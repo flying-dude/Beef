@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include "../Compiler/BfSystem.h"
 #include "../Compiler/BfParser.h"
 #include "../Compiler/BfReducer.h"

@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef XMAKE_BUILD
+#include "Common.h"
+#else
 #include "../Common.h"
+#endif
 
 NS_BF_BEGIN
 

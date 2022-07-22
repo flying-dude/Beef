@@ -19,10 +19,10 @@ Beefy::Debugger* CreateDebugger32(DebugManager* debugManager, DbgMiniDump* miniD
 
 Beefy::Debugger* CreateDebugger64(DebugManager* debugManager, DbgMiniDump* miniDump)
 {
-	// custom X86 backend deactivated on linux for now,
-	// since it has compile error when using distro-provided llvm package.
-	// if (gX86Target == NULL)
-		// gX86Target = new X86Target();
+#ifndef XMAKE_BUILD
+	if (gX86Target == NULL)
+		gX86Target = new X86Target();
+#endif
 	return NULL;
 }
 
