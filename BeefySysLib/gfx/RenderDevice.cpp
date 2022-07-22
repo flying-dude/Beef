@@ -147,7 +147,7 @@ Texture* RenderDevice::LoadTexture(const StringImpl& fileName, int flags)
 			if (!imageData->LoadFromMemory(addr, len))
 			{
 				failed = true;
-				BF_FATAL("Failed to load image");
+				BF_FATAL_PRINTF("Failed to load image: %s", fileName.c_str());
 			}
 		}
 		else
@@ -155,7 +155,7 @@ Texture* RenderDevice::LoadTexture(const StringImpl& fileName, int flags)
 			if (!imageData->LoadFromFile(fileName))
 			{
 				failed = true;
-				BF_FATAL("Failed to load image");
+				BF_FATAL_PRINTF("Failed to load image: %s", fileName.c_str());
 			}
 		}
 	}

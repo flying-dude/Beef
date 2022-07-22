@@ -939,7 +939,7 @@ void BfContext::AddTypeToWorkList(BfType* type)
 
 void BfContext::ValidateDependencies()
 {
-#if _DEBUG
+#ifdef _DEBUG
 // 	BP_ZONE("BfContext::ValidateDependencies");
 // 	BfLogSysM("ValidateDependencies\n");
 //
@@ -2015,7 +2015,7 @@ void BfContext::UpdateAfterDeletingTypes()
 			}
 			else
 			{
-#if _DEBUG
+#ifdef _DEBUG
 				if (type->IsGenericTypeInstance())
 				{
 					// We can't contain deleted generic arguments without being deleted ourselves
@@ -2052,7 +2052,7 @@ void BfContext::UpdateAfterDeletingTypes()
 			break;
 	}
 
-#if _DEBUG
+#ifdef _DEBUG
 // 	auto itr = mResolvedTypes.begin();
 // 	while (itr != mResolvedTypes.end())
 // 	{

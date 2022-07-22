@@ -124,9 +124,15 @@ bool ImageData::LoadFromMemory(void* ptr, int size)
 bool ImageData::LoadFromFile(const StringImpl& path)
 {
 	int size = 0;
-	uint8* aData = LoadBinaryData(path, &size);
-	if (aData == NULL)
+
+	std::variant<uint8*, errno_wrapper> load = LoadBinaryData(path, &size);
+	if (load.index() == 1) {
+		errno_wrapper err = std::get<errno_wrapper>(load);
+		printf("error while loading binary data: %s", strerror(err));
 		return false;
+	}
+
+	uint8* aData = std::get<uint8*>(load);
 	SetSrcData(aData, size);
 	bool result = ReadData();
 	if (mKeepSrcDataValid)

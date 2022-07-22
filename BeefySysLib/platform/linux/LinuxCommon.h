@@ -1,5 +1,20 @@
 #pragma once
 
+#ifdef _DEBUG
+#define DEBUG
+#endif
+
+#include <string.h>
+#include <string>
+// special type to pass error values received from the "errno" variable when calling libc functions.
+struct errno_wrapper {
+	int error_code;
+	errno_wrapper(int error_code) : error_code(error_code) {}
+	operator int() { return error_code; }
+	operator const char * () { return strerror(error_code); }
+	operator std::string() { return strerror(error_code); };
+};
+
 #ifdef __LP64__
 #define BF64
 #else
@@ -25,6 +40,8 @@
 #include <pthread.h>
 #include <wctype.h>
 #include <stddef.h>
+
+#include <signal.h> // raise(SIGINT)
 
 //#define offsetof(type, member)  __builtin_offsetof (type, member)
 
@@ -109,8 +126,6 @@ typedef void* HMODULE;
 #define _DEBUG
 #endif
 
-#define NOT_IMPL throw "Unimplemented";
-
 //ARM
 
 #if defined(__x86_64__) || defined(__i386__)
@@ -124,20 +139,82 @@ typedef void* HMODULE;
 #define BF_COMPILER_FENCE() __asm__ __volatile__("": : :"memory")
 #define BF_THREAD_YIELD() sched_yield()
 
+// assert and print a message if fail.
+#if defined _DEBUG || defined BF_DEBUG_ASSERTS
+#define BF_ASSERT_MSG(expr, msg, ...) {                                                                               \
+if (!(expr)) {                                                                                                        \
+	printf("DBG :: ASSERTION FAILED :: [%s] :: [%d] :: ", __FILE_NAME__, __LINE__);                                   \
+	printf(msg __VA_OPT__(, ) __VA_ARGS__);                                                                           \
+	printf("\n");                                                                                                     \
+                                                                                                                      \
+	/* https://stackoverflow.com/questions/4326414/set-breakpoint-in-c-or-c-code-programmatically-for-gdb-on-linux */ \
+	raise(SIGINT);                                                                                                    \
+}                                                                                                                     \
+}
+#else
+#define BF_ASSERT_MSG(expr, msg, ...)
+#endif
+
 #if defined _DEBUG || defined BF_DEBUG_ASSERTS
 #define BF_ASSERT(_Expression) (void)( (!!(_Expression)) || (Beefy::BFFatalError(#_Expression, __FILE__, __LINE__), 0) )
 #else
 #define BF_ASSERT(_Expression) (void)(0)
 #endif
 
+// assert but don't crash on assertion failure. print a message and continue.
+#if defined _DEBUG || defined BF_DEBUG_ASSERTS
+#define BF_ASSERT_SOFT(expr, msg, ...)                                               \
+	if (!(expr)) { \
+		printf("DBG :: ASSERTION FAILED (SOFT) :: %s :: %d :: ", __FILE_NAME__, __LINE__);         \
+		printf(msg __VA_OPT__(, ) __VA_ARGS__);                                     \
+		printf("\n"); \
+}
+#else
+#define BF_ASSERT_SOFT(expr, msg, ...)
+#endif
+
 #define BF_ASSERT_REL(_Expression) (void)( (!!(_Expression)) || (Beefy::BFFatalError(#_Expression, __FILE__, __LINE__), 0) )
 #define BF_FATAL(msg) (void) ((Beefy::BFFatalError(msg, __FILE__, __LINE__), 0) )
+
+#define BF_FATAL_PRINTF(msg, ...)                                               \
+	printf("FATAL ERROR :: [%s] :: [%d] :: ", __FILE_NAME__, __LINE__);         \
+	printf(msg __VA_OPT__(, ) __VA_ARGS__);                                     \
+	printf("\n");                                                               \
+	raise(SIGINT);
+
+// only clang supports the "__FILE_NAME__" macro.
+#ifndef __clang__
+#define __FILE_NAME__ \
+    (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#endif
 
 #if defined _DEBUG || defined BF_DEBUG_ASSERTS
 #define BF_DBG_FATAL(msg) (void) ((Beefy::BFFatalError(msg, __FILE__, __LINE__), 0) )
 #else
 #define BF_DBG_FATAL(msg)
 #endif
+
+// convenience. using this occasionally but no code is checked in where it is used.
+#if defined _DEBUG || defined BF_DEBUG_ASSERTS
+#define BF_DBG_LOG(msg, ...) \
+		printf("DBG :: %s :: %d :: %s :: ", __FILE_NAME__, __LINE__, __FUNCTION__); \
+		printf(msg __VA_OPT__(, ) __VA_ARGS__); \
+		printf("\n");
+#else
+#define BF_DBG_LOG(msg, ...)
+#endif
+
+#define NOT_IMPL                           \
+{                                          \
+	std::string msg = "NOT IMPLEMENTED: "; \
+	msg += __FUNCTION__;                   \
+	BF_DBG_FATAL(msg);                     \
+}
+
+#define NOT_IMPL_WARN                                                                              \
+{                                                                                                  \
+	printf("%s :: %d :: warning :: NOT IMPLEMENTED: %s\n", __FILE_NAME__, __LINE__, __FUNCTION__); \
+}
 
 #define BF_NOINLINE __attribute__ ((noinline))
 #define BF_NAKED

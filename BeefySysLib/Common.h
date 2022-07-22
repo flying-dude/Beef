@@ -20,6 +20,8 @@
 
 #include "BFPlatform.h"
 
+#include <variant>
+
 inline size_t HashBytes(const uint8* ptr, size_t count) noexcept
 {
 #ifdef BF64
@@ -226,7 +228,7 @@ void EncodeULEB32(uint64 value, StringImpl& buffer);
 int32 Rand();
 int32 GetHighestBitSet(int32 n);
 
-uint8* LoadBinaryData(const StringImpl& path, int* size);
+std::variant<uint8*, errno_wrapper> LoadBinaryData(const StringImpl& path, int* size);
 char* LoadTextData(const StringImpl& path, int* size);
 bool LoadTextData(const StringImpl& path, StringImpl& str);
 int64 GetFileTimeWrite(const StringImpl& path);

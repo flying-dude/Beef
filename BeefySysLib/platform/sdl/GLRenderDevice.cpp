@@ -144,23 +144,32 @@ static void CreateOrthographicOffCenter(float left, float right, float bottom, f
 
 GLShaderParam::GLShaderParam()
 {
+	NOT_IMPL_WARN;
 	mGLVariable = 0;
 }
 
 GLShaderParam::~GLShaderParam()
 {
+	NOT_IMPL_WARN;
 }
 
 void GLShaderParam::SetTexture(Texture* texture)
 {
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 	//GLTexture* dXTexture = (GLTexture*) texture;
 	//GLCHECK(mGLVariable->AsShaderResource()->SetResource(dXTexture->mGLTexture));
 }
 
+RenderCmd* GLDrawLayer::CreateSetTextureCmd(int textureIdx, Texture* texture) {
+	GLSetTextureCmd* setTextureCmd = AllocRenderCmd<GLSetTextureCmd>();
+	setTextureCmd->mTextureIdx = textureIdx;
+	setTextureCmd->mTexture = texture;
+	return setTextureCmd;
+}
+
 void GLShaderParam::SetFloat4(float x, float y, float z, float w)
 {
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 	//float v[4] = {x, y, z, w};
 	//GLCHECK(mGLVariable->AsVector()->SetFloatVector(v));
 }
@@ -169,19 +178,23 @@ void GLShaderParam::SetFloat4(float x, float y, float z, float w)
 
 GLShader::GLShader()
 {
+	NOT_IMPL_WARN;
 }
 
 GLShader::~GLShader()
 {
+	NOT_IMPL_WARN;
+
 	for (auto paramKV : mParamsMap)
 	{
 		delete paramKV.mValue;
 	}
 }
 
+// ShaderParam* GLShader::GetShaderParam(const std::wstring& name)
 ShaderParam* GLShader::GetShaderParam(const StringImpl& name)
 {
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 	return NULL;
 }
 
@@ -206,7 +219,7 @@ GLTexture::~GLTexture()
 
 void GLTexture::PhysSetAsTarget()
 {
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 }
 
 void GLTexture::Blt(ImageData* imageData, int x, int y)
@@ -235,6 +248,7 @@ GLDrawBatch::GLDrawBatch() : DrawBatch()
 
 GLDrawBatch::~GLDrawBatch()
 {
+	NOT_IMPL_WARN;
 }
 
 extern int gBFDrawBatchCount;
@@ -248,6 +262,7 @@ struct GLVertex3D
 
 void GLDrawBatch::Render(RenderDevice* renderDevice, RenderWindow* renderWindow)
 {
+	NOT_IMPL_WARN;
 	if (mIdxIdx == 0)
 		return;
 
@@ -298,20 +313,10 @@ GLDrawLayer::~GLDrawLayer()
 
 DrawBatch* GLDrawLayer::CreateDrawBatch()
 {
-	return new GLDrawBatch();
-}
-
-
-RenderCmd* GLDrawLayer::CreateSetTextureCmd(int textureIdx, Texture* texture)
-{
-	GLSetTextureCmd* setTextureCmd = AllocRenderCmd<GLSetTextureCmd>();
-	setTextureCmd->mTextureIdx = textureIdx;
-	setTextureCmd->mTexture = texture;
-	return setTextureCmd;
-}
-
-void GLDrawLayer::SetShaderConstantData(int usageIdx, int slotIdx, void* constData, int size)
-{
+	auto newBatch = new GLDrawBatch();
+	BF_DBG_LOG("DIRTY HACKZ: assign vtxSize zero...");
+	newBatch->mVtxSize = 0;
+	return newBatch;
 }
 
 void GLRenderDevice::PhysSetRenderWindow(RenderWindow* renderWindow)
@@ -655,6 +660,7 @@ Texture* GLRenderDevice::LoadTexture(ImageData* imageData, int flags)
 Shader* GLRenderDevice::LoadShader(const StringImpl& fileName, VertexDefinition* vertexDefinition)
 {
 	GLShader* glShader = new GLShader();
+	NOT_IMPL_WARN;
 
 	glShader->mVertexSize = sizeof(GLVertex3D);
 	glShader->mGLVertexShader = bf_glCreateShader(GL_VERTEX_SHADER);

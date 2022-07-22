@@ -1,11 +1,12 @@
 #include "SdlBFApp.h"
+#include "SdlBFWindow.h"
 #include "GLRenderDevice.h"
-#include "platform/PlatformHelper.h"
 #include <SDL2/SDL.h>
 
-USING_NS_BF;
+#include "platform/notwin/NotWin.h"
+#include "platform/PlatformHelper.h"
 
-///
+USING_NS_BF;
 
 #pragma comment(lib, "imm32.lib")
 #pragma comment(lib, "version.lib")
@@ -449,17 +450,14 @@ void SdlBFWindow::RemoveMenuItem(BFMenu* item)
 
 BFSysBitmap* SdlBFApp::LoadSysBitmap(const wchar_t* fileName)
 {
+	BF_ASSERT_SOFT(fileName != NULL, "fileName is null.");
 	return NULL;
-}
-
-void SdlBFWindow::ModalsRemoved()
-{
-	//::EnableWindow(mHWnd, TRUE);
-	//::SetFocus(mHWnd);
 }
 
 DrawLayer* SdlBFApp::CreateDrawLayer(BFWindow* window)
 {
+	BF_ASSERT_SOFT(window != NULL, "window is null.");
+	BF_ASSERT_SOFT(mRenderDevice != NULL, "mRenderDevice is null.");
 	GLDrawLayer* drawLayer = new GLDrawLayer();
 	if (window != NULL)
 	{
@@ -479,6 +477,7 @@ void SdlBFApp::GetDesktopResolution(int& width, int& height)
 
 void SdlBFApp::GetWorkspaceRect(int& x, int& y, int& width, int& height)
 {
+	NOT_IMPL_WARN;
 	x = 0;
 	y = 0;
 	width = 1024;

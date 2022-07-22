@@ -14,9 +14,15 @@
 #include "gfx/RenderDevice.h"
 #include "gfx/DrawLayer.h"
 
+#include <vector>
+
 struct SDL_Window;
 
 NS_BF_BEGIN;
+
+//class Vertex3D : public DefaultVertex3D
+//{
+//};
 
 class BFApp;
 class GLRenderDevice;
@@ -47,7 +53,7 @@ public:
 	GLShaderParam();
 	~GLShaderParam();
 
-	virtual void			SetTexture(Texture* texture);
+	virtual void			SetTexture(Texture* texture) override;
 	virtual void			SetFloat4(float x, float y, float z, float w) override;
 };
 

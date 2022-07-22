@@ -209,6 +209,11 @@ namespace IDE
 			if ((gApp.mSettings.mEditorSettings.mEnableFileRecovery != .Yes) || (mDisabled))
 				return;
 
+			if (gApp.mWorkspace.mDir == null) {
+				Console.WriteLine($"FileRecovery.bf :: dbg :: warn :: skipping append in recover path due to missing workspace dir mDir (null). this would otherwise cause a runtime error due to nullpointer.");
+				return;
+			}
+
 			mWantWorkspaceCleanup = true;
 
 			String recoverPath = scope String();

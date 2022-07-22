@@ -91,20 +91,20 @@ namespace System
 #endif
 		}
 
-#if BF_ENABLE_REALTIME_LEAK_CHECK || BF_DEBUG_ALLOC
+// #if BF_ENABLE_REALTIME_LEAK_CHECK || BF_DEBUG_ALLOC
 		[CallingConvention(.Cdecl)]
 		public extern static void Report();
 		[CallingConvention(.Cdecl)]
 		public extern static void Shutdown();
 		[CallingConvention(.Cdecl)]
 		public extern static void SetMaxRawDeferredObjectFreePercentage(int maxPercentage);
-#else
-		public static void Report() {}
-		public static void Shutdown() {}
-		public static void SetMaxRawDeferredObjectFreePercentage(int maxPercentage) {}
-#endif
+// #else
+// 		public static void Report() {}
+// 		public static void Shutdown() {}
+// 		public static void SetMaxRawDeferredObjectFreePercentage(int maxPercentage) {}
+// #endif
 
-#if BF_ENABLE_REALTIME_LEAK_CHECK
+// #if BF_ENABLE_REALTIME_LEAK_CHECK
 		[CallingConvention(.Cdecl)]
 		private extern static void Init();
 		[CallingConvention(.Cdecl)]
@@ -121,8 +121,8 @@ namespace System
 		private extern static void FindAllTLSMembers();
 		[CallingConvention(.Cdecl)]
 		public extern static void DebugDumpLeaks();
-		[CallingConvention(.Cdecl)]
-        public extern static void Mark(Object obj);
+		// [CallingConvention(.Cdecl)]
+        // public extern static void Mark(Object obj);
 		[CallingConvention(.Cdecl)]
 		public extern static void Mark(void* ptr, int size);
 		[CallingConvention(.Cdecl)]
@@ -131,23 +131,23 @@ namespace System
 		public extern static void SetCollectFreeThreshold(int freeBytes); // -1 to disable, 0 to trigger collection after every single free. Defaults to 64MB
 		[CallingConvention(.Cdecl)]
 		public extern static void SetMaxPausePercentage(int maxPausePercentage); // 0 = disabled. Defaults to 20.
-		[CallingConvention(.Cdecl)]
-		extern static void AddPendingThread(void* internalThread);
-		[CallingConvention(.Cdecl)]
-		public extern static void ExcludeThreadId(int thereadId);
-#else
-		public static void Collect(bool async = true) {}
-		private static void MarkAllStaticMembers() {}
-		public static void DebugDumpLeaks() {}
-		[SkipCall]
+		// [CallingConvention(.Cdecl)]
+		// extern static void AddPendingThread(void* internalThread);
+		// [CallingConvention(.Cdecl)]
+		// public extern static void ExcludeThreadId(int thereadId);
+// #else
+// 		public static void Collect(bool async = true) {}
+// 		private static void MarkAllStaticMembers() {}
+// 		public static void DebugDumpLeaks() {}
+// 		[SkipCall]
 		public static void Mark(Object obj) {}
-		public static void Mark(void* ptr, int size) {}
-		public static void SetAutoCollectPeriod(int periodMS) {}
-		public static void SetCollectFreeThreshold(int freeBytes) {}
-		public static void SetMaxPausePercentage(int maxPausePercentage) {}
+// 		public static void Mark(void* ptr, int size) {}
+// 		public static void SetAutoCollectPeriod(int periodMS) {}
+// 		public static void SetCollectFreeThreshold(int freeBytes) {}
+// 		public static void SetMaxPausePercentage(int maxPausePercentage) {}
 		static void AddPendingThread(void* internalThreadInfo) {}
 		public static void ExcludeThreadId(int thereadId) {}
-#endif
+// #endif
 
 		[DisableObjectAccessChecks]
 		static void MarkAppendedObject(Object obj)

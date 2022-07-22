@@ -172,12 +172,17 @@ void DrawLayer::CloseDrawBatch()
 		return;
 	mIdxByteIdx += mCurDrawBatch->mIdxIdx * sizeof(uint16);
 	mVtxByteIdx += mCurDrawBatch->mVtxIdx * mCurDrawBatch->mVtxSize;
-	BF_ASSERT(mVtxByteIdx <= DRAWBUFFER_VTXBUFFER_SIZE);
+
+	BF_ASSERT_MSG(mVtxByteIdx <= DRAWBUFFER_VTXBUFFER_SIZE,
+		"mVtxByteIdx out of range. mVtxByteIdx: %d, DRAWBUFFER_VTXBUFFER_SIZE: %d, mVtxSize: %d",
+		mVtxByteIdx, DRAWBUFFER_VTXBUFFER_SIZE, mCurDrawBatch->mVtxSize);
+
 	mCurDrawBatch = NULL;
 }
 
 void DrawLayer::QueueRenderCmd(RenderCmd* renderCmd)
 {
+	BF_ASSERT_SOFT(renderCmd != nullptr, "renderCmd parameter is null.");
 	CloseDrawBatch();
 	mRenderCmdList.PushBack(renderCmd);
 	renderCmd->CommandQueued(this);
@@ -311,21 +316,23 @@ void DrawLayer::Clear()
 void* DrawLayer::AllocTris(int vtxCount)
 {
 	if (mCurDrawBatch == NULL)
-		AllocateBatch(0, 0);
+		AllocateBatch();
 	return mCurDrawBatch->AllocTris(vtxCount);
 }
 
 void* DrawLayer::AllocStrip(int vtxCount)
 {
 	if (mCurDrawBatch == NULL)
-		AllocateBatch(0, 0);
+		AllocateBatch();
+
+	BF_ASSERT_MSG(mCurDrawBatch != NULL, "mCurDrawBatch is null.");
 	return mCurDrawBatch->AllocStrip(vtxCount);
 }
 
 void DrawLayer::AllocIndexed(int vtxCount, int idxCount, void** verticesOut, uint16** indicesOut, uint16* idxOfsOut)
 {
 	if (mCurDrawBatch == NULL)
-		AllocateBatch(0, 0);
+		AllocateBatch();
 	mCurDrawBatch->AllocIndexed(vtxCount, idxCount, verticesOut, indicesOut, idxOfsOut);
 }
 
