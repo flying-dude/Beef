@@ -45,7 +45,7 @@ public:
 	void					SetSrcData(uint8* data, int dataLen);	
 	virtual bool			LoadFromMemory(void* ptr, int size);
 	virtual bool			LoadFromFile(const StringImpl& path);
-	virtual bool			ReadData() { return false; }
+	virtual bool			ReadData() { NOT_IMPL_WARN; return false; }
 	virtual void			PremultiplyAlpha();
 	virtual void			UnPremultiplyAlpha();
 };

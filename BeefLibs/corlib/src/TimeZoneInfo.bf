@@ -1926,6 +1926,9 @@ namespace System {
         // The GetLocalTzFile() call returns a Byte[] containing the compiled tzfile.
         // 
         static private TimeZoneInfo GetLocalTimeZoneFromTzFile() {
+#if !BF_PLATFORM_WINDOWS
+            return Utc;
+#else
             /*uint8[] rawData = GetLocalTzFile();
 
             if (rawData != null) {
@@ -1942,8 +1945,8 @@ namespace System {
              }
             // the data returned from the PAL is completely bogus; return a dummy entry
             return CreateCustomTimeZone(c_localId, TimeSpan.Zero, c_localId, c_localId);*/
-			// TODO: Not implemented.
-            return Utc;
+			Runtime.NotImplemented();
+#endif
         }
 #endif // !FEATURE_WIN32_REGISTRY
 

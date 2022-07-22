@@ -7,8 +7,6 @@
 
 USING_NS_BF;
 
-#define NOT_IMPL throw "Not implemented"
-
 #ifdef _WIN32
 #ifdef BF_PLATFORM_OPENGL_ES2
 #pragma comment(lib, "libEGL.lib")
@@ -130,23 +128,32 @@ static void CreateOrthographicOffCenter(float left, float right, float bottom, f
 
 GLShaderParam::GLShaderParam()
 {
+	NOT_IMPL_WARN;
 	mGLVariable = NULL;
 }
 
 GLShaderParam::~GLShaderParam()
 {	
+	NOT_IMPL_WARN;
 }
 
 void GLShaderParam::SetTexture(Texture* texture)
 {
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 	//GLTexture* dXTexture = (GLTexture*) texture;
 	//GLCHECK(mGLVariable->AsShaderResource()->SetResource(dXTexture->mGLTexture));
 }
 
+RenderCmd* GLDrawLayer::CreateSetTextureCmd(int textureIdx, Texture* texture) {
+	GLSetTextureCmd* setTextureCmd = AllocRenderCmd<GLSetTextureCmd>();
+	setTextureCmd->mTextureIdx = textureIdx;
+	setTextureCmd->mTexture = texture;
+	return setTextureCmd;
+}
+
 void GLShaderParam::SetFloat4(float x, float y, float z, float w)
 {
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 	//float v[4] = {x, y, z, w};	
 	//GLCHECK(mGLVariable->AsVector()->SetFloatVector(v));
 }
@@ -155,22 +162,22 @@ void GLShaderParam::SetFloat4(float x, float y, float z, float w)
 
 GLShader::GLShader()
 {		
+	NOT_IMPL_WARN;
 }
 
 GLShader::~GLShader()
 {
-	GLShaderParamMap::iterator itr = mParamsMap.begin();
-	while (itr != mParamsMap.end())
-	{
-		delete itr->second;
-		++itr;
-	}
+	NOT_IMPL_WARN;
+
+	for (auto const& [key, val] : mParamsMap)
+		delete val;
 
 	//if (mGLEffect != NULL)
 		//mGLEffect->Release();	
 }
 
-ShaderParam* GLShader::GetShaderParam(const std::wstring& name)
+// ShaderParam* GLShader::GetShaderParam(const std::wstring& name)
+ShaderParam* GLShader::GetShaderParam(const StringImpl& name)
 {
 	/*GLShaderParamMap::iterator itr = mParamsMap.find(name);
 	if (itr != mParamsMap.end())
@@ -185,7 +192,7 @@ ShaderParam* GLShader::GetShaderParam(const std::wstring& name)
 	mParamsMap[name] = shaderParam;
 
 	return shaderParam;*/
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 	return NULL;
 }
 
@@ -193,20 +200,22 @@ ShaderParam* GLShader::GetShaderParam(const std::wstring& name)
 
 GLTexture::GLTexture()
 {
-	mGLTexture = NULL;
-	//mGLRenderTargetView = NULL;	
 	mRenderDevice = NULL;
+	mGLTexture = NULL;
+	mGLTexture2 = NULL;
+	//mGLRenderTargetView = NULL;
 }
 
 GLTexture::~GLTexture()
 {
+	NOT_IMPL_WARN;
 	//if (mGLTexture != NULL)
 		//mGLTexture->Release();
 }
 
 void GLTexture::PhysSetAsTarget()
 {	
-	NOT_IMPL;
+	NOT_IMPL_WARN;
 	//{
 	//	GL10_VIEWPORT viewPort;
 	//	viewPort.Width = mWidth;
@@ -247,6 +256,7 @@ GLDrawBatch::GLDrawBatch(int minVtxSize, int minIdxSize) : DrawBatch()
 
 GLDrawBatch::~GLDrawBatch()
 {
+	NOT_IMPL_WARN;
 	delete mVertices;
 	delete mIndices;
 	//mGLBuffer->Release();
@@ -254,6 +264,7 @@ GLDrawBatch::~GLDrawBatch()
 
 void GLDrawBatch::Lock()
 {		
+	NOT_IMPL_WARN;
 	//mGLBuffer->Map(GL10_MAP_WRITE_DISCARD, 0, (void**) &mVertices);
 }
 
@@ -261,6 +272,7 @@ extern int gBFDrawBatchCount;
 
 void GLDrawBatch::Draw()
 {
+	NOT_IMPL_WARN;
 	if (mIdxIdx == 0)
 		return;
 
@@ -285,8 +297,12 @@ void GLDrawBatch::Draw()
 	
 	
 	//GLShader* curShader = (GLShader*) aRenderDevice->mCurShader;
-	GLShader* curShader = (GLShader*) mCurShader;
+	// GLShader* curShader = (GLShader*) mCurShader;
 		
+	GLShader* curShader = nullptr;
+	NOT_IMPL_WARN;
+	return;
+
 	//if (curShader->mTextureParam != NULL)
 		//curShader->mTextureParam->SetTexture(mCurTexture);
 
@@ -302,7 +318,9 @@ void GLDrawBatch::Draw()
 	glUniform1i(curShader->mAttribTex1, 1);
 	//glEnable(GL_TEXTURE_2D);
 #else
-	glBindTexture(GL_TEXTURE_2D, ((GLTexture*)mCurTexture)->mGLTexture);
+	// glBindTexture(GL_TEXTURE_2D, ((GLTexture*)mCurTexture)->mGLTexture);
+	NOT_IMPL_WARN;
+	return;
 #endif
 
     
@@ -310,8 +328,10 @@ void GLDrawBatch::Draw()
 		//glRenderDevice->PhysSetAdditive(mIsAdditive);
 
 	//TODO: Just do 'apply', we don't have to do full PhysSetShaderPass
-	if (curShader != glRenderDevice->mPhysShader)
-		glRenderDevice->PhysSetShader(mCurShader);		
+	// if (curShader != glRenderDevice->mPhysShader)
+		// glRenderDevice->PhysSetShader(mCurShader);		
+	NOT_IMPL_WARN;
+	return;
 
 	// Set vertex buffer
 	
@@ -346,7 +366,10 @@ GLDrawLayer::~GLDrawLayer()
 
 DrawBatch* GLDrawLayer::CreateDrawBatch()
 {
-	return new GLDrawBatch();
+	auto newBatch = new GLDrawBatch();
+	BF_DBG_LOG("DIRTY HACKZ: assign vtxSize zero...");
+	newBatch->mVtxSize = 0;
+	return newBatch;
 }
 
 DrawBatch* GLDrawLayer::AllocateBatch(int minVtxCount, int minIdxCount)
@@ -357,6 +380,9 @@ DrawBatch* GLDrawLayer::AllocateBatch(int minVtxCount, int minIdxCount)
 
     GLRenderDevice* glRenderDevice = (GLRenderDevice*)gBFApp->mRenderDevice;
     
+	BF_ASSERT(mRenderDevice->mCurRenderState->mShader != NULL);
+	int vtxSize = mRenderDevice->mCurRenderState->mShader->mVertexSize;
+
 	GLDrawBatch* newBatch = NULL;
 	
     //TODO: Search
@@ -373,11 +399,11 @@ DrawBatch* GLDrawLayer::AllocateBatch(int minVtxCount, int minIdxCount)
             checkBatch->mNext = NULL;
 			break;
 		}
-        
-        checkBatch = (GLDrawBatch*)checkBatch->mNext;
-        prevRefPtr = (GLDrawBatch**)&checkBatch->mNext;
-    }
     
+		checkBatch = (GLDrawBatch*)checkBatch->mNext;
+		prevRefPtr = (GLDrawBatch**)&checkBatch->mNext;
+	}
+
 	/*for (int i = pool->size() -1; i >= 0; i--)
 	{
 		GLDrawBatch* checkBatch = (*pool)[i];
@@ -394,7 +420,16 @@ DrawBatch* GLDrawLayer::AllocateBatch(int minVtxCount, int minIdxCount)
 	if (newBatch == NULL)
 		newBatch = new GLDrawBatch(minVtxCount, minIdxCount);	
 	
+	BF_DBG_LOG("assign vtxSize: %d", vtxSize);
+
+	if (vtxSize > 0) {
+		BF_DBG_LOG("got unexpexted vtxSize: %d. assigning zero manually. this is wrong and only done for testing.", vtxSize);
+		vtxSize = 0;
+	}
+
+	newBatch->mVtxSize = vtxSize;
 	newBatch->mDrawLayer = this;
+	mCurDrawBatch = newBatch;
 	return newBatch;
 }
 
@@ -781,26 +816,44 @@ bool GLRenderDevice::Init(BFApp* app)
 	return true;
 }
 
+// copy-pasta'd this one from DXRenderDevice.
 void GLRenderDevice::FrameStart()
 {	
 	mCurRenderTarget = NULL;
 	mPhysRenderWindow = NULL;
-	mPhysShader = NULL;
-	RenderWindowList::iterator itr = mRenderWindowList.begin();
-	while (itr != mRenderWindowList.end())
+
+	for (auto renderWindow : mRenderWindowList)
 	{
-		(*itr)->mHasBeenDrawnTo = false;
-		(*itr)->mHasBeenTargeted = false;
-		++itr;
+		renderWindow->mHasBeenDrawnTo = false;
+		renderWindow->mHasBeenTargeted = false;
 	}	
 }
 
+// copy-pasta'd this one from DXRenderDevice.
 void GLRenderDevice::FrameEnd()
 {	
-	RenderWindowList::iterator itr = mRenderWindowList.begin();
+	for (int renderWindowIdx = 0; renderWindowIdx < (int)mRenderWindowList.size(); renderWindowIdx++)
+	{
+		RenderWindow* aRenderWindow = mRenderWindowList[renderWindowIdx];
+		if (aRenderWindow->mHasBeenTargeted)
+		{
+			PhysSetRenderState(mDefaultRenderState);
+			PhysSetRenderWindow(aRenderWindow);
+
+			for (int drawLayerIdx = 0; drawLayerIdx < (int)aRenderWindow->mDrawLayerList.size(); drawLayerIdx++)
+			{
+				DrawLayer* drawLayer = aRenderWindow->mDrawLayerList[drawLayerIdx];
+				drawLayer->Draw();
+			}
+
+			aRenderWindow->Present();
+		}
+	}
+
+	/*RenderWindowList::iterator itr = mRenderWindowList.begin();
 	while (itr != mRenderWindowList.end())
 	{
-		RenderWindow* aRenderWindow = *itr;		
+		RenderWindow* aRenderWindow = *itr;
 		if (aRenderWindow->mHasBeenTargeted)
 		{
 			//aRenderWindow->mCurDrawLayer->Flush();
@@ -816,12 +869,12 @@ void GLRenderDevice::FrameEnd()
 			aRenderWindow->Present();
 		}
 		++itr;
-	}
+	}*/
 }
 
-Texture* GLRenderDevice::LoadTexture(ImageData* imageData, bool additive)
+Texture* GLRenderDevice::LoadTexture(ImageData* imageData, int flags)
 {
-	imageData->mIsAdditive = additive;	
+	imageData->mIsAdditive = (flags & TextureFlag_Additive) != 0;	
 	imageData->PremultiplyAlpha();
 
 	//int w = power_of_two(imageData->mWidth);
@@ -952,29 +1005,55 @@ Texture* GLRenderDevice::LoadTexture(ImageData* imageData, bool additive)
 	//return aTexture;
 }
 
-Shader* GLRenderDevice::LoadShader(const StringImpl& fileName)
+Shader* GLRenderDevice::LoadShader(const StringImpl& fileName, VertexDefinition* vertexDefinition)
 {
 	GLShader* glShader = new GLShader();
+	NOT_IMPL_WARN;
 
 	glShader->mGLVertexShader = bf_glCreateShader(GL_VERTEX_SHADER);
 	glShader->mGLFragmentShader = bf_glCreateShader(GL_FRAGMENT_SHADER);
     
-	GLint vertProgramLen = 0;
-	GLint fragProgramLen = 0;
-    
 #ifdef BF_PLATFORM_OPENGL_ES2
-	GLchar* vertProgram = (GLchar*)LoadBinaryData(fileName + L"_es.vert", &vertProgramLen);
-	GLchar* fragProgram = (GLchar*)LoadBinaryData(fileName + L"_es.frag", &fragProgramLen);
+	auto fileName_vert = fileName + L"_es.vert";
+	auto fileName_frag = fileName + L"_es.frag";
 #else
-	GLchar* vertProgram = (GLchar*)LoadBinaryData(fileName + L".vert", &vertProgramLen);
-	GLchar* fragProgram = (GLchar*)LoadBinaryData(fileName + L".frag", &fragProgramLen);
+	auto fileName_vert = fileName + ".vert";
+	auto fileName_frag = fileName + ".frag";
 #endif
 
-	if ((vertProgram == NULL) || (fragProgram == NULL))
+	GLint vertProgramLen = 0;
+	GLint fragProgramLen = 0;
+	std::variant<uint8*, errno_wrapper> vertProgram_ = LoadBinaryData(fileName_vert, &vertProgramLen);
+	std::variant<uint8*, errno_wrapper> fragProgram_ = LoadBinaryData(fileName_frag, &fragProgramLen);
+
+	bool has_error = false;
+
+	if (vertProgram_.index() == 1) {
+		errno_wrapper err = std::get<errno_wrapper>(vertProgram_);
+		printf("error: failed to load binary data\n");
+		printf(" file: %s\n", fileName_vert.c_str());
+		printf("  msg: %s\n", strerror(err));
+		has_error = true;
+	}
+
+	if (fragProgram_.index() == 1) {
+		errno_wrapper err = std::get<errno_wrapper>(fragProgram_);
+		printf("error: failed to load binary data\n");
+		printf(" file: %s\n", fileName_frag.c_str());
+		printf("  msg: %s\n", strerror(err));
+		has_error = true;
+	}
+
+	GLchar* vertProgram = (GLchar*)std::get<uint8*>(vertProgram_);
+	GLchar* fragProgram = (GLchar*)std::get<uint8*>(fragProgram_);
+
+	if (has_error)
 	{
 		delete vertProgram;
 		delete fragProgram;
-		return NULL;
+
+		// return the shader prematurely. this is basically an error but possibly not a crash.
+		return glShader;
 	}
 
 	int infoLogLen = 0;
@@ -1022,43 +1101,14 @@ Shader* GLRenderDevice::LoadShader(const StringImpl& fileName)
 	return glShader;
 }
 
-void GLRenderDevice::SetShader(Shader* shader)
-{
-	mShaderChanged = true;
-	mCurShader = shader;
-}
-
 void GLRenderDevice::PhysSetAdditive(bool additive)
 {
+	NOT_IMPL_WARN;
 	if (additive)		
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);	
 	else
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);	
-	mCurAdditive = additive;
-}
-
-void GLRenderDevice::SetClip(float x, float y, float width, float height)
-{
-	//TODO: Store state in draw batcher
-	mCurDrawLayer->Flush();
-	
-	NOT_IMPL;
-
-	/*GL10_RECT rects[1];
-	rects[0].left = (int) x;
-	rects[0].right = (int) (x + width);
-	rects[0].top = (int) y;
-	rects[0].bottom = (int) (y + height);
-
-	mGLDevice->RSSetScissorRects(1, rects);
-	mGLDevice->RSSetState(mGLRasterizerStateClipped);*/
-}
-
-void GLRenderDevice::DisableClip()
-{
-	mCurDrawLayer->Flush();
-	NOT_IMPL;
-	//mGLDevice->RSSetState(mGLRasterizerStateUnclipped);
+	//mCurAdditive = additive;
 }
 
 Texture* GLRenderDevice::CreateRenderTarget(int width, int height, bool destAlpha)
@@ -1121,4 +1171,14 @@ Texture* GLRenderDevice::CreateRenderTarget(int width, int height, bool destAlph
 	//aRenderTarget->mGLRenderTargetView = d3DRenderTargetView;
 	//aRenderTarget->AddRef();
 	//return aRenderTarget;	
+}
+
+void GLSetTextureCmd::Render(RenderDevice* renderDevice, RenderWindow* renderWindow)
+{
+	// copied from platform/win - does not compile
+	GLRenderDevice* glRenderDevice = (GLRenderDevice*)renderDevice;
+	//glRenderDevice->mD3DDeviceContext->PSSetShaderResources(mTextureIdx, 1, &((GLTexture*)mTexture)->mD3DResourceView);
+
+	// this one is not impl but produce too much clutter...
+	// NOT_IMPL_WARN;
 }

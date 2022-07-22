@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "PlatformApp.h"
+#include "BFWindow.h"
 #include "gfx/RenderDevice.h"
 #include "gfx/Texture.h"
 #include "gfx/Shader.h"
@@ -436,6 +437,8 @@ BF_EXPORT TextureSegment* BF_CALLTYPE Gfx_CreateDynTexture(int width, int height
 
 BF_EXPORT TextureSegment* BF_CALLTYPE Gfx_LoadTexture(const char* fileName, int flags)
 {
+	BF_ASSERT_MSG(gBFApp->mRenderDevice != nullptr, "mRenderDevice is null.");
+
 	Texture* texture = gBFApp->mRenderDevice->LoadTexture(fileName, flags);
 	if (texture == NULL)
 		return NULL;	
@@ -529,6 +532,9 @@ BF_EXPORT void BF_CALLTYPE Gfx_DrawTextureSegment(TextureSegment* textureSegment
 	c *= textureSegment->mScaleY;
 	d *= textureSegment->mScaleY;	
 
+	// note: i had the code below commented before to dirty-fix a segfault.
+	// reactivating since for now its working but might trigger again in the future.
+	//BF_DBG_LOG("textureSegment: %p", textureSegment);
 	v[0].Set(tx, ty, z, textureSegment->mU1, textureSegment->mV1, color);
 	v[1].Set(tx + a, ty + b, z, textureSegment->mU2, textureSegment->mV1, color);
 	v[2].Set(tx + c, ty + d, z, textureSegment->mU1, textureSegment->mV2, color);	

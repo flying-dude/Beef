@@ -13,9 +13,16 @@
 #include "gfx/RenderDevice.h"
 #include "gfx/DrawLayer.h"
 
+#include <map>
+#include <vector>
+
 struct SDL_Window;
 
 NS_BF_BEGIN;
+
+class Vertex3D : public DefaultVertex3D
+{
+};
 
 class BFApp;
 class GLRenderDevice;
@@ -44,7 +51,7 @@ public:
 	GLShaderParam();
 	~GLShaderParam();
 
-	virtual void			SetTexture(Texture* texture);
+	virtual void			SetTexture(Texture* texture) override;
 	virtual void			SetFloat4(float x, float y, float z, float w) override;
 };
 
@@ -84,14 +91,21 @@ public:
 
 	virtual void			Lock();
 	virtual void			Draw();
+
+	virtual void Render(RenderDevice* renderDevice, RenderWindow* renderWindow) override { NOT_IMPL_WARN; }
 };
 
 class GLDrawLayer : public DrawLayer
 {
 public:
-	virtual DrawBatch*		CreateDrawBatch();
+	virtual DrawBatch*		CreateDrawBatch() override;
 	virtual DrawBatch*		AllocateBatch(int minVtxCount, int minIdxCount) override;
-	virtual void			FreeBatch(DrawBatch* drawBatch) override;
+
+	// TODO this method is unused and should probably be deleted.
+	/*virtual*/ void			FreeBatch(DrawBatch* drawBatch) /*override*/;
+
+	virtual RenderCmd* CreateSetTextureCmd(int textureIdx, Texture* texture) override;
+	virtual void SetShaderConstantData(int usageIdx, int slotIdx, void* constData, int size) override { NOT_IMPL_WARN; }
 
 public:
 	GLDrawLayer();
@@ -149,7 +163,9 @@ public:
 	virtual void			PhysSetAdditive(bool additive);
 	virtual void			PhysSetShader(Shader* shaderPass);
 	virtual void			PhysSetRenderWindow(RenderWindow* renderWindow);
-	virtual void			PhysSetRenderTarget(Texture* renderTarget);
+
+	virtual void			PhysSetRenderState(RenderState* renderState) override { NOT_IMPL_WARN; }
+	virtual void			PhysSetRenderTarget(Texture* renderTarget) override;
 
 public:
 	GLRenderDevice();
@@ -159,13 +175,21 @@ public:
 	void					FrameStart() override;
 	void					FrameEnd() override;
 
-	Texture*				LoadTexture(ImageData* imageData, bool additive) override;
-	Shader*					LoadShader(const StringImpl& fileName) override;
+	virtual Texture*				LoadTexture(ImageData* imageData, int flags) override;
+	virtual Texture*					CreateDynTexture(int width, int height) override { NOT_IMPL; }
 	Texture*				CreateRenderTarget(int width, int height, bool destAlpha) override;
+	virtual Shader* LoadShader(const StringImpl& fileName, VertexDefinition* vertexDefinition) override;
+};
 
-	void					SetShader(Shader* shader) override;
-	virtual void			SetClip(float x, float y, float width, float height) override;
-	virtual void			DisableClip() override;
+// copied from platform/win for now
+class GLSetTextureCmd : public RenderCmd
+{
+public:
+	int						mTextureIdx;
+	Texture*				mTexture;
+
+public:
+	virtual void Render(RenderDevice* renderDevice, RenderWindow* renderWindow) override;
 };
 
 NS_BF_END;

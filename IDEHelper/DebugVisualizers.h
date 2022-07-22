@@ -4,7 +4,45 @@
 #include "BeefySysLib/util/Hash.h"
 #include "Compiler/BfUtil.h"
 #include "DebugCommon.h"
+
+// BEGIN: toml
+
+// including "toml.h" in this section. implementing a "failwith()" function, so that
+// toml does not require exceptions to work.
+
+#include <sstream>
+#include <iostream>
+
+inline std::string toml_failwith_format(std::stringstream& ss)
+{
+	return ss.str();
+}
+
+template <typename T, typename... Args>
+std::string toml_failwith_format(std::stringstream& ss, T&& t, Args&&... args)
+{
+	ss << std::forward<T>(t);
+	return toml_failwith_format(ss, std::forward<Args>(args)...);
+}
+
+// implement "failwith()" function, so that toml does not require exceptions and we can compile with "-fno-exceptions" globally.
+template <typename... Args>
+#if defined(_MSC_VER)
+__declspec(noreturn)
+#else
+[[noreturn]]
+#endif
+void failwith(Args&&... args)
+{
+	std::stringstream ss;
+	std::cerr << toml_failwith_format(ss, std::forward<Args>(args)...) << std::endl;
+	std::cerr << "TODO: how to do toml error reporting without exceptions? (not aborting here but program might crash soon)" << std::endl;
+	exit(1);
+}
+
 #include "extern/toml/toml.h"
+
+// END: toml
 
 NS_BF_BEGIN
 

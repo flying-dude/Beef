@@ -651,9 +651,15 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 					String dataPath = GetFileDir(basePathName) + "/" + jName->mValueString;
 
 					int size = 0;
-					uint8* rawData = LoadBinaryData(dataPath, &size);
-					if (rawData != NULL)					
-						data.Insert(0, rawData, size);					
+					std::variant<uint8*, errno_wrapper> rawData_ = LoadBinaryData(dataPath, &size);
+
+					if (rawData_.index() == 1) {
+						int err = std::get<errno_wrapper>(rawData_);
+						printf("error in LoadBinaryData: %s\n", strerror(err));
+					} else {
+						uint8* rawData = std::get<uint8*>(rawData_);
+						data.Insert(0, rawData, size);
+					}
 				}
 			}
 

@@ -862,20 +862,34 @@ void Beefy::OutputDebugStrF(const char* fmt ...)
     OutputDebugStr(aResult);
 }
 
-uint8* Beefy::LoadBinaryData(const StringImpl& path, int* size)
+std::variant<uint8*, errno_wrapper> Beefy::LoadBinaryData(const StringImpl& path, int* size)
 {
+	errno = 0; // clear errno
+
 	FILE* fP = fopen(path.c_str(), "rb");
 	if (fP == NULL)
-		return NULL;
+		return errno;
 
-	fseek(fP, 0, SEEK_END);
+	if (fseek(fP, 0, SEEK_END) != 0)
+		return errno;
+
 	int aSize = (int32)ftell(fP);
-	fseek(fP, 0, SEEK_SET);
+	if (aSize == -1L)
+		return errno;
+
+	if (fseek(fP, 0, SEEK_SET) != 0)
+		return errno;
 
 	uint8* data = new uint8[aSize];
 	int readSize = (int)fread(data, 1, aSize, fP);
+	if (ferror(fP) != 0)
+		return errno; // https://stackoverflow.com/questions/15473699/message-text-for-ferror-return-value
+
 	(void)readSize;
-	fclose(fP);
+
+	if (fclose(fP) != 0)
+		return errno;
+
 	if (size)
 		*size = aSize;
 	return data;

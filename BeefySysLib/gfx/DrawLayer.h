@@ -78,6 +78,8 @@ public:
 	template <typename T>
 	T*						AllocRenderCmd(int extraBytes = 0)
 	{ 
+		BF_ASSERT_MSG(mRenderDevice != nullptr, "mRenderDevice variable is null.");
+
 		if (mRenderCmdByteIdx + sizeof(T) + extraBytes >= DRAWBUFFER_CMDBUFFER_SIZE)
 		{
 			mRenderCmdBuffer = mRenderDevice->mPooledRenderCmdBuffers.AllocMemoryBlock();
@@ -96,7 +98,7 @@ public:
 public:		
 	void					CloseDrawBatch();
 	virtual DrawBatch*		CreateDrawBatch() = 0;	
-	virtual DrawBatch*		AllocateBatch(int minVtxCount, int minIdxCount);
+	virtual DrawBatch*		AllocateBatch(int minVtxCount = 0, int minIdxCount = 0);
 	void					QueueRenderCmd(RenderCmd* renderCmd);
 	virtual RenderCmd*		CreateSetTextureCmd(int textureIdx, Texture* texture) = 0;
 	virtual void			SetShaderConstantData(int usageIdx, int slotIdx, void* constData, int size) = 0;

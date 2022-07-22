@@ -3714,7 +3714,7 @@ void BfModule::VisitCodeBlock(BfBlock* block)
 		{
 			auto localMethod = mCurMethodState->mLocalMethods.back();
 
-#if _DEBUG
+#ifdef _DEBUG
 			BfLocalMethod** localMethodPtr = NULL;
 			mCurMethodState->mLocalMethodMap.TryGetValue(localMethod->mMethodName, &localMethodPtr);
 			BF_ASSERT(*localMethodPtr == localMethod);

@@ -312,7 +312,7 @@ public:
 	
 	virtual Shader*			LoadShader(const StringImpl& fileName, VertexDefinition* vertexDefinition) = 0;
 		
-	virtual void			SetRenderState(RenderState* renderState) = 0;
+	virtual void			SetRenderState(RenderState* renderState) { mCurRenderState = renderState; }
 };
 
 NS_BF_END;
