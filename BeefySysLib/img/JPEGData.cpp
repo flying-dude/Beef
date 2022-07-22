@@ -8,9 +8,15 @@
 
 extern "C"
 {
+#ifdef XMAKE_BUILD
+#include "jpeglib.h"
+#include "jerror.h"
+#include "jpegint.h"
+#else
 #include "jpeg/jpeglib.h"
 #include "jpeg/jerror.h"
 #include "jpeg/jpegint.h"
+#endif
 }
 
 

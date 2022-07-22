@@ -2,7 +2,12 @@
 #include "Beef/BfCommon.h"
 
 #define HUNSPELL_STATIC
+#ifdef XMAKE_BUILD
+#include "../extern/hunspell/src/hunspell/hunspell.h"
+#else
 #include "../../extern/hunspell/src/hunspell/hunspell.h"
+#endif
+
 
 USING_NS_BF;
 

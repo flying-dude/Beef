@@ -1,3 +1,4 @@
+.xmake
 CMakeLists.txt.user
 .DS_Store
 *.lst
