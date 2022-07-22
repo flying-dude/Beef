@@ -11,13 +11,21 @@ This fork attempts to bring these existing facilities to life on Linux platforms
 
 Prerequisites:
 
-1) Install xmake from AUR: https://aur.archlinux.org/packages/xmake
-2) Install with pacman: llvm13, noto-fonts
+* Install xmake from AUR: https://aur.archlinux.org/packages/xmake
 
 ```
-git clone https://github.com/flying-dude/Beef
+sudo pacman --sync llvm13 noto-fonts
+git clone --branch xmake https://github.com/flying-dude/Beef
 cd Beef
 xmake build libffi
 xmake
 ./IDE/dist/BeefIDE
 ```
+
+This is work in progress.
+Currently you can compile the IDE and display the main SDL window of the IDE.
+
+Here is how it looks right now:
+
+![Screenshot](BeefIDE-Linux.png)
+
