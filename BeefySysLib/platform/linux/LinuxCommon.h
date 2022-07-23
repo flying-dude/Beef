@@ -123,7 +123,9 @@ typedef void* HMODULE;
 //#include "../notwin/NotWin.h"
 
 #ifdef DEBUG
+#ifndef _DEBUG
 #define _DEBUG
+#endif
 #endif
 
 //ARM
@@ -183,9 +185,8 @@ if (!(expr)) {                                                                  
 	raise(SIGINT);
 
 // only clang supports the "__FILE_NAME__" macro.
-#ifndef __clang__
-#define __FILE_NAME__ \
-    (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#ifndef __FILE_NAME__
+#define __FILE_NAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
 
 #if defined _DEBUG || defined BF_DEBUG_ASSERTS
