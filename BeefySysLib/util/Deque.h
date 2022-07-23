@@ -1044,12 +1044,12 @@ public:
 };
 
 template <typename T, typename TAlloc = AllocatorCLib<T> >
-class Deque : public DequeImpl<T, TAlloc, std::is_pod<T>::value>
+class Deque : public DequeImpl<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value>
 {
 public:
-	typedef DequeImpl<T, TAlloc, std::is_pod<T>::value> _DequeImpl;
+    typedef DequeImpl<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value> _DequeImpl;
 
-	using DequeImpl<T, TAlloc, std::is_pod<T>::value>::DequeImpl;
+    using DequeImpl<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value>::DequeImpl;
 	using _DequeImpl::operator=;
 	using _DequeImpl::operator==;
 	using _DequeImpl::operator!=;

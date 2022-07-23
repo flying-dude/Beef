@@ -479,7 +479,7 @@ public:
 
 	~HashSet()
 	{
-		if (!std::is_pod<TKey>::value)
+        if (!(std::is_standard_layout<TKey>::value && std::is_trivial<TKey>::value))
 		{
 			for (int_cosize i = 0; i < mCount; i++)
 			{
@@ -603,7 +603,7 @@ public:
 		{
 			for (int_cosize i = 0; i < mAllocSize; i++) mBuckets[i] = -1;
 
-			if (!std::is_pod<TKey>::value)
+            if (!(std::is_standard_layout<TKey>::value && std::is_trivial<TKey>::value))
 			{
 				for (int_cosize i = 0; i < mCount; i++)
 				{

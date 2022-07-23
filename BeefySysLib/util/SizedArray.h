@@ -855,10 +855,10 @@ public:
 };
 
 template <typename T, typename TAlloc = AllocatorCLib<T> >
-class SizedArrayImpl : public SizedArrayBaseT<T, TAlloc, std::is_pod<T>::value>
+class SizedArrayImpl : public SizedArrayBaseT<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value>
 {
 public:
-	typedef SizedArrayBaseT<T, TAlloc, std::is_pod<T>::value> _Base;
+    typedef SizedArrayBaseT<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value> _Base;
 };
 
 template <typename T, int TInternalSize, typename TAlloc = AllocatorCLib<T> >
