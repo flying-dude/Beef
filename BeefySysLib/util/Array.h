@@ -1103,12 +1103,12 @@ public:
 };
 
 template <typename T, typename TAlloc = AllocatorCLib<T> >
-class Array : public ArrayImpl<T, TAlloc, std::is_pod<T>::value>
+class Array : public ArrayImpl<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value>
 {
 public:
-	typedef ArrayImpl<T, TAlloc, std::is_pod<T>::value> _ArrayImpl;
+    typedef ArrayImpl<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value> _ArrayImpl;
 
-	using ArrayImpl<T, TAlloc, std::is_pod<T>::value>::ArrayImpl;
+    using ArrayImpl<T, TAlloc, std::is_standard_layout<T>::value && std::is_trivial<T>::value>::ArrayImpl;
 	using _ArrayImpl::operator=;
 	using _ArrayImpl::operator==;
 	using _ArrayImpl::operator!=;
