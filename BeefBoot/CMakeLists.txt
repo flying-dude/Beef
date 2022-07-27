@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
+# https://stackoverflow.com/questions/30867712/add-llvm-to-project-using-cmake
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
 ################### Variables. ####################
 # Change if you want modify path or other values. #
 ###################################################
@@ -8,6 +14,9 @@ set(PROJECT_NAME BeefBoot)
 # Output Variables
 set(OUTPUT_DEBUG Debug/bin)
 set(OUTPUT_RELEASE Release/bin)
+
+include_directories(${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
 
 ############## CMake Project ################
 #        The main options of project        #
@@ -44,8 +53,8 @@ if (${APPLE})
     ../BeefySysLib/
     ../BeefySysLib/third_party
     ../BeefySysLib/third_party/freetype/include
-    ../extern/llvm-project_13_0_1/llvm/include
-    ../extern/llvm-project_13_0_1/llvm/lib/Target
+#    ../extern/llvm-project_13_0_1/llvm/include
+#    ../extern/llvm-project_13_0_1/llvm/lib/Target
     ../IDEHelper
 
     ../BeefySysLib/platform/osx
@@ -57,8 +66,8 @@ else()
     ../BeefySysLib/
     ../BeefySysLib/third_party
     ../BeefySysLib/third_party/freetype/include
-    ../extern/llvm-project_13_0_1/llvm/include
-    ../extern/llvm-project_13_0_1/llvm/lib/Target
+#    ../extern/llvm-project_13_0_1/llvm/include
+#    ../extern/llvm-project_13_0_1/llvm/lib/Target
     ../IDEHelper
 
     ../BeefySysLib/platform/linux
@@ -73,19 +82,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(
     -D_DEBUG
   )
-  include_directories(
-    ../extern/llvm_linux_13_0_1/include
-    ../extern/llvm_linux_13_0_1/lib/Target/X86
-  )
+#  include_directories(
+#    ../extern/llvm_linux_13_0_1/include
+#    ../extern/llvm_linux_13_0_1/lib/Target/X86
+#  )
   set(EXECUTABLE_OUTPUT_PATH  "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
   set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/lib")
 else()
-  include_directories(
-    ../extern/llvm_linux_rel_13_0_1/include
-    ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
-  )
+#  include_directories(
+#    ../extern/llvm_linux_rel_13_0_1/include
+#    ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
+#  )
   set(EXECUTABLE_OUTPUT_PATH  "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
-  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
+#  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
 endif()
 
 ################### Dependencies ##################
@@ -133,20 +142,20 @@ add_executable(${PROJECT_NAME}
    ${SRC_FILES}
 )
 
-execute_process(
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/bin/llvm-config --system-libs --link-static
-  OUTPUT_VARIABLE LLVM_SYSTEM_LIBS
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  RESULT_VARIABLE EXEC_RESULT
-)
+#execute_process(
+#  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/bin/llvm-config --system-libs --link-static
+#  OUTPUT_VARIABLE LLVM_SYSTEM_LIBS
+#  OUTPUT_STRIP_TRAILING_WHITESPACE
+#  RESULT_VARIABLE EXEC_RESULT
+#)
 
-if (EXEC_RESULT AND NOT EXEC_RESULT EQUAL 0)
-  if (EXEC_RESULT MATCHES "^[0-9]+$")
-    message(FATAL_ERROR "llvm-config exited with code ${EXEC_RESULT}.")
-  else()
-    message(FATAL_ERROR "llvm-config couldn't be executed: ${EXEC_RESULT}")
-  endif()
-endif()
+#if (EXEC_RESULT AND NOT EXEC_RESULT EQUAL 0)
+#  if (EXEC_RESULT MATCHES "^[0-9]+$")
+#    message(FATAL_ERROR "llvm-config exited with code ${EXEC_RESULT}.")
+#  else()
+#    message(FATAL_ERROR "llvm-config couldn't be executed: ${EXEC_RESULT}")
+#  endif()
+#endif()
 
 if (${APPLE})
     set(TARGET_LIBS_OS "")
@@ -154,7 +163,8 @@ else()
     #set(TARGET_LIBS_OS "curses")
     #set(TARGET_LIBS_OS "-Xlinker --no-demangle -v")
 
-    set(TARGET_LIBS_OS "${LLVM_SYSTEM_LIBS}")
+#    set(TARGET_LIBS_OS "${LLVM_SYSTEM_LIBS}")
+    set(TARGET_LIBS_OS "${llvm_libs}")
 endif()
 
 # Link with other dependencies.

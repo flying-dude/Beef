@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
+# https://stackoverflow.com/questions/30867712/add-llvm-to-project-using-cmake
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
 ################### Variables. ####################
 # Change if you want modify path or other values. #
 ###################################################
@@ -61,12 +67,15 @@ else()
     ../BeefySysLib/
     ../BeefySysLib/third_party
     ../BeefySysLib/third_party/freetype/include
-    ../extern/llvm-project_13_0_1/llvm/include
-    ../extern/llvm-project_13_0_1/llvm/lib/Target
+#    ../extern/llvm-project_13_0_1/llvm/include
+#    ../extern/llvm-project_13_0_1/llvm/lib/Target
 
     ../BeefySysLib/platform/linux
   )
 endif()
+
+include_directories(${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
 
 ############## Artefacts Output #################
 # Defines outputs , depending Debug or Release. #
@@ -77,24 +86,24 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     -D_DEBUG
   )
   include_directories(
-    ../extern/llvm_linux_13_0_1/include
-    ../extern/llvm_linux_13_0_1/lib/Target/X86
-    ../extern/llvm_linux_13_0_1/lib/Target/AArch64
+#    ../extern/llvm_linux_13_0_1/include
+#    ../extern/llvm_linux_13_0_1/lib/Target/X86
+#    ../extern/llvm_linux_13_0_1/lib/Target/AArch64
   )
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
   set(CMAKE_EXECUTABLE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
-  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/lib")
+#  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/lib")
 else()
   include_directories(
-    ../extern/llvm_linux_rel_13_0_1/include
-    ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
-    ../extern/llvm_linux_rel_13_0_1/lib/Target/AArch64
+#    ../extern/llvm_linux_rel_13_0_1/include
+#    ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
+#    ../extern/llvm_linux_rel_13_0_1/lib/Target/AArch64
   )
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
   set(CMAKE_EXECUTABLE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
-  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
+#  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
 endif()
 
 ################### Dependencies ##################
@@ -194,12 +203,12 @@ add_library(${PROJECT_NAME} SHARED
    ${SRC_FILES}
 )
 
-execute_process(
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/bin/llvm-config --system-libs --link-static
-  OUTPUT_VARIABLE LLVM_SYSTEM_LIBS
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  RESULT_VARIABLE EXEC_RESULT
-)
+#execute_process(
+#  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/bin/llvm-config --system-libs --link-static
+#  OUTPUT_VARIABLE LLVM_SYSTEM_LIBS
+#  OUTPUT_STRIP_TRAILING_WHITESPACE
+#  RESULT_VARIABLE EXEC_RESULT
+#)
 
 if (EXEC_RESULT AND NOT EXEC_RESULT EQUAL 0)
   if (EXEC_RESULT MATCHES "^[0-9]+$")
@@ -282,9 +291,9 @@ list(APPEND LLVM_LIBS
   ${LLVM_LIB}/libLLVMSupport.a
   ${LLVM_LIB}/libLLVMDemangle.a)
 
-FOREACH (lib ${LLVM_LIBS})
-  string(APPEND TARGET_LIBS_OS " " ${lib})
-ENDFOREACH()
+#FOREACH (lib ${LLVM_LIBS})
+#  string(APPEND TARGET_LIBS_OS " " ${lib})
+#ENDFOREACH()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" )
   FILE(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/../IDE/dist/IDEHelper_libs_d.txt" ${TARGET_LIBS_OS})
@@ -296,7 +305,6 @@ endif()
 if(MSVC)
   target_link_libraries(${PROJECT_NAME} BeefySysLib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib LLVMX86Disassembler.lib LLVMMCDisassembler.lib LLVMSupport.lib LLVMX86Info.lib LLVMX86Desc.lib %(AdditionalDependencies) LLVMMC.lib LLVMObject.lib LLVMCore.lib LLVMBitReader.lib LLVMAsmParser.lib LLVMMCParser.lib LLVMCodeGen.lib LLVMTarget.lib LLVMX86CodeGen.lib LLVMScalarOpts.lib LLVMInstCombine.lib LLVMSelectionDAG.lib LLVMProfileData.lib LLVMTransformUtils.lib LLVMAnalysis.lib LLVMX86AsmParser.lib LLVMAsmPrinter.lib LLVMBitWriter.lib LLVMVectorize.lib LLVMipo.lib LLVMInstrumentation.lib LLVMDebugInfoDWARF.lib LLVMDebugInfoPDB.lib LLVMDebugInfoCodeView.lib LLVMGlobalISel.lib LLVMBinaryFormat.lib LLVMAggressiveInstCombine.lib libcurl_a.lib)
 else()
-  target_link_libraries(${PROJECT_NAME} BeefySysLib hunspell pthread dl ${TARGET_LIBS_OS}
-
-  )
+#  target_link_libraries(${PROJECT_NAME} BeefySysLib hunspell pthread dl ${TARGET_LIBS_OS}
+  target_link_libraries(${PROJECT_NAME} BeefySysLib hunspell pthread dl LLVM)
 endif()
