@@ -11530,8 +11530,10 @@ namespace IDE
 						});
 					((DarkButton)dlg.mButtons[0]).Label = "Open Link";
 					dlg.PopupWindow(GetActiveWindow());
+#if BF_PLATFORM_WINDOWS
 					MessageBeep(.Error);
-#endif
+#endif // #if BF_PLATFORM_WINDOWS
+#endif // #if CLI
 				}
 			}
 
