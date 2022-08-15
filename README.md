@@ -17,7 +17,7 @@ See script `Beef/bin/build_release.sh` for how this works.
 Execute the steps below to create a **release build** on Arch Linux:
 
 ```
-sudo pacman --sync llvm13 noto-fonts
+sudo pacman --sync --needed llvm13 clang noto-fonts sdl2 freetype2 libglvnd
 git clone https://github.com/flying-dude/Beef
 Beef/bin/build_release.sh
 Beef/IDE/dist/BeefBuild -help
