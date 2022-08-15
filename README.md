@@ -14,7 +14,7 @@ Prerequisites:
 * Install xmake from AUR: https://aur.archlinux.org/packages/xmake
 
 ```
-sudo pacman --sync llvm13 noto-fonts
+sudo pacman --sync --needed llvm13 clang noto-fonts sdl2 freetype2 libglvnd
 git clone --branch xmake https://github.com/flying-dude/Beef
 cd Beef
 xmake build libffi
