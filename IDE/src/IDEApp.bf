@@ -13979,7 +13979,8 @@ namespace IDE
 
 #if !CLI
 		void UpdateIPC()
-		{						
+		{
+#if BF_PLATFORM_WINDOWS
 			bool hasFocus = false;
 			for (var window in mWindows)
 			{
@@ -14043,6 +14044,7 @@ namespace IDE
 					}
 				}				
 			}			
+#endif // #if BF_PLATFORM_WINDOWS
 		}
 #endif
 
