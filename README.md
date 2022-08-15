@@ -14,11 +14,18 @@ See script `Beef/bin/build_release.sh` for how this works.
 
 ## Build on Arch Linux
 
-Execute the steps below to build and run on Arch Linux:
+Execute the steps below to create a **release build** on Arch Linux:
 
 ```
 sudo pacman --sync llvm13 noto-fonts
 git clone https://github.com/flying-dude/Beef
 Beef/bin/build_release.sh
 Beef/IDE/dist/BeefBuild -help
+```
+
+And for a **debug build**:
+
+```
+Beef/bin/build_debug.sh
+Beef/IDE/dist/BeefBuild_d -help
 ```
