@@ -137,9 +137,11 @@ file(GLOB SRC_FILES
     NetManager.cpp
     SpellChecker.cpp
     Targets.cpp
-    X64.cpp
-    X86.cpp
-    X86Target.cpp
+
+    # deactivate the custom X86 backend, since it seems to require the LLVM sources.
+    # X64.cpp
+    # X86.cpp
+    # X86Target.cpp
     X86XmmInfo.cpp
 
     LinuxDebugger.cpp
