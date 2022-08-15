@@ -1,0 +1,34 @@
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# command-line usage of clang-format:
+#
+# clang-format --dump-config | grep ColumnLimit
+# clang-format -i MyFile.cpp
+
+---
+Language: Cpp
+
+NamespaceIndentation: All
+AccessModifierOffset: -8
+PointerAlignment: Left
+AllowShortCaseLabelsOnASingleLine: true
+SortIncludes: Never
+
+# https://stackoverflow.com/questions/47683910/can-you-set-clang-formats-line-length
+ColumnLimit: 0
+
+# https://stackoverflow.com/questions/53980784/clang-format-kr-braces-style
+# https://en.wikipedia.org/wiki/Indentation_style#Allman_style
+BreakBeforeBraces: Allman
+
+# note: it won't use tabs for indent unless we have "TabWidth == IndentWidth" ...
+TabWidth: 8
+IndentWidth: 8
+UseTab: ForIndentation
+
+# clang can add a a little comment to closing braces for namespaces.
+# that way, we always know which namespace gets closed with a closing brace.
+# this is deactivated for now.
+FixNamespaceComments: false
+
+# https://stackoverflow.com/questions/27111078/can-clang-format-align-variable-or-macro-assignments-in-columns
+AlignConsecutiveAssignments: Consecutive
