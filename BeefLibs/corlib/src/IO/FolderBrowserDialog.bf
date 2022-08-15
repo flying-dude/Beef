@@ -1,7 +1,9 @@
 
-#if BF_PLATFORM_WINDOWS
 namespace System.IO
 {
+
+#if BF_PLATFORM_WINDOWS
+
 	class FolderBrowserDialog : CommonDialog
 	{
 		public enum FolderKind
@@ -220,5 +222,34 @@ namespace System.IO
             return 0;
 		}
 	}	
-}
+
+#else
+
+class FolderBrowserDialog : CommonDialog
+	{
+		public enum FolderKind
+		{
+			Open,
+			Save
+		}
+
+		// String mSelectedPath = new String() ~ delete _;
+		// public bool ShowNewFolderButton;
+		// String mDescriptionText = new String() ~ delete _;
+		// bool mSelectedPathNeedsCheck;
+		// static FolderBrowserDialog sCurrentThis;
+		// FolderKind mFolderKind;
+
+		public this(FolderKind kind = .Open) { }
+		public StringView SelectedPath { get { return "mSelectedPath"; } set { } }
+		public StringView Description { get { return "mDescriptionText"; } set { } }
+		public void Reset() { }
+
+		// protected Result<DialogResult> RunDialog_New(Windows.HWnd hWndOwner, Windows.COM_IFileDialog* fileDialog) { }
+		// protected override Result<DialogResult> RunDialog(Windows.HWnd hWndOwner) { }
+		// public static int FolderBrowserDialog_BrowseCallbackProc(Windows.HWnd hWnd, int32 msg, int wParam, int lParam) { }
+	}
+
 #endif
+
+} // end namespace System.IO

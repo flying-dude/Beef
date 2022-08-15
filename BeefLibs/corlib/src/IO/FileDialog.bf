@@ -577,4 +577,139 @@ namespace System.IO
 		}
 	}
 }
+#else
+
+namespace System.IO
+{
+	enum DialogResult { None = 0, OK = 1, Cancel = 2 }
+
+	abstract class CommonDialog
+	{
+		// public Windows.HWnd mHWnd;
+		// public Windows.HWnd mDefaultControlHwnd;
+		public int mDefWndProc;
+		private const int32 CDM_SETDEFAULTFOCUS = 0;
+
+// 		public static Dictionary<int, CommonDialog> sHookMap = new Dictionary<int, CommonDialog>() ~
+// 	        {
+// 				Debug.Assert(sHookMap.Count == 0);
+// 	            delete _;
+// 			};
+// 		public static Monitor sMonitor = new Monitor() ~ delete _;
+
+		public Result<DialogResult> ShowDialog(INativeWindow owner = null) { return .Err; }
+
+// 		public virtual int OwnerWndProc(Windows.HWnd hWnd, int32 msg, int wParam, int lParam) { }
+
+// 		protected virtual int HookProc(Windows.HWnd hWnd, int32 msg, int wParam, int lparam) { }
+
+// 		protected abstract Result<DialogResult> RunDialog(Windows.HWnd hWndOwner);
+	}
+
+	abstract class FileDialog : CommonDialog
+	{
+		// protected abstract Result<DialogResult> RunFileDialog(ref Windows.OpenFileName ofn);
+		// protected override Result<DialogResult> RunDialog(Windows.HWnd hWndOwner) { return .Err; }
+
+		private const int32 FILEBUFSIZE = 8192;
+		protected const int32 OPTION_ADDEXTENSION = (int32)0x80000000;
+
+		protected int32 mOptions;
+		private String mTitle ~ delete _;
+		private String mInitialDir ~ delete _;
+		private String mDefaultExt ~ delete _;
+		protected String[] mFileNames ~ DeleteContainerAndItems!(_);
+		private bool mSecurityCheckFileNames;
+		private String mFilter ~ delete _;
+		private String mFilterBuffer = new String() ~ delete _;
+		private int32 mFilterIndex;
+		private bool mSupportMultiDottedExtensions;
+		private bool mIgnoreSecondFileOkNotification;
+		private int32 mOKNotificationCount;
+
+		public this() { }
+		public virtual void Reset() { }
+
+		protected int32 Options { get { return 0; } }
+
+		public StringView Title
+		{
+			get { return mTitle; }
+			set { String.NewOrSet!(mTitle, value); }
+		}
+
+		public StringView InitialDirectory
+		{
+			get { return mInitialDir; }
+			set { }
+		}
+
+		public String[] FileNames
+		{
+			get { return mFileNames; }
+		}
+
+		public StringView FileName
+		{
+			set { }
+		}
+
+		public bool AddExtension
+		{
+		    get { return false; }
+		    set { }
+		}
+
+		public virtual bool CheckFileExists
+		{
+		    get { return false; }
+		    set { }
+		}
+
+		public bool DereferenceLinks
+		{
+		    get { return false; }
+		    set { }
+		}
+
+		public bool CheckPathExists
+		{
+		    get { return false; }
+		    set { }
+		}
+
+		public bool Multiselect
+		{
+		    get { return false; }
+		    set { }
+		}
+
+		public bool ValidateNames
+		{
+			get { return false; }
+			set { }
+		}
+
+		public StringView DefaultExt
+		{
+			get { return ""; }
+			set { }
+		}
+
+		public void GetFilter(String outFilter) { }
+		public Result<void> SetFilter(StringView value) { return .Ok; }
+		protected bool GetOption(int32 option) { return false; }
+		protected void SetOption(int32 option, bool value) { }
+		// private static Result<void> MakeFilterString(String s, bool dereferenceLinks, String filterBuffer) { return .Ok; }
+		// private Result<DialogResult> RunDialogOld(Windows.HWnd hWndOwner) { return .Ok; }
+		// static int StaticHookProc(Windows.HWnd hWnd, int32 msg, int wParam, int lparam) { return 0; }
+		// protected abstract Result<Windows.COM_IFileDialog*> CreateVistaDialog();
+		// private Result<DialogResult> TryRunDialogVista(Windows.HWnd hWndOwner) { return .Ok; }
+		// private void OnBeforeVistaDialog(Windows.COM_IFileDialog* dialog) {} 
+		// private Windows.COM_IFileDialog.FOS GetOptions(){}
+		// protected abstract void ProcessVistaFiles(Windows.COM_IFileDialog* dialog, List<String> files);
+		// private Result<void> SetFileTypes(Windows.COM_IFileDialog* dialog) { return .Ok; }
+	}
+}
+
 #endif

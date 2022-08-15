@@ -143,10 +143,14 @@ namespace System.IO
 
 namespace System.IO
 {
-	[Error("This class is only available on Windows")]
-	class SaveFileDialog
+	class SaveFileDialog : FileDialog
 	{
-
+		public this(){}
+		public override void Reset(){}
+		public virtual bool OverwritePrompt { get{ return false; } set{} }
+		// protected override Result<DialogResult> RunFileDialog(ref Windows.OpenFileName ofn) { return .Ok; }
+		// protected override void ProcessVistaFiles(Windows.COM_IFileDialog* dialog, System.Collections.List<String> files){}
+		// protected override Result<Windows.COM_IFileDialog*> CreateVistaDialog() { return .Ok; }
 	}
 }
 
