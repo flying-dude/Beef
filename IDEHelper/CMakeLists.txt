@@ -66,9 +66,10 @@ else()
     ../
     ../BeefySysLib/
     ../BeefySysLib/third_party
-    ../BeefySysLib/third_party/freetype/include
-#    ../extern/llvm-project_13_0_1/llvm/include
-#    ../extern/llvm-project_13_0_1/llvm/lib/Target
+    # ../BeefySysLib/third_party/freetype/include
+
+    # ../extern/llvm-project_13_0_1/llvm/include
+    # ../extern/llvm-project_13_0_1/llvm/lib/Target
 
     ../BeefySysLib/platform/linux
   )
@@ -85,25 +86,27 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(
     -D_DEBUG
   )
-  include_directories(
-#    ../extern/llvm_linux_13_0_1/include
-#    ../extern/llvm_linux_13_0_1/lib/Target/X86
-#    ../extern/llvm_linux_13_0_1/lib/Target/AArch64
-  )
+
+  # include_directories(
+    # ../extern/llvm_linux_13_0_1/include
+    # ../extern/llvm_linux_13_0_1/lib/Target/X86
+    # ../extern/llvm_linux_13_0_1/lib/Target/AArch64
+  # )
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
   set(CMAKE_EXECUTABLE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
-#  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/lib")
+  # set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/lib")
 else()
-  include_directories(
-#    ../extern/llvm_linux_rel_13_0_1/include
-#    ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
-#    ../extern/llvm_linux_rel_13_0_1/lib/Target/AArch64
-  )
+  # include_directories(
+    # ../extern/llvm_linux_rel_13_0_1/include
+    # ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
+    # ../extern/llvm_linux_rel_13_0_1/lib/Target/AArch64
+  # )
+
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
   set(CMAKE_EXECUTABLE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
-#  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
+  # set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
 endif()
 
 ################### Dependencies ##################

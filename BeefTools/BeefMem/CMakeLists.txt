@@ -33,12 +33,15 @@ add_definitions(
    -DBFSYSLIB_DYNAMIC
 )
 
+find_package(Freetype REQUIRED)
+include_directories(${Freetype_INCLUDE_DIRS})
+
 include_directories(
   .
   ../BeefySysLib/
   ../BeefySysLib/platform/linux
   ../BeefySysLib/third_party
-  ../BeefySysLib/third_party/freetype/include
+  # ../BeefySysLib/third_party/freetype/include
   ../BeefySysLib/third_party/libffi/x86_64-unknown-linux-gnu/include
   ../
   ../extern

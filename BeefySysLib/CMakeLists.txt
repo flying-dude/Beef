@@ -40,7 +40,10 @@ if (HAVE_BACKTRACE_HEADERS)
    add_definitions(-DBFP_HAS_BACKTRACE)
 endif ()
 
-set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
+
+find_package(Freetype REQUIRED)
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 if (${APPLE})
     include_directories(
@@ -56,7 +59,7 @@ else()
       .
       platform/linux
       third_party
-      third_party/freetype/include
+      # third_party/freetype/include
       ../extern
     )
 endif()
@@ -136,6 +139,7 @@ file(GLOB SRC_FILES
     gfx/RenderTarget.cpp
     gfx/Shader.cpp
     gfx/Texture.cpp
+
     img/BFIData.cpp
     img/ImageAdjustments.cpp
     img/ImageData.cpp
@@ -147,44 +151,45 @@ file(GLOB SRC_FILES
     img/PVRData.cpp
     img/TGAData.cpp
 
-    third_party/freetype/src/autofit/autofit.c
-    third_party/freetype/src/base/ftbase.c
-    third_party/freetype/src/base/ftbbox.c
-    third_party/freetype/src/base/ftbitmap.c
-    third_party/freetype/src/base/ftdebug.c
-    third_party/freetype/src/base/ftfntfmt.c
-    third_party/freetype/src/base/ftfstype.c
-    third_party/freetype/src/base/ftgasp.c
-    third_party/freetype/src/base/ftglyph.c
-    third_party/freetype/src/base/ftgxval.c
-    third_party/freetype/src/base/ftinit.c
-    third_party/freetype/src/base/ftlcdfil.c
-    third_party/freetype/src/base/ftmm.c
-    third_party/freetype/src/base/ftotval.c
-    third_party/freetype/src/base/ftpatent.c
-    third_party/freetype/src/base/ftstroke.c
-    third_party/freetype/src/base/ftsynth.c
-    third_party/freetype/src/base/ftsystem.c
-    third_party/freetype/src/base/fttype1.c
-    third_party/freetype/src/base/ftwinfnt.c
-    third_party/freetype/src/bdf/bdf.c
-    third_party/freetype/src/cache/ftcache.c
-    third_party/freetype/src/cff/cff.c
-    third_party/freetype/src/cid/type1cid.c
-    third_party/freetype/src/gzip/ftgzip.c
-    third_party/freetype/src/lzw/ftlzw.c
-    third_party/freetype/src/pcf/pcf.c
-    third_party/freetype/src/pfr/pfr.c
-    third_party/freetype/src/psaux/psaux.c
-    third_party/freetype/src/pshinter/pshinter.c
-    third_party/freetype/src/psnames/psmodule.c
-    third_party/freetype/src/raster/raster.c
-    third_party/freetype/src/sfnt/sfnt.c
-    third_party/freetype/src/smooth/smooth.c
-    third_party/freetype/src/truetype/truetype.c
-    third_party/freetype/src/type1/type1.c
-    third_party/freetype/src/type42/type42.c
-    third_party/freetype/src/winfonts/winfnt.c
+#    third_party/freetype/src/autofit/autofit.c
+#    third_party/freetype/src/base/ftbase.c
+#    third_party/freetype/src/base/ftbbox.c
+#    third_party/freetype/src/base/ftbitmap.c
+#    third_party/freetype/src/base/ftdebug.c
+#    third_party/freetype/src/base/ftfntfmt.c
+#    third_party/freetype/src/base/ftfstype.c
+#    third_party/freetype/src/base/ftgasp.c
+#    third_party/freetype/src/base/ftglyph.c
+#    third_party/freetype/src/base/ftgxval.c
+#    third_party/freetype/src/base/ftinit.c
+#    third_party/freetype/src/base/ftlcdfil.c
+#    third_party/freetype/src/base/ftmm.c
+#    third_party/freetype/src/base/ftotval.c
+#    third_party/freetype/src/base/ftpatent.c
+#    third_party/freetype/src/base/ftstroke.c
+#    third_party/freetype/src/base/ftsynth.c
+#    third_party/freetype/src/base/ftsystem.c
+#    third_party/freetype/src/base/fttype1.c
+#    third_party/freetype/src/base/ftwinfnt.c
+#    third_party/freetype/src/bdf/bdf.c
+#    third_party/freetype/src/cache/ftcache.c
+#    third_party/freetype/src/cff/cff.c
+#    third_party/freetype/src/cid/type1cid.c
+#    third_party/freetype/src/gzip/ftgzip.c
+#    third_party/freetype/src/lzw/ftlzw.c
+#    third_party/freetype/src/pcf/pcf.c
+#    third_party/freetype/src/pfr/pfr.c
+#    third_party/freetype/src/psaux/psaux.c
+#    third_party/freetype/src/pshinter/pshinter.c
+#    third_party/freetype/src/psnames/psmodule.c
+#    third_party/freetype/src/raster/raster.c
+#    third_party/freetype/src/sfnt/sfnt.c
+#    third_party/freetype/src/smooth/smooth.c
+#    third_party/freetype/src/truetype/truetype.c
+#    third_party/freetype/src/type1/type1.c
+#    third_party/freetype/src/type42/type42.c
+#    third_party/freetype/src/winfonts/winfnt.c
+
     third_party/jpeg/cdjpeg.c
     third_party/jpeg/jcapimin.c
     third_party/jpeg/jcapistd.c
@@ -245,6 +250,7 @@ file(GLOB SRC_FILES
     third_party/jpeg/wrppm.c
     third_party/jpeg/wrrle.c
     third_party/jpeg/wrtarga.c
+
     third_party/png/png.c
     third_party/png/pngerror.c
     third_party/png/pngget.c
@@ -261,7 +267,9 @@ file(GLOB SRC_FILES
     third_party/png/pngwrite.c
     third_party/png/pngwtran.c
     third_party/png/pngwutil.c
+
     third_party/utf8proc/utf8proc.c
+
     third_party/zlib/adler32.c
     third_party/zlib/compress.c
     third_party/zlib/crc32.c
@@ -276,8 +284,10 @@ file(GLOB SRC_FILES
     third_party/zlib/trees.c
     third_party/zlib/uncompr.c
     third_party/zlib/zutil.c
+
     third_party/miniz/miniz.c
     third_party/putty/wildcard.c
+
     util/AllocDebug.cpp
     util/BeefPerf.cpp
     util/BSpline.cpp
@@ -336,6 +346,7 @@ add_library(${PROJECT_NAME} SHARED
 
 # Link with other dependencies.
 if(MSVC)
-   target_link_libraries(${PROJECT_NAME} imm32.lib version.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
-        )
+   target_link_libraries(${PROJECT_NAME} imm32.lib version.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib)
+else()
+    target_link_libraries(BeefySysLib ${FREETYPE_LIBRARIES})
 endif(MSVC)

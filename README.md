@@ -10,7 +10,7 @@ Keep in mind that Beef currently still requires LLVM13, wheras most distribution
 So try install an explicit "llvm13" package instead of the default one (see below for Arch Linux).
 
 You may have to set an explicit `CMAKE_PREFIX_PATH` for CMake being able to find the correct LLVM version.
-See script `Beef/bin/build_release.sh` for how this works.
+See script `bin/build_release.sh` for how this works.
 
 ## Build on Arch Linux
 

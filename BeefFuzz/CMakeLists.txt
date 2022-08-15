@@ -37,6 +37,9 @@ add_definitions(
    -DBFSYSLIB_DYNAMIC
 )
 
+find_package(Freetype REQUIRED)
+include_directories(${Freetype_INCLUDE_DIRS})
+
 if (${APPLE})
   include_directories(
     .
@@ -50,15 +53,15 @@ if (${APPLE})
 
     ../BeefySysLib/platform/osx
   )
-else()
+else() # Linux
   include_directories(
     .
     ../
     ../BeefySysLib/
     ../BeefySysLib/third_party
-    ../BeefySysLib/third_party/freetype/include
-    ../extern/llvm-project_13_0_1/llvm/include
-    ../extern/llvm-project_13_0_1/llvm/lib/Target
+    # ../BeefySysLib/third_party/freetype/include
+    # ../extern/llvm-project_13_0_1/llvm/include
+    # ../extern/llvm-project_13_0_1/llvm/lib/Target
     ../IDEHelper
 
     ../BeefySysLib/platform/linux
@@ -74,18 +77,18 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     -D_DEBUG
   )
   include_directories(
-    ../extern/llvm_linux_13_0_1/include
-    ../extern/llvm_linux_13_0_1/lib/Target/X86
+    # ../extern/llvm_linux_13_0_1/include
+    # ../extern/llvm_linux_13_0_1/lib/Target/X86
   )
   set(EXECUTABLE_OUTPUT_PATH  "${CMAKE_BINARY_DIR}/${OUTPUT_DEBUG}")
-  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/lib")
+  # set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_13_0_1/lib")
 else()
   include_directories(
-    ../extern/llvm_linux_rel_13_0_1/include
-    ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
+    # ../extern/llvm_linux_rel_13_0_1/include
+    # ../extern/llvm_linux_rel_13_0_1/lib/Target/X86
   )
   set(EXECUTABLE_OUTPUT_PATH  "${CMAKE_BINARY_DIR}/${OUTPUT_RELEASE}")
-  set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
+  # set(LLVM_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../extern/llvm_linux_rel_13_0_1/lib")
 endif()
 
 ################### Dependencies ##################

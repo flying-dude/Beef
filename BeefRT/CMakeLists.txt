@@ -45,6 +45,9 @@ if (HAVE_BACKTRACE_HEADERS)
    add_definitions(-DBFP_HAS_BACKTRACE)
 endif ()
 
+find_package(Freetype REQUIRED)
+include_directories(${Freetype_INCLUDE_DIRS})
+
 if (DEFINED BF_DISABLE_FFI)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBF_DISABLE_FFI")
 endif()
@@ -146,7 +149,7 @@ else()
     .
     ../BeefySysLib/
     ../BeefySysLib/third_party
-    ../BeefySysLib/third_party/freetype/include
+#    ../BeefySysLib/third_party/freetype/include
     ../BeefySysLib/third_party/libffi/x86_64-unknown-linux-gnu/include
     ../
     ../extern
