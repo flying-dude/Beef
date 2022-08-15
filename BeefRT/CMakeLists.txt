@@ -45,6 +45,9 @@ if (HAVE_BACKTRACE_HEADERS)
    add_definitions(-DBFP_HAS_BACKTRACE)
 endif ()
 
+find_package(Freetype REQUIRED)
+include_directories(${Freetype_INCLUDE_DIRS})
+
 if (${IOS})
   include_directories(
     .
@@ -137,12 +140,12 @@ elseif (${ANDROID})
       ../BeefySysLib/platform/android
     )
   endif()
-else()
+else() # Linux
   include_directories(
     .
     ../BeefySysLib/
     ../BeefySysLib/third_party
-    ../BeefySysLib/third_party/freetype/include
+    # ../BeefySysLib/third_party/freetype/include
     ../BeefySysLib/third_party/libffi/x86_64-unknown-linux-gnu/include
     ../
     ../extern

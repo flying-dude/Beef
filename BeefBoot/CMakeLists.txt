@@ -46,6 +46,9 @@ add_definitions(
    -DBFSYSLIB_DYNAMIC
 )
 
+find_package(Freetype REQUIRED)
+include_directories(${Freetype_INCLUDE_DIRS})
+
 if (${APPLE})
   include_directories(
     .
@@ -53,8 +56,8 @@ if (${APPLE})
     ../BeefySysLib/
     ../BeefySysLib/third_party
     ../BeefySysLib/third_party/freetype/include
-#    ../extern/llvm-project_13_0_1/llvm/include
-#    ../extern/llvm-project_13_0_1/llvm/lib/Target
+    ../extern/llvm-project_13_0_1/llvm/include
+    ../extern/llvm-project_13_0_1/llvm/lib/Target
     ../IDEHelper
 
     ../BeefySysLib/platform/osx
@@ -65,9 +68,9 @@ else()
     ../
     ../BeefySysLib/
     ../BeefySysLib/third_party
-    ../BeefySysLib/third_party/freetype/include
-#    ../extern/llvm-project_13_0_1/llvm/include
-#    ../extern/llvm-project_13_0_1/llvm/lib/Target
+    # ../BeefySysLib/third_party/freetype/include
+    # ../extern/llvm-project_13_0_1/llvm/include
+    # ../extern/llvm-project_13_0_1/llvm/lib/Target
     ../IDEHelper
 
     ../BeefySysLib/platform/linux
