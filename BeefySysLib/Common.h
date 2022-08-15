@@ -1,7 +1,14 @@
 #pragma once
 
+// use extra "#ifndef" to guard against redefinition compile errors. not sure when exactly they get triggered.
+#ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
+#endif
+
+// use extra "#ifndef" to guard against redefinition compile errors. not sure when exactly they get triggered.
+#ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
+#endif
 
 // #include <string>
 // #include <map>
