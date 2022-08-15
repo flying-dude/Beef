@@ -173,4 +173,20 @@ namespace System.IO
 	}
 }
 
+#else
+
+namespace System.IO
+{
+	class OpenFileDialog : FileDialog
+	{
+		public override void Reset() { }
+		public bool ReadOnlyChecked { get { return false; } set { } }
+		public bool ShowReadOnly { get { return false; } set { } }
+
+		// protected override Result<DialogResult> RunFileDialog(ref Windows.OpenFileName ofn) { }
+		// protected override void ProcessVistaFiles(Windows.COM_IFileDialog* dialog, List<String> files) { }
+		// protected override Result<Windows.COM_IFileDialog*> CreateVistaDialog() }
+	}
+}
+
 #endif
