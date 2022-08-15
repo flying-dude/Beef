@@ -140,7 +140,7 @@ namespace System
 		private static void MarkAllStaticMembers() {}
 		public static void DebugDumpLeaks() {}
 		[SkipCall]
-		public static void Mark(Object obj) {}		
+		public static void Mark(Object obj) {}
 		public static void Mark(void* ptr, int size) {}
 		public static void SetAutoCollectPeriod(int periodMS) {}
 		public static void SetCollectFreeThreshold(int freeBytes) {}
