@@ -30,7 +30,7 @@ TargetName = "$(ProjectName)_d"
 OtherLinkFlags = "./libBeefRT_d.a ./libIDEHelper_d.dylib ./libBeefySysLib_d.dylib $(Var IDEHelperLibs) -Wl,-rpath -Wl,@executable_path"
 CLibType = "Dynamic"
 PreBuildCmds = ["ReadFile(\"$(WorkspaceDir)/../IDE/dist/IDEHelper_libs_d.txt\", \"IDEHelperLibs\")"]
-DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64"
+DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64" # why "Win64" on Mac?
 DebugWorkingDirectory = "$(WorkspaceDir)/../IDE/dist"
 PreprocessorMacros = ["DEBUG", "CLI"]
 
@@ -40,7 +40,7 @@ TargetName = "$(ProjectName)_d"
 OtherLinkFlags = "$(LinkFlags) ./libIDEHelper_d.so ./libBeefySysLib_d.so $(Var IDEHelperLibs) -Wl,-rpath -Wl,$ORIGIN"
 CLibType = "Dynamic"
 PreBuildCmds = ["ReadFile(\"$(WorkspaceDir)/../IDE/dist/IDEHelper_libs_d.txt\", \"IDEHelperLibs\")"]
-DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64"
+DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64" # why "Win64" on Linux?
 DebugWorkingDirectory = "$(WorkspaceDir)/../IDE/dist"
 PreprocessorMacros = ["DEBUG", "CLI"]
 
@@ -49,7 +49,7 @@ TargetDirectory = "$(WorkspaceDir)/../IDE/dist"
 OtherLinkFlags = "./libBeefRT.a ./libIDEHelper.dylib ./libBeefySysLib.dylib $(Var IDEHelperLibs) -Wl,-rpath -Wl,@executable_path"
 CLibType = "Dynamic"
 PreBuildCmds = ["ReadFile(\"$(WorkspaceDir)/../IDE/dist/IDEHelper_libs.txt\", \"IDEHelperLibs\")"]
-DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64"
+DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64" # why "Win64" on Mac?
 DebugWorkingDirectory = "$(WorkspaceDir)/../IDE/dist"
 PreprocessorMacros = ["CLI"]
 
@@ -58,7 +58,7 @@ TargetDirectory = "$(WorkspaceDir)/../IDE/dist"
 OtherLinkFlags = "$(LinkFlags) ./libIDEHelper.so ./libBeefySysLib.so $(Var IDEHelperLibs) -Wl,-rpath -Wl,$ORIGIN"
 CLibType = "Dynamic"
 PreBuildCmds = ["ReadFile(\"$(WorkspaceDir)/../IDE/dist/IDEHelper_libs.txt\", \"IDEHelperLibs\")"]
-DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64"
+DebugCommandArguments = "-proddir=..\\ -config=Debug -platform=Win64" # why "Win64" on Linux?
 DebugWorkingDirectory = "$(WorkspaceDir)/../IDE/dist"
 PreprocessorMacros = ["CLI"]
 

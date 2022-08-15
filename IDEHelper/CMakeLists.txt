@@ -298,6 +298,8 @@ list(APPEND LLVM_LIBS
 #  string(APPEND TARGET_LIBS_OS " " ${lib})
 #ENDFOREACH()
 
+# this yields an empty "IDEHelper_libs.txt" on linux when using distro llvm libs.
+# still compiles and links. so presumably it is only for providing location of self-compiled llvm to ide.
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" )
   FILE(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/../IDE/dist/IDEHelper_libs_d.txt" ${TARGET_LIBS_OS})
 else()
