@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
-# https://stackoverflow.com/questions/30867712/add-llvm-to-project-using-cmake
-find_package(LLVM REQUIRED CONFIG)
-
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-
 ################### Variables. ####################
 # Change if you want modify path or other values. #
 ###################################################
@@ -15,6 +9,19 @@ set(PROJECT_NAME IDEHelper)
 set(OUTPUT_DEBUG Debug/bin)
 set(CMAKE_DEBUG_POSTFIX "_d")
 set(OUTPUT_RELEASE Release/bin)
+
+###
+### Use LLVM Libraries.
+###
+
+# https://stackoverflow.com/questions/30867712/add-llvm-to-project-using-cmake
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+include_directories(${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
 
 ############## CMake Project ################
 #        The main options of project        #
@@ -74,9 +81,6 @@ else()
     ../BeefySysLib/platform/linux
   )
 endif()
-
-include_directories(${LLVM_INCLUDE_DIRS})
-add_definitions(${LLVM_DEFINITIONS})
 
 ############## Artefacts Output #################
 # Defines outputs , depending Debug or Release. #
