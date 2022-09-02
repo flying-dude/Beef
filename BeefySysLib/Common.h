@@ -15,9 +15,9 @@
 // #include <set>
 // #include <vector>
 // #include <list>
- #include <algorithm>
-// #include <functional>
+#include <algorithm>
 #include <functional>
+
 #include "BFPlatform.h"
 
 inline size_t HashBytes(const uint8* ptr, size_t count) noexcept
