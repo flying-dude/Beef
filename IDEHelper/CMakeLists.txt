@@ -15,10 +15,25 @@ set(OUTPUT_RELEASE Release/bin)
 ###
 
 # https://stackoverflow.com/questions/30867712/add-llvm-to-project-using-cmake
+# https://llvm.org/docs/CMake.html
+
 find_package(LLVM REQUIRED CONFIG)
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+set(REQUIRED_LLVM_VERSION "13")
+
+# https://stackoverflow.com/questions/7485227/how-to-increment-variable
+MATH(EXPR NEWER_LLVM_VERSION "${REQUIRED_LLVM_VERSION}+1")
+
+# testing for exact version: https://gitlab.kitware.com/cmake/cmake/-/issues/18067
+if (${LLVM_PACKAGE_VERSION} VERSION_LESS REQUIRED_LLVM_VERSION)
+    message(FATAL_ERROR "Found old, incompatible LLVM version ${LLVM_PACKAGE_VERSION}. Upgrade LLVM to at least version ${REQUIRED_LLVM_VERSION}.")
+endif()
+if (NOT ${LLVM_PACKAGE_VERSION} VERSION_LESS NEWER_LLVM_VERSION)
+    message(FATAL_ERROR "Newer LLVM version ${LLVM_PACKAGE_VERSION} currently not supported. Required LLVM version: ${REQUIRED_LLVM_VERSION}. Install this version and assign environment variable 'CMAKE_PREFIX_PATH' to the corresponding folder before running cmake (see 'bin/build_release.sh').")
+endif()
 
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
