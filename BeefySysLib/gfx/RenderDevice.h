@@ -20,7 +20,7 @@ public:
 	float z;
 	float u;
 	float v;
-	uint32 color;	
+	uint32 color;
 
 public:
 	DefaultVertex3D()
@@ -65,10 +65,10 @@ class RenderWindow : public RenderTarget
 {
 public:
 	RenderDevice*			mRenderDevice;
-	BFWindow*				mWindow;	
+	BFWindow*				mWindow;
 	Array<DrawLayer*>		mDrawLayerList;
 	DrawLayer*				mCurDrawLayer;
-		
+
 public:
 	RenderWindow();
 	virtual ~RenderWindow();
@@ -196,7 +196,7 @@ class RenderState
 public:
 	Shader*					mShader;
 	bool					mWriteDepthBuffer;
-	DepthFunc				mDepthFunc;	
+	DepthFunc				mDepthFunc;
 	bool					mClipped;
 	bool					mTexWrap;
 	bool					mWireframe;
@@ -248,8 +248,8 @@ public:
 
 	void* AllocMemoryBlock()
 	{
-		if (IsEmpty())		
-			return new uint8[mSize];		
+		if (IsEmpty())
+			return new uint8[mSize];
 		return (uint8*)PopFront();
 	}
 
@@ -269,25 +269,25 @@ enum ModelCreateFlags
 
 class RenderDevice
 {
-public:	
-	Array<DrawBatch*>		mDrawBatchPool;	
-	
+public:
+	Array<DrawBatch*>		mDrawBatchPool;
+
 	BFApp*					mApp;
 	RenderWindow*			mPhysRenderWindow;
 	RenderState*			mPhysRenderState;
 	int						mResizeCount;
 	Array<RenderWindow*>	mRenderWindowList;
 	RenderTarget*			mCurRenderTarget;
-	DrawLayer*				mCurDrawLayer;	
+	DrawLayer*				mCurDrawLayer;
 
 	RenderState*			mDefaultRenderState;
-	RenderState*			mCurRenderState;	
+	RenderState*			mCurRenderState;
 
 	MemoryPool				mPooledIndexBuffers;
 	MemoryPool				mPooledVertexBuffers;
 	MemoryPool				mPooledRenderCmdBuffers;
 
-public:	
+public:
 	virtual void			PhysSetRenderState(RenderState* renderState) = 0;
 	virtual void			PhysSetRenderTarget(Texture* renderTarget) = 0;
 
@@ -297,10 +297,10 @@ public:
 	virtual bool			Init(BFApp* app) = 0;
 	virtual void			AddRenderWindow(RenderWindow* renderWindow);
 	virtual void			RemoveRenderWindow(RenderWindow* renderWindow);
-	
+
 	virtual RenderState*	CreateRenderState(RenderState* srcRenderState);
 	virtual ModelInstance*	CreateModelInstance(ModelDef* modelDef, ModelCreateFlags flags) { return NULL; }
-	virtual VertexDefinition* CreateVertexDefinition(VertexDefData* elementData, int numElements);	
+	virtual VertexDefinition* CreateVertexDefinition(VertexDefData* elementData, int numElements);
 
 	virtual void			FrameStart() = 0;
 	virtual void			FrameEnd();
@@ -309,9 +309,9 @@ public:
 	virtual Texture*		CreateDynTexture(int width, int height) = 0;
 	virtual Texture*		LoadTexture(const StringImpl& fileName, int flags);
 	virtual Texture*		CreateRenderTarget(int width, int height, bool destAlpha) = 0;
-	
+
 	virtual Shader*			LoadShader(const StringImpl& fileName, VertexDefinition* vertexDefinition) = 0;
-		
+
 	virtual void			SetRenderState(RenderState* renderState) = 0;
 };
 

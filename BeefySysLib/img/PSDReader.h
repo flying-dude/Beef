@@ -11,7 +11,7 @@ class FileStream;
 class ImageData;
 class ImageAdjustment;
 
-class PSDChannelInfo 
+class PSDChannelInfo
 {
 public:
 	int						mId;
@@ -43,7 +43,7 @@ public:
 	double					mCtlEnterX;
 	double					mCtlEnterY;
 	double					mAnchorX;
-	double					mAnchorY;	
+	double					mAnchorY;
 	double					mCtlLeaveX;
 	double					mCtlLeaveY;
 };
@@ -70,7 +70,7 @@ public:
 
 public:
 	PSDValue();
-	~PSDValue();		
+	~PSDValue();
 
 	int32					GetMulticharInt();
 };
@@ -100,26 +100,26 @@ enum
 class PSDLayerInfo : public ImageData
 {
 public:
-	PSDReader*				mPSDReader;	
+	PSDReader*				mPSDReader;
 	PSDLayerInfo*			mParent;
 	String					mName;
 	int						mIdx;
 	uint32					mLayerId;
 	int						mSectionDividerType;
-	int32					mSectionBlendMode;	
-	uint8					mOpacity;	
+	int32					mSectionBlendMode;
+	uint8					mOpacity;
 	uint8					mFillOpacity;
 	int32					mBlendMode;
 	bool					mBaseClipping;
-	bool					mVisible;	
-	bool					mLayerMaskEnabled;	
+	bool					mVisible;
+	bool					mLayerMaskEnabled;
 	bool					mLayerMaskInverted;
 	uint8					mLayerMaskDefault;
-	uint8*					mLayerMask;	
+	uint8*					mLayerMask;
 	int						mLayerMaskX;
 	int						mLayerMaskY;
 	int						mLayerMaskWidth;
-	int						mLayerMaskHeight;	
+	int						mLayerMaskHeight;
 	ImageEffects*			mImageEffects;
 	PSDDescriptor*			mPSDDescriptor;
 	PSDPath*				mVectorMask;
@@ -130,7 +130,7 @@ public:
 	bool					mBlendClippedElementsAsGroup;
 	bool					mTransparencyShapesLayer;
 	bool					mLayerMaskHidesEffects;
-	bool					mVectorMaskHidesEffects;	
+	bool					mVectorMaskHidesEffects;
 	uint32					mBlendingRangeSourceStart;
 	uint32					mBlendingRangeSourceEnd;
 	uint32					mBlendingRangeDestStart;
@@ -158,7 +158,7 @@ public:
 	int						mTop;
 	int						mLeft;
 	int						mBottom;
-	int						mRight;	
+	int						mRight;
 	uint8*					mIntensityBits;
 	PSDPattern*				mNextMipLevel;
 
@@ -185,12 +185,12 @@ public:
 	int						mVersion;
 	int						mWidth;
 	int						mHeight;
-	int						mBitDepthPerChannel;	
+	int						mBitDepthPerChannel;
 	int						mMode;
 	int						mGlobalAngle;
 	int						mGlobalAltitude;
 
-	int						mChannels;	
+	int						mChannels;
 	int						mImageDataSectStart;
 
 	PSDLayerInfoVector		mPSDLayerInfoVector;
@@ -204,7 +204,7 @@ public:
 	bool					ReadEffectGradient(PSDDescriptor* descriptor, ImageGradient* colorGradient);
 	void					ReadEffectContour(PSDDescriptor* descriptor, ImageCurve* curve);
 	int32					ReadBlendMode(PSDValue* value);
-	
+
 	void					ReadExtraInfo(int endPos);
 	void					ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* desc);
 	void					ReadGradientFill(PSDDescriptor* descriptor, ImageGradientFill* gradientFill);
@@ -218,7 +218,7 @@ public:
 
 	ImageData*				ReadImageData();
 	Texture*				LoadLayerTexture(int layerIdx, int* ofsX, int* ofsY); // -1 = composited image
-	ImageData*				MergeLayers(PSDLayerInfo* group, const std::vector<int>& layerIndices, ImageData* bottomImage);	
+	ImageData*				MergeLayers(PSDLayerInfo* group, const std::vector<int>& layerIndices, ImageData* bottomImage);
 	Texture*				LoadMergedLayerTexture(const std::vector<int>& layerIndices, int* ofsX, int* ofsY);
 
 };

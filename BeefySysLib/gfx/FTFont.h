@@ -43,7 +43,7 @@ public:
 	{
 	public:
 		String mFileName;
-		FT_Face mFTFace;		
+		FT_Face mFTFace;
 		Dictionary<float, FaceSize*> mFaceSizes;
 
 	public:
@@ -53,7 +53,7 @@ public:
 		}
 		~Face();
 	};
-	
+
 	class Page
 	{
 	public:
@@ -103,12 +103,12 @@ public:
 
 	uint8 mWhiteTab[256];
 	uint8 mBlackTab[256];
-	
+
 	void DoClearCache();
 public:
 	FTFontManager();
 	~FTFontManager();
-		
+
 	static void ClearCache();
 };
 
@@ -127,9 +127,9 @@ protected:
 
 public:
 	FTFont();
-	~FTFont();	
-	
-	bool Load(const StringImpl& file, float pointSize);	
+	~FTFont();
+
+	bool Load(const StringImpl& file, float pointSize);
 
 	FTFontManager::Glyph* AllocGlyph(int charCode, bool allowDefault);
 	int GetKerning(int charA, int charB);

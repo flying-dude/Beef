@@ -37,10 +37,10 @@ class ImageCurve
 {
 public:
 	String				mInterpType;
-	ImageCurvePointVector	mPoints;			
+	ImageCurvePointVector	mPoints;
 	bool					mInitialized;
 
-public:		
+public:
 	void					Init();
 
 	float					GetVal(float x);
@@ -63,10 +63,10 @@ public:
 	ImageGradientPointVector mPoints;
 	CubicUnitFuncSpline		mSpline;
 	float					mSmoothness; // 0.0 - 1.0
-	int						mXSize;	
+	int						mXSize;
 
 public:
-	int						GetVal(float x);	
+	int						GetVal(float x);
 };
 
 ///
@@ -96,7 +96,7 @@ public:
 	virtual void			Apply(ImageEffectCtx* ctx);
 	virtual int				GetMixType(); // Default:Interior
 	virtual int				GetNeededBorderSize();
-	virtual bool			NeedsOrigBits(ImageEffects* effects);	
+	virtual bool			NeedsOrigBits(ImageEffects* effects);
 };
 
 class ImageShadowEffect :public BaseImageEffect
@@ -136,29 +136,29 @@ public:
 class ImageGlowEffect : public BaseImageEffect
 {
 public:
-	ImageGradient			mColorGradient[4];	
+	ImageGradient			mColorGradient[4];
 	bool					mHasGradient;
 
-	double					mNoise;	
-	
+	double					mNoise;
+
 	int32					mTechnique; // 'SfBL' or 'PrBL'
 	double					mSize;
-	
+
 	ImageCurve				mContour;
 	double					mRange;
 	double					mJitter;
-	bool					mAntiAliased;		
+	bool					mAntiAliased;
 
 public:
 	virtual void			Init() override;
-	virtual void			CreateContourAndGradientData();	
+	virtual void			CreateContourAndGradientData();
 	virtual int				GetNeededBorderSize() override;
 };
 
 class ImageOuterGlowEffect : public ImageGlowEffect
 {
-public:	
-	double					mSpread;	
+public:
+	double					mSpread;
 
 public:
 	void Apply(PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* destImageData) override;
@@ -168,8 +168,8 @@ public:
 
 class ImageInnerGlowEffect : public ImageGlowEffect
 {
-public:	
-	double					mChoke;	
+public:
+	double					mChoke;
 	bool					mIsCenter; // Otherwise 'Edge'
 
 public:
@@ -194,14 +194,14 @@ public:
 
 class ImagePatternFill : public ImageFill
 {
-public:	
+public:
 	double					mPhaseX;
 	double					mPhaseY;
-	bool					mLinkWithLayer;	
-	double					mScale;	
+	bool					mLinkWithLayer;
+	double					mScale;
 	String				mPatternName;
 
-public:	
+public:
 	void					Apply(PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* destImageData);
 };
 
@@ -238,8 +238,8 @@ public:
 	double					mLocalAngle;
 	bool					mUseGlobalLight;
 	double					mLocalAltitude;
-	ImageCurve				mGlossContour;	
-	bool					mAntiAliased;	
+	ImageCurve				mGlossContour;
+	bool					mAntiAliased;
 	int32					mHiliteMode;
 	uint32					mHiliteColor;
 	double					mHiliteOpacity;
@@ -251,23 +251,23 @@ public:
 	ImageCurve				mBevelContour;
 	int32*					mBevelContourData;
 	double					mBevelContourRange;
-	
+
 	bool					mUseTexture;
 	ImagePatternFill		mTexture;
 	double					mTextureDepth;
 	bool					mTextureInvert;
 
-	uint16*					mGlossContourData;	
+	uint16*					mGlossContourData;
 
 public:
 	ImageBevelEffect();
 	~ImageBevelEffect();
 
 	void					Init() override;
-	void					Apply(PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* destImageData) override;	
+	void					Apply(PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* destImageData) override;
 	virtual void			Apply(ImageEffectCtx* ctx) override;
 	virtual int				GetMixType() override;
-	void					Apply(int pass, int style, PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* hiliteImage, ImageData* shadowImage);	
+	void					Apply(int pass, int style, PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* hiliteImage, ImageData* shadowImage);
 	virtual int				GetNeededBorderSize() override;
 };
 
@@ -325,8 +325,8 @@ class ImageStrokeEffect : public BaseImageEffect
 public:
 	double					mSize;
 	int						mPosition;
-	
-	int32					mFillType;	
+
+	int32					mFillType;
 	ImageGradientFill		mGradientFill;
 	ImageColorFill			mColorFill;
 	ImagePatternFill		mPatternFill;
@@ -363,7 +363,7 @@ public:
 
 public:
 	ImageData*				GetDestImage(ImageData* usingImage);
-	
+
 
 public:
 	ImageEffects();

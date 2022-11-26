@@ -31,7 +31,7 @@ public:
 
 	struct Node
 	{
-	public:		
+	public:
 		NodeKind mKind;
 		int mStart;
 		int mEnd;
@@ -57,7 +57,7 @@ public:
 	char* mEnd;
 	Node mNext;
 
-public:		
+public:
 	GLTFPropsParser(const StringImpl& str)
 	{
 		mStart = str.mPtr;
@@ -69,14 +69,14 @@ public:
 // 	{
 // 		char buf[256];
 // 		int len = BF_MAX(mTokenEnd - mTokenStart, 255);
-// 
+//
 // 		memcpy(buf, &mSrc[mTokenStart], len);
 // 		char c = buf[len - 1];
 // 		if ((c == 'd') || (c == 'D') || (c == 'f') || (c == 'F'))
 // 			buf[len - 1] = '\0';
 // 		else
 // 			buf[len] = '\0';
-// 
+//
 // 		return strtod(buf, NULL);
 // 	}
 
@@ -92,10 +92,10 @@ public:
 				mNext.mKind = NodeKind_End;
 				return mNext;
 			}
-				
+
 			char* start = mPtr;
 			char c = *(mPtr++);
-			
+
 			if (c == '{')
 				mNext.mKind = NodeKind_LBrace;
 			else if (c == '}')
@@ -110,9 +110,9 @@ public:
 			if (mNext.mKind != NodeKind_None)
 			{
 				mNext.mStart = (int)(mPtr - mStart - 1);
-				mNext.mEnd = (int)(mPtr - mStart);				
+				mNext.mEnd = (int)(mPtr - mStart);
 				return mNext;
-			}						
+			}
 
 			if ((c >= '0') && (c <= '9'))
 			{
@@ -125,17 +125,17 @@ public:
 						mPtr++;
 						hadDot = true;
 					}
-					else if ((c >= '0') && (c <= '9'))						
-					{						
+					else if ((c >= '0') && (c <= '9'))
+					{
 						mPtr++;
 					}
 					else
 						break;
 				}
-				
+
 				mNext.mStart = (int)(start - mStart);
 				mNext.mEnd = (int)(mPtr - mStart);
-				
+
 				char buf[256];
 				int len = BF_MIN((int)(mPtr - start), 255);
 
@@ -166,7 +166,7 @@ public:
 				{
 					char c = *mPtr;
 					if ((c == '}') || (c == '=') || (c == '[') || (c == '\r') || (c == '\n'))
-						break;		
+						break;
 					if (c != ' ')
 						lastCPtr = mPtr;
 					mPtr++;
@@ -201,7 +201,7 @@ public:
 			prefix = "";
 			return stringView;
 		}
-		
+
 		int strStartIdx = (int)stringView.IndexOf('\'');
 		prefix = StringView(stringView, 0, strStartIdx);
 		return StringView(stringView, strStartIdx + 1, (int)stringView.mLength - strStartIdx - 2);
@@ -256,7 +256,7 @@ GLTFReader::GLTFReader(ModelDef* modelDef)
 
 GLTFReader::~GLTFReader()
 {
-	
+
 }
 
 struct DataSpan
@@ -275,7 +275,7 @@ struct DataAccessor
 
 template <typename T>
 static void ReadBuffer(DataAccessor& dataAccessor, T* outPtr, int outStride)
-{	
+{
 	for (int i = 0; i < dataAccessor.mCount; i++)
 		*(T*)((uint8*)outPtr + i * outStride) = ((T*)dataAccessor.mPtr)[i];
 }
@@ -380,7 +380,7 @@ bool GLTFReader::ParseMaterialDef(ModelMaterialDef* materialDef, const StringImp
 					return false;
 
 				StringView prefix;
-				StringView str = propsParser.GetStringView(valueNode, prefix);				
+				StringView str = propsParser.GetStringView(valueNode, prefix);
 				auto parentMaterialDef = LoadMaterial(str);
 			}
 			else if (key == "TextureParameterValues")
@@ -422,7 +422,7 @@ bool GLTFReader::ParseMaterialDef(ModelMaterialDef* materialDef, const StringImp
 								break;
 							if (node.mKind != GLTFPropsParser::NodeKind_String)
 								return false;
-							
+
 							str = propsParser.GetStringView(node, prefix);
 							if (str == "ParameterInfo")
 							{
@@ -500,7 +500,7 @@ ModelMaterialDef* GLTFReader::LoadMaterial(const StringImpl& relPath)
 
 	if (materialDef->mInitialized)
 		return materialDef;
-	
+
 	materialDef->mInitialized = true;
 
 	String propText;
@@ -511,7 +511,7 @@ ModelMaterialDef* GLTFReader::LoadMaterial(const StringImpl& relPath)
 			// Had error
 		}
 
-	}		
+	}
 	return materialDef;
 }
 
@@ -552,7 +552,7 @@ bool GLTFReader::LoadModelProps(const StringImpl& propsPath)
 					StringView prefix;
 					StringView str = propsParser.GetStringView(node, prefix);
 					if (str == "StaticMaterials")
-					{	
+					{
 						StaticMaterial staticMaterial;
 
 						int idx = 0;
@@ -621,8 +621,8 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 	mBasePathName = basePathName;
 	mRootDir = rootDir;
 
-	String jsonPath = basePathName + ".gltf";	
-	
+	String jsonPath = basePathName + ".gltf";
+
 	char* textData = LoadTextData(jsonPath, NULL);
 	if (textData == NULL)
 		return false;
@@ -631,14 +631,14 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 	Json* jRoot = Json::Parse(textData);
 	if (jRoot == NULL)
 		return false;
-	defer({ delete jRoot; });	
+	defer({ delete jRoot; });
 
 	LoadModelProps(basePathName + ".props.txt");
-	
+
 	Array<Array<uint8>> buffers;
 	Array<DataSpan> bufferViews;
 	Array<DataAccessor> dataAccessors;
-	
+
 	if (auto jBuffers = jRoot->GetObjectItem("buffers"))
 	{
 		for (auto jBuffer = jBuffers->mChild; jBuffer != NULL; jBuffer = jBuffer->mNext)
@@ -652,8 +652,8 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 
 					int size = 0;
 					uint8* rawData = LoadBinaryData(dataPath, &size);
-					if (rawData != NULL)					
-						data.Insert(0, rawData, size);					
+					if (rawData != NULL)
+						data.Insert(0, rawData, size);
 				}
 			}
 
@@ -674,10 +674,10 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 			if (auto jByteOffset = jBufferView->GetObjectItem("byteOffset"))
 				byteOffset = jByteOffset->mValueInt;
 			if (auto jByteLength = jBufferView->GetObjectItem("byteLength"))
-				byteLength = jByteLength->mValueInt;			
+				byteLength = jByteLength->mValueInt;
 			bufferViews.Add(DataSpan{ buffers[bufferIdx].mVals + byteOffset, byteLength });
 		}
-	}	
+	}
 
 	if (auto jAccessors = jRoot->GetObjectItem("accessors"))
 	{
@@ -729,8 +729,8 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 				vec.mW = (float)jItem->mValueDouble;
 			i++;
 		}
-	};	
-	
+	};
+
 	if (auto jMaterials = jRoot->GetObjectItem("materials"))
 	{
 		int materialIdx = 0;
@@ -740,12 +740,12 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 			if (auto jName = jMaterial->GetObjectItem("name"))
 			{
 				if (jName->mValueString != NULL)
-				{					
-					modelMaterialInstance.mName = jName->mValueString;					
+				{
+					modelMaterialInstance.mName = jName->mValueString;
 					String matPath = jName->mValueString;
 
 					if (materialIdx < mStaticMaterials.mSize)
-						matPath = mStaticMaterials[materialIdx].mMaterialSlotName;					
+						matPath = mStaticMaterials[materialIdx].mMaterialSlotName;
 
 					ModelMaterialDef* materialDef = LoadMaterial(matPath);
 					modelMaterialInstance.mDef = materialDef;
@@ -753,8 +753,8 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 			}
 			if (auto jPBRMetallicRoughness = jMaterial->GetObjectItem("pbrMetallicRoughness"))
 			{
-				
-			}			
+
+			}
 
 			mModelDef->mMaterials.Add(modelMaterialInstance);
 			materialIdx++;
@@ -775,7 +775,7 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 
 			if (auto jPrimitives = jMesh->GetObjectItem("primitives"))
 			{
-				modelMesh.mPrimitives.Resize(jPrimitives->GetArraySize());				
+				modelMesh.mPrimitives.Resize(jPrimitives->GetArraySize());
 
 				int primCount = 0;
 				for (auto jPrimitive = jPrimitives->mChild; jPrimitive != NULL; jPrimitive = jPrimitive->mNext)
@@ -784,7 +784,7 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 
 					if (auto jIndices = jPrimitive->GetObjectItem("indices"))
 					{
-						auto& dataAccessor = dataAccessors[jIndices->mValueInt];						
+						auto& dataAccessor = dataAccessors[jIndices->mValueInt];
 						modelPrimitives.mIndices.ResizeRaw(dataAccessor.mCount);
 						for (int i = 0; i < dataAccessor.mCount; i++)
 							modelPrimitives.mIndices[i] = *(uint16*)(dataAccessor.mPtr + i * 2);
@@ -802,7 +802,7 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 							ReadBuffer<Vector3>(dataAccessor, &modelPrimitives.mVertices[0].mPosition, sizeof(ModelVertex));
 						}
 
-						if (auto jNormal = jAttributes->GetObjectItem("NORMAL"))													
+						if (auto jNormal = jAttributes->GetObjectItem("NORMAL"))
 							ReadBuffer<Vector3>(dataAccessors[jNormal->mValueInt], &modelPrimitives.mVertices[0].mNormal, sizeof(ModelVertex));
 						if (auto jTangent = jAttributes->GetObjectItem("TANGENT"))
 							ReadBuffer<Vector3>(dataAccessors[jTangent->mValueInt], &modelPrimitives.mVertices[0].mTangent, sizeof(ModelVertex), sizeof(Vector4));
@@ -833,7 +833,7 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 					}
 
 					primCount++;
-				}				
+				}
 			}
 
 			mModelDef->mMeshes.Add(modelMesh);
@@ -841,7 +841,7 @@ bool GLTFReader::ReadFile(const StringImpl& filePath, const StringImpl& rootDir)
 	}
 
 	if (auto jNodes = jRoot->GetObjectItem("nodes"))
-	{		
+	{
 		mModelDef->mNodes.Reserve(jNodes->GetArraySize());
 		for (auto jNode = jNodes->mChild; jNode != NULL; jNode = jNode->mNext)
 		{

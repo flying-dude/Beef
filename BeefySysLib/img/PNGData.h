@@ -6,13 +6,13 @@ NS_BF_BEGIN;
 
 class PNGData : public ImageData
 {
-public:	
+public:
 	int						mReadPos;
 
-public:		
+public:
 	PNGData();
 
-	bool					ReadData();							
+	bool					ReadData();
 	bool					WriteToFile(const StringImpl& path);
 };
 

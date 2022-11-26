@@ -22,12 +22,12 @@ void Texture::Release()
 }
 
 void TextureSegment::InitFromTexture(Texture* texture)
-{	
+{
 	mTexture = texture;
 	mU1 = 0;
 	mV1 = 0;
 	mU2 = 1.0f;
 	mV2 = 1.0f;
 	mScaleX = (float) mTexture->mWidth;
-	mScaleY = (float) mTexture->mHeight;	
+	mScaleY = (float) mTexture->mHeight;
 }

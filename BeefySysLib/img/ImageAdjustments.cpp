@@ -15,7 +15,7 @@ void ImageAdjustment::ApplyImageAdjustment(PSDLayerInfo* layerInfo, ImageData* i
 }
 
 ImageData* ImageAdjustment::CreateAdjustedImage(PSDLayerInfo* layerInfo, ImageData* destImage)
-{	
+{
 	ImageData* newImage = destImage->Duplicate();
 	ApplyImageAdjustment(layerInfo, newImage);
 	CrossfadeImage(destImage, newImage, layerInfo->mFillOpacity / 255.0f);
@@ -27,7 +27,7 @@ void InvertImageAdjustement::ApplyImageAdjustment(PSDLayerInfo* layerInfo, Image
 	int size = image->mWidth*image->mHeight;
 	for (int i = 0; i < size; i++)
 	{
-		image->mBits[i] = 
+		image->mBits[i] =
 			(image->mBits[i] & 0xFF000000) |
 			((0xFFFFFFFF - image->mBits[i]) & 0x00FFFFFF);
 	}
@@ -36,8 +36,8 @@ void InvertImageAdjustement::ApplyImageAdjustment(PSDLayerInfo* layerInfo, Image
 void SolidColorImageAdjustement::ApplyImageAdjustment(PSDLayerInfo* layerInfo, ImageData* image)
 {
 	int size = image->mWidth*image->mHeight;
-	for (int i = 0; i < size; i++)	
-		image->mBits[i] = mColor;	
+	for (int i = 0; i < size; i++)
+		image->mBits[i] = mColor;
 }
 
 GradientImageAdjustement::~GradientImageAdjustement()
@@ -46,7 +46,7 @@ GradientImageAdjustement::~GradientImageAdjustement()
 }
 
 void GradientImageAdjustement::ApplyImageAdjustment(PSDLayerInfo* layerInfo, ImageData* image)
-{	
+{
 	mFill->Apply(layerInfo, image, image);
 }
 
@@ -62,11 +62,11 @@ void PatternImageAdjustement::ApplyImageAdjustment(PSDLayerInfo* layerInfo, Imag
 
 void BrightnessContrastImageAdjustment::ApplyImageAdjustment(PSDLayerInfo* layerInfo, ImageData* image)
 {
-	int size = image->mWidth*image->mHeight;	
-	for (int i = 0; i < size; i++)	
-	{		
+	int size = image->mWidth*image->mHeight;
+	for (int i = 0; i < size; i++)
+	{
 		PackedColor* color = (PackedColor*) (&image->mBits[i]);
-		//int effect = 256 - (int) (pow(abs(color->r - mMeanValue)/127.0, 2.0)*127);		
+		//int effect = 256 - (int) (pow(abs(color->r - mMeanValue)/127.0, 2.0)*127);
 		//color->r = BFClamp(color->r + effect*mBrightness/256, 0, 255);
 
 		color->r = (int) (pow(color->r / 255.0f, 1.0f - mBrightness/200.0f) * 255);

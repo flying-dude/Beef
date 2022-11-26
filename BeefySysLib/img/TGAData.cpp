@@ -8,7 +8,7 @@ bool TGAData::ReadData()
 {
 	size_t step = sizeof(unsigned char) * 2;
     //CC_BREAK_IF((step + sizeof(unsigned char)) > bufSize);
-	
+
 	#pragma pack(push, 1)
 	struct Header
 	{
@@ -79,7 +79,7 @@ bool TGAData::ReadData()
 		{
 			int y = 0;
 			int x = 0;
-			
+
 readSpanHeader:
 			int spanLen = 0;
 			uint32 spanColor = 0;
@@ -88,7 +88,7 @@ readSpanHeader:
 			spanLen = (spanHeader & 0x7F) + 1;
 			if ((spanHeader & 0x80) != 0)
 			{
-				// Repeat color								
+				// Repeat color
 				int b = *(srcPtr++);
 				int g = *(srcPtr++);
 				int r = *(srcPtr++);
@@ -106,15 +106,15 @@ readSpanHeader:
 				for (; y < mHeight; y++)
 				{
 					for (; x < mWidth; x++)
-					{						
+					{
 						if (spanLen == 0)
 							goto readSpanHeader;
-						*(destPtr++) = spanColor;						
+						*(destPtr++) = spanColor;
 						spanLen--;
 					}
 
 					x = 0;
-					destPtr += destAdd;					
+					destPtr += destAdd;
 				}
 			}
 			else
@@ -139,12 +139,12 @@ readSpanHeader:
 						}
 
 						*(destPtr++) = (a << 24) | (b << 16) | (g << 8) | r;
-						
+
 						spanLen--;
 					}
-										
+
 					x = 0;
-					destPtr += destAdd;					
+					destPtr += destAdd;
 				}
 			}
 
@@ -163,12 +163,12 @@ readSpanHeader:
 			spanLen = (spanHeader & 0x7F) + 1;
 			if ((spanHeader & 0x80) != 0)
 			{
-				// Repeat color								
+				// Repeat color
 				int b = *(srcPtr++);
 				int g = *(srcPtr++);
 				int r = *(srcPtr++);
 				int a = 255;
-				
+
 				spanColor = (a << 24) | (b << 16) | (g << 8) | r;
 
 				for (; y < mHeight; y++)
@@ -198,7 +198,7 @@ readSpanHeader:
 						int g = *(srcPtr++);
 						int r = *(srcPtr++);
 						int a = 255;
-						
+
 						*(destPtr++) = (a << 24) | (b << 16) | (g << 8) | r;
 
 						spanLen--;
@@ -214,7 +214,7 @@ readSpanHeader:
 	}
 	else
 	{
-		int total;        
+		int total;
         size_t step = (sizeof(unsigned char) + sizeof(signed short)) * 6;
 
         // mode equal the number of components for each pixel
@@ -236,12 +236,12 @@ readSpanHeader:
 		}
 
 		if (aMode == 4)
-		{			
+		{
 			for (int y = 0; y < mHeight; y++)
-			{				
+			{
 				for (int x = 0; x < mWidth; x++)
-				{					
-					int b = *(srcPtr++);				
+				{
+					int b = *(srcPtr++);
 					int g = *(srcPtr++);
 					int r = *(srcPtr++);
 					int a = *(srcPtr++);
@@ -256,16 +256,16 @@ readSpanHeader:
 					*(destPtr++) = (a << 24) | (b << 16) | (g << 8) | r;
 				}
 
-				destPtr += destAdd;				
+				destPtr += destAdd;
 			}
 		}
 		else if (aMode == 3)
-		{			
+		{
 			for (int y = 0; y < mHeight; y++)
-			{				
+			{
 				for (int x = 0; x < mWidth; x++)
-				{					
-					int b = *(srcPtr++);				
+				{
+					int b = *(srcPtr++);
 					int g = *(srcPtr++);
 					int r = *(srcPtr++);
 					int a = 255;
@@ -274,16 +274,16 @@ readSpanHeader:
 				}
 
 				destPtr += destAdd;
-			}			
+			}
 		}
 		else if (aMode == 1)
 		{
 			for (int y = 0; y < mHeight; y++)
-			{				
+			{
 				for (int x = 0; x < mWidth; x++)
 				{
 					int a = *(srcPtr++);
-		
+
 #ifdef BF_PLATFORM_WINDOWS
                     // Only windows has alpha correction for colored fonts (ATM)
 					//int r = (int) (pow(a / 255.0f, 0.7f) * 255.0f);
@@ -304,7 +304,7 @@ readSpanHeader:
 			}
 		}
 
-		
+
 
         //memcpy(psInfo->imageData, Buffer + step, dataSize);
 
@@ -319,7 +319,7 @@ readSpanHeader:
                 psInfo->imageData[i+2] = aux;
             }
         }*/
-	}	
+	}
 
 	mAlphaPremultiplied = mWantsAlphaPremultiplied;
 	return true;

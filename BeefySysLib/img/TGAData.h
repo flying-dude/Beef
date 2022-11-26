@@ -6,8 +6,8 @@ NS_BF_BEGIN;
 
 class TGAData : public ImageData
 {
-public:	
-public:		
+public:
+public:
 	bool					ReadData();
 };
 

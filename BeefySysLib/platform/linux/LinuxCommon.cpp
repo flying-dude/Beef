@@ -49,7 +49,7 @@ private:
         while (!mIsClosing)
         {
             int length = read(mInotifyHandle, &mEventBuffer, NOTIFY_BUFFER_SIZE);
-            if (mIsClosing) 
+            if (mIsClosing)
                 break;
             if (length < 0)
             {
@@ -168,13 +168,13 @@ private:
         ((InotifyFileWatchManager*)_this)->WorkerProc();
         return NULL;
     }
-   
+
     void HandleDirRemove(const inotify_event* event, const BfpFileWatcher* fileWatch, const SubdirInfo* subdir)
     {
         const bool shouldHandle = (event->mask & IN_ISDIR) && (fileWatch->mFlags & BfpFileWatcherFlag_IncludeSubdirectories);
         if (!shouldHandle)
             return;
-        
+
         AutoCrit autoCrit(mCritSect);
         Array<int> toRemove;
         String removedDir;
@@ -224,7 +224,7 @@ private:
         if (subdir != NULL)
         {
             dirPath.Append('/');
-            dirPath.Append(subdir->mRelativePath);    
+            dirPath.Append(subdir->mRelativePath);
         }
         dirPath.Append('/');
         dirPath.Append(event->name);
@@ -278,7 +278,7 @@ private:
             if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
                 continue;
 
-            // Send events for files/dirs inside the directory as don't receive events in newly created directories 
+            // Send events for files/dirs inside the directory as don't receive events in newly created directories
             if (sendEvents)
             {
                 String localPath = o_path.Substring(std::min(o_path.length(), fileWatcher->mPath.length()+1));
@@ -433,7 +433,7 @@ public:
                     toRemove.Add(subdir.mKey);
                 }
             }
-            
+
             for (auto handle : toRemove)
             {
                 mSubdirs.Remove(handle);

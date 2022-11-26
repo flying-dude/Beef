@@ -18,7 +18,7 @@ USING_NS_BF;
 struct ModelManager
 {
 public:
-	Dictionary<String, ModelMaterialDef*> mMaterialMap;	
+	Dictionary<String, ModelMaterialDef*> mMaterialMap;
 };
 
 ModelManager sModelManager;
@@ -38,7 +38,7 @@ void Beefy::ModelAnimation::GetJointTranslation(int jointIdx, float frameNum, Mo
 	ModelJointTranslation* jointTransEnd = &(mFrames[frameNumEnd].mJointTranslations[jointIdx]);
 
 	//if (/*(jointIdx == 37) || (jointIdx == 36) || (jointIdx == 35) ||*/ (jointIdx == 34) /*|| (jointIdx == 12) || (jointIdx == 11) || (jointIdx == 10) || (jointIdx == 0)*/)
-	{		
+	{
 		outJointTranslation->mQuat = Quaternion::Slerp(endAlpha, jointTransStart->mQuat, jointTransEnd->mQuat, true);
 		outJointTranslation->mScale = (jointTransStart->mScale * startAlpha) + (jointTransEnd->mScale * endAlpha);
 		outJointTranslation->mTrans = (jointTransStart->mTrans * startAlpha) + (jointTransEnd->mTrans * endAlpha);
@@ -78,10 +78,10 @@ BF_EXPORT const char* BF_CALLTYPE ModelDef_GetInfo(ModelDef* modelDef)
 {
 	String& outString = *gModelDef_TLStrReturn.Get();
 	outString.Clear();
-	for (int meshIdx = 0; meshIdx < (int)modelDef->mMeshes.mSize; meshIdx++)	
+	for (int meshIdx = 0; meshIdx < (int)modelDef->mMeshes.mSize; meshIdx++)
 	{
 		auto mesh = modelDef->mMeshes[meshIdx];
-		for (int primIdx = 0; primIdx < (int)mesh.mPrimitives.mSize; primIdx++)		
+		for (int primIdx = 0; primIdx < (int)mesh.mPrimitives.mSize; primIdx++)
 		{
 			auto prims = mesh.mPrimitives[primIdx];
 			outString += StrFormat("%d\t%d\t%d\t%d", meshIdx, primIdx, prims.mIndices.size(), prims.mVertices.size());
@@ -146,7 +146,7 @@ BF_EXPORT const char* BF_CALLTYPE ModelDefAnimation_GetName(ModelAnimation* mode
 }
 
 BF_EXPORT void BF_CALLTYPE ModelDefAnimation_Clip(ModelAnimation* modelAnimation, int startFrame, int numFrames)
-{	
+{
 	modelAnimation->mFrames.RemoveRange(0, startFrame);
 	modelAnimation->mFrames.RemoveRange(numFrames, modelAnimation->mFrames.Count() - numFrames);
 }
@@ -171,12 +171,12 @@ void ModelDef::Compact()
 		for (auto& prims : mesh.mPrimitives)
 		{
 			Array<int> vtxMap;
-			vtxMap.Insert(0, -1, prims.mVertices.mSize);			
+			vtxMap.Insert(0, -1, prims.mVertices.mSize);
 			int newVtxIdx = 0;
 
 			for (uint16 vtxIdx : prims.mIndices)
 			{
-				if (vtxMap[vtxIdx] == -1)				
+				if (vtxMap[vtxIdx] == -1)
 					vtxMap[vtxIdx] = newVtxIdx++;
 			}
 
@@ -195,7 +195,7 @@ void ModelDef::Compact()
 					prims.mVertices[newVtxIdx] = oldVertices[oldVtxIdx];
 			}
 		}
-	}	
+	}
 }
 
 void ModelDef::CalcBounds()
@@ -238,7 +238,7 @@ void ModelDef::GetBounds(Vector3& min, Vector3& max)
 		CalcBounds();
 
 	min = mBounds.mMin;
-	max = mBounds.mMax;	
+	max = mBounds.mMax;
 }
 
 #define SWAP(x, y) { auto temp = x; x = y; y = temp; }
@@ -318,16 +318,16 @@ void ModelDef::GenerateCollisionData()
 	int statsWorkTris = 0;
 
 	BF_ASSERT(mBVNodes.IsEmpty());
-			
+
 	struct _WorkEntry
 	{
-		int mParentNodeIdx;		
+		int mParentNodeIdx;
 		int mTriWorkIdx;
-		int mTriWorkCount;		
+		int mTriWorkCount;
 	};
 
 	Array<int32> triWorkList;
-	
+
 	int triCount = 0;
 	for (auto& mesh : mMeshes)
 	{
@@ -353,22 +353,22 @@ void ModelDef::GenerateCollisionData()
 	}
 
 	Array<_WorkEntry> workList;
-	
+
  	_WorkEntry workEntry;
-	workEntry.mParentNodeIdx = -1; 	
+	workEntry.mParentNodeIdx = -1;
 	workEntry.mTriWorkIdx = 0;
 	workEntry.mTriWorkCount = triWorkList.mSize;
 	workList.Add(workEntry);
 
 	Array<Vector3> points;
-	points.Reserve(triWorkList.mSize);	
+	points.Reserve(triWorkList.mSize);
 	Array<float> centers;
 	centers.Reserve(triWorkList.mSize);
 	Array<int> left;
 	left.Reserve(triWorkList.mSize);
 	Array<int> right;
-	right.Reserve(triWorkList.mSize);	
-	
+	right.Reserve(triWorkList.mSize);
+
 	mBVTris.Reserve(triWorkList.mSize * 2);
 
 	while (!workList.IsEmpty())
@@ -378,7 +378,7 @@ void ModelDef::GenerateCollisionData()
 
 		statsWorkItrs++;
 		statsWorkTris += workEntry.mTriWorkCount;
-		
+
 		centers.Clear();
 		left.Clear();
 		right.Clear();
@@ -409,7 +409,7 @@ void ModelDef::GenerateCollisionData()
 				int vtxIdx = mBVIndices.mVals[triIdx * 3 + triVtxIdx];
 				bool isNewVtx = false;
 
-				int32* valuePtr = NULL;				
+				int32* valuePtr = NULL;
 				auto& vtx = mBVVertices[vtxIdx];
 
 				auto& bvNode = mBVNodes[nodeIdx];
@@ -427,7 +427,7 @@ void ModelDef::GenerateCollisionData()
 					bvNode.mBoundAABB.mMax.mX = BF_MAX(bvNode.mBoundAABB.mMax.mX, vtx.mX);
 					bvNode.mBoundAABB.mMax.mY = BF_MAX(bvNode.mBoundAABB.mMax.mY, vtx.mY);
 					bvNode.mBoundAABB.mMax.mZ = BF_MAX(bvNode.mBoundAABB.mMax.mZ, vtx.mZ);
-				}				
+				}
 			}
 		}
 
@@ -474,7 +474,7 @@ void ModelDef::GenerateCollisionData()
 					splitPlane = dimIdx;
 					splitWidth = width;
 				}
-			}						
+			}
 
 			centers.SetSize(workEntry.mTriWorkCount);
 			for (int triIdxIdx = 0; triIdxIdx < workEntry.mTriWorkCount; triIdxIdx++)
@@ -496,7 +496,7 @@ void ModelDef::GenerateCollisionData()
 			float centerCoord = quickselect(centers.mVals, 0, centers.mSize - 1, centers.mSize / 2);
 
 // 			centers.Sort([](float lhs, float rhs) { return lhs < rhs; });
-// 			centerCoord = centers[centers.mSize / 2];						
+// 			centerCoord = centers[centers.mSize / 2];
 
 			for (int triIdxIdx = 0; triIdxIdx < workEntry.mTriWorkCount; triIdxIdx++)
 			{
@@ -528,18 +528,18 @@ void ModelDef::GenerateCollisionData()
 				(right.mSize <= workEntry.mTriWorkCount * 0.85f);
 
 			if (doSplit)
-			{				
+			{
 				mBVNodes[nodeIdx].mKind = ModelBVNode::Kind_Branch;
 				mBVNodes[nodeIdx].mLeft = -1;
 				mBVNodes[nodeIdx].mRight = -1;
-						
+
 				_WorkEntry childWorkEntry;
-								
+
 				childWorkEntry.mParentNodeIdx = nodeIdx;
 				childWorkEntry.mTriWorkIdx = triWorkList.mSize;
 				childWorkEntry.mTriWorkCount = right.mSize;
 				workList.Add(childWorkEntry);
-				triWorkList.Insert(triWorkList.mSize, right.mVals, right.mSize);											
+				triWorkList.Insert(triWorkList.mSize, right.mVals, right.mSize);
 
 				childWorkEntry.mParentNodeIdx = nodeIdx;
 				childWorkEntry.mTriWorkIdx = triWorkList.mSize;
@@ -551,7 +551,7 @@ void ModelDef::GenerateCollisionData()
 			}
 		}
 
-		// Did not split	
+		// Did not split
 		int triStartIdx = mBVTris.mSize;
 		//mBVTris.Reserve(mBVTris.mSize + workEntry.mTriWorkCount);
 		for (int triIdxIdx = 0; triIdxIdx < workEntry.mTriWorkCount; triIdxIdx++)
@@ -567,7 +567,7 @@ void ModelDef::GenerateCollisionData()
 }
 
 void ModelDef::RayIntersect(ModelBVNode* bvNode, const Matrix4& worldMtx, const Vector3& origin, const Vector3& vec, Vector3& outIntersect, float& outDistance)
-{	
+{
 // 	if (!RayIntersectsCircle(origin, vec, bvNode->mBoundSphere, NULL, NULL, NULL))
 // 		return false;
 	if (!RayIntersectsAABB(origin, vec, bvNode->mBoundAABB, NULL, NULL, NULL))
@@ -576,18 +576,18 @@ void ModelDef::RayIntersect(ModelBVNode* bvNode, const Matrix4& worldMtx, const 
 	if (bvNode->mKind == ModelBVNode::Kind_Branch)
 	{
 		bool hadIntersect = false;
-		for (int branchIdx = 0; branchIdx < 2; branchIdx++)		
-			RayIntersect(&mBVNodes[(branchIdx == 0) ? bvNode->mLeft : bvNode->mRight], worldMtx, origin, vec, outIntersect, outDistance);		
+		for (int branchIdx = 0; branchIdx < 2; branchIdx++)
+			RayIntersect(&mBVNodes[(branchIdx == 0) ? bvNode->mLeft : bvNode->mRight], worldMtx, origin, vec, outIntersect, outDistance);
 		return;
 	}
-	
+
 	for (int triIdxIdx = 0; triIdxIdx < bvNode->mTriCount; triIdxIdx++)
 	{
 		int triIdx = mBVTris[bvNode->mTriStartIdx + triIdxIdx];
 
 		Vector3 curIntersect;
 		float curDistance;
-		if (RayIntersectsTriangle(origin, vec, 
+		if (RayIntersectsTriangle(origin, vec,
 			mBVVertices[mBVIndices[triIdx*3+0]], mBVVertices[mBVIndices[triIdx*3+1]], mBVVertices[mBVIndices[triIdx*3+2]],
 			&curIntersect, &curDistance))
 		{
@@ -597,7 +597,7 @@ void ModelDef::RayIntersect(ModelBVNode* bvNode, const Matrix4& worldMtx, const 
 				outDistance = curDistance;
 			}
 		}
-	}		
+	}
 }
 
 bool ModelDef::RayIntersect(const Matrix4& worldMtx, const Vector3& origin, const Vector3& vec, Vector3& outIntersect, float& outDistance)
@@ -613,12 +613,12 @@ bool ModelDef::RayIntersect(const Matrix4& worldMtx, const Vector3& origin, cons
 
 	const float maxDist = 3.40282e+038f;
 	outDistance = maxDist;
-	RayIntersect(&mBVNodes[0], worldMtx, origin, vec, outIntersect, outDistance);	
+	RayIntersect(&mBVNodes[0], worldMtx, origin, vec, outIntersect, outDistance);
 	return outDistance != maxDist;
 }
 
 ModelMaterialDef* ModelMaterialDef::CreateOrGet(const StringImpl& prefix, const StringImpl& path)
-{	
+{
 	StringT<128> key = prefix;
 	key += ":";
 	key += path;
@@ -693,7 +693,7 @@ public:
 	}
 
 	bool ReadFile(const StringImpl& fileName, const StringImpl& baseDir)
-	{	
+	{
 		if (fileName.StartsWith('@'))
 		{
 			int colon = (int)fileName.IndexOf(':');
@@ -710,9 +710,9 @@ public:
 			mFS = fs;
 			if (!fs->Open(fileName, "rb"))
 				return false;
-		}		
-		
-		return ReadFile();		
+		}
+
+		return ReadFile();
 	}
 };
 
@@ -767,7 +767,7 @@ BF_EXPORT StringView BF_CALLTYPE Res_SerializeModel(ModelDef* modelDef)
 			}
 		}
 	}
-	
+
 	String& outString = *gModelDef_TLStrReturn.Get();
 	outString.Clear();
 	outString.Append((char*)ms.GetPtr(), ms.GetSize());

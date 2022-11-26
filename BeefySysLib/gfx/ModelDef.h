@@ -77,7 +77,7 @@ public:
 class ModelMaterialDef
 {
 public:
-	class TextureParameterValue	
+	class TextureParameterValue
 	{
 	public:
 		String mName;
@@ -86,12 +86,12 @@ public:
 	public:
 		TextureParameterValue()
 		{
-		
+
 		}
 
 		~TextureParameterValue()
 		{
-			
+
 		}
 	};
 
@@ -125,7 +125,7 @@ public:
 	enum Flags
 	{
 		Flags_None = 0,
-		Flags_Vertex_Position = 1,	
+		Flags_Vertex_Position = 1,
 		Flags_Vertex_Tex0 = 2,
 		Flags_Vertex_Tex1 = 4,
 		Flags_Vertex_Tex2 = 8,
@@ -138,7 +138,7 @@ public:
 	Array<ModelVertex> mVertices;
 	Array<uint16> mIndices;
 	ModelMaterialInstance* mMaterial;
-	Array<String> mTexPaths;	
+	Array<String> mTexPaths;
 	Flags mFlags;
 
 public:
@@ -152,7 +152,7 @@ public:
 class ModelMesh
 {
 public:
-	String mName;	
+	String mName;
 	Array<ModelPrimitives> mPrimitives;
 };
 
@@ -167,7 +167,7 @@ public:
 };
 
 class ModelBVNode
-{	
+{
 public:
 	enum Kind
 	{
@@ -182,13 +182,13 @@ public:
 
 	union
 	{
-		struct 
+		struct
 		{
 			int mLeft;
 			int mRight;
 		};
 
-		struct  
+		struct
 		{
 			int mTriStartIdx;
 			int mTriCount;
@@ -216,13 +216,13 @@ public:
 
 public:
 	String mLoadDir;
-	float mFrameRate;	
+	float mFrameRate;
 	Array<ModelMesh> mMeshes;
 	Array<ModelJoint> mJoints;
 	Array<ModelAnimation> mAnims;
 	Array<ModelNode> mNodes;
 	Array<ModelMaterialInstance> mMaterials;
-	
+
 	Flags mFlags;
 	AABB mBounds;
 	Array<ModelBVNode> mBVNodes;
@@ -233,7 +233,7 @@ public:
 protected:
 	void CalcBounds();
 	void RayIntersect(ModelBVNode* bvNode, const Matrix4& worldMtx, const Vector3& origin, const Vector3& vec, Vector3& outIntersect, float& outDistance);
-	
+
 public:
 	ModelDef();
 	~ModelDef();

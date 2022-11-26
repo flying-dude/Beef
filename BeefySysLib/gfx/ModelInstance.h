@@ -10,14 +10,14 @@ NS_BF_BEGIN;
 class ModelInstance : public RenderCmd
 {
 public:
-	ModelDef* mModelDef;	
+	ModelDef* mModelDef;
 	Array<ModelJointTranslation> mJointTranslations;
 	Array<bool> mMeshesVisible;
 
 public:
 	ModelInstance(ModelDef* modelDef);
 
-	virtual void Free() override {}	
+	virtual void Free() override {}
 	virtual void SetJointPosition(int jointIdx, const ModelJointTranslation& jointTranslation);
 };
 

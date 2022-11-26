@@ -8,26 +8,26 @@ USING_NS_BF;
 #include <complex>
 #include <iostream>
 #include <valarray>
- 
+
 const double PI = 3.141592653589793238460;
- 
+
 typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
- 
+
 // Cooley�Tukey FFT (in-place)
 void fft(CArray& x)
 {
     const size_t N = x.size();
     if (N <= 1) return;
- 
+
     // divide
     CArray even = x[std::slice(0, N/2, 2)];
     CArray  odd = x[std::slice(1, N/2, 2)];
- 
+
     // conquer
     fft(even);
     fft(odd);
- 
+
     // combine
     for (size_t k = 0; k < N/2; ++k)
     {
@@ -36,14 +36,14 @@ void fft(CArray& x)
         x[k+N/2] = even[k] - t;
     }
 }
- 
+
 void DFTTest()
 {
 	const Complex test[] = { 1.0, 2.0, 3.0, 4.0 };
     CArray data(test, sizeof(test) / sizeof(test[0]));
- 
+
     fft(data);
-	
+
 }
 
 /*-------------------------------------------------------------------------
@@ -161,12 +161,12 @@ class BFComplex
 public:
 	double mR;
 	double mI;
-	
+
 public:
 	BFComplex(double r = 0, double i = 0)
 	{
 		mR = r;
-		mI = i;		
+		mI = i;
 	}
 
 	BFComplex operator +(const BFComplex& complex) const
@@ -237,7 +237,7 @@ int FFT2D(BFComplex **c,int nx,int ny,int dir)
    int i,j;
    int m,twopm;
    double *real,*imag;
-   
+
 
    /* Transform the rows */
    real = (double *)malloc(nx * sizeof(double));
@@ -250,7 +250,7 @@ int FFT2D(BFComplex **c,int nx,int ny,int dir)
       for (i=0;i<nx;i++) {
          real[i] = c[i][j].mR;
          imag[i] = c[i][j].mI;
-      }	  
+      }
       FFT(dir,m,real,imag);
       for (i=0;i<nx;i++) {
          c[i][j].mR = real[i];
@@ -271,7 +271,7 @@ int FFT2D(BFComplex **c,int nx,int ny,int dir)
       for (j=0;j<ny;j++) {
          real[j] = c[i][j].mR;
          imag[j] = c[i][j].mI;
-      }	  
+      }
       FFT(dir,m,real,imag);
       for (j=0;j<ny;j++) {
          c[i][j].mR = real[j];
@@ -294,10 +294,10 @@ void DFTTest_2D()
 		for (int j = 0; j < 4; j++)
 			test[i][j].mR = i*4+j+1;
 	}
-	
-	/*std::wstring aString;	
+
+	/*std::wstring aString;
 	for (int i = 0; i < 4; i++)
-	{		
+	{
 		aString += L"(";
 		for (int j = 0; j < 4; j++)
 		{
@@ -309,16 +309,16 @@ void DFTTest_2D()
 	}
 	OutputDebugStringW(aString.c_str());*/
 
-	/*[][3] = 
-	{{1.0, 2.0, 3.0}, 
+	/*[][3] =
+	{{1.0, 2.0, 3.0},
 	{4.0, 5.0, 6.0},
 	{7.0, 8.0, 9.0}};*/
 
 	FFT2D(test, 4, 4, -1);
 
-	String aString;	
+	String aString;
 	for (int i = 0; i < 4; i++)
-	{		
+	{
 		aString += "(";
 		for (int j = 0; j < 4; j++)
 		{
@@ -330,14 +330,14 @@ void DFTTest_2D()
 	}
     BfpOutput_DebugString(aString.c_str());
 
-	
+
 }
 
 void PrintComplex2D(BFComplex* ptr, int cols, int rows)
 {
-	String aString = "(\n";	
+	String aString = "(\n";
 	for (int i = 0; i < rows; i++)
-	{		
+	{
 		aString += "\t(";
 		for (int j = 0; j < cols; j++)
 		{
@@ -357,12 +357,12 @@ void FFD_1D(BFComplex* array, int size, int pitch, int aDir)
 	BFComplex* prev = new BFComplex[size];
 	for (int i = 0; i < size; i++)
 		prev[i] = array[i*pitch];
-	
+
 	for (int idxOut = 0; idxOut < size; idxOut++)
-	{		
+	{
 		BFComplex val;
 		for (int idxIn = 0; idxIn < size; idxIn++)
-			val += prev[idxIn] * BFComplex::Polar(1.0, aDir * 2 * BF_PI_D * idxIn * idxOut / (double) size);		
+			val += prev[idxIn] * BFComplex::Polar(1.0, aDir * 2 * BF_PI_D * idxIn * idxOut / (double) size);
 		if (aDir == 1)
 			val = val * BFComplex(1.0/size);
 		array[idxOut*pitch] = val;
@@ -371,7 +371,7 @@ void FFD_1D(BFComplex* array, int size, int pitch, int aDir)
 
 void DFTTest_Mine()
 {
-	BFComplex test[] = 
+	BFComplex test[] =
 	{ 1.0, 2.0, 3.0, 4.0,
 	5.0, 6.0, 7.0, 8.0,
 	9.0, 10.0, 11.0, 12.0,
@@ -387,8 +387,8 @@ void DFTTest_Mine()
 		for (int colOut = 0; colOut < aCols; colOut++)
 		{
 			BFComplex val;
-			for (int colIn = 0; colIn < aCols; colIn++)			
-				val += test[row*aCols+colIn] * BFComplex::Polar(1.0, - 2 * BF_PI_D * colIn * colOut / (double) aCols);		
+			for (int colIn = 0; colIn < aCols; colIn++)
+				val += test[row*aCols+colIn] * BFComplex::Polar(1.0, - 2 * BF_PI_D * colIn * colOut / (double) aCols);
 			outR.push_back(val);
 		}
 	}
@@ -402,8 +402,8 @@ void DFTTest_Mine()
 		for (int rowOut = 0; rowOut < aRows; rowOut++)
 		{
 			BFComplex val;
-			for (int rowIn = 0; rowIn < aRows; rowIn++)			
-				val += outR[rowIn*aCols+col] * BFComplex::Polar(1.0, - 2 * BF_PI_D * rowIn * rowOut / (double) aRows);		
+			for (int rowIn = 0; rowIn < aRows; rowIn++)
+				val += outR[rowIn*aCols+col] * BFComplex::Polar(1.0, - 2 * BF_PI_D * rowIn * rowOut / (double) aRows);
 			//outC.push_back(val);
 			outC[rowOut*aCols+col] = val;
 		}
@@ -424,13 +424,13 @@ void DFTTest_Mine()
 		for (int rowOut = 0; rowOut < aRows; rowOut++)
 		{
 			BFComplex val;
-			for (int rowIn = 0; rowIn < aRows; rowIn++)			
-				val += test[rowIn*aCols+col] * BFComplex::Polar(1.0, - 2 * BF_PI_D * rowIn * rowOut / (double) aRows);		
+			for (int rowIn = 0; rowIn < aRows; rowIn++)
+				val += test[rowIn*aCols+col] * BFComplex::Polar(1.0, - 2 * BF_PI_D * rowIn * rowOut / (double) aRows);
 			outC[rowOut*aCols+col] = val;
 		}
 	}
 
-	
+
 
 	PrintComplex2D(&outC.front(), aRows, aCols);
 	std::vector<BFComplex> outR;
@@ -441,8 +441,8 @@ void DFTTest_Mine()
 		for (int colOut = 0; colOut < aCols; colOut++)
 		{
 			BFComplex val;
-			for (int colIn = 0; colIn < aCols; colIn++)			
-				val += outC[row*aCols+colIn] * BFComplex::Polar(1.0, - 2 * BF_PI_D * colIn * colOut / (double) aCols);		
+			for (int colIn = 0; colIn < aCols; colIn++)
+				val += outC[row*aCols+colIn] * BFComplex::Polar(1.0, - 2 * BF_PI_D * colIn * colOut / (double) aCols);
 			//outC.push_back(val);
 			outR[row*aCols+colOut] = val;
 		}
@@ -453,27 +453,27 @@ void DFTTest_Mine()
 	/*int N = sizeof(test) / sizeof(test[0]);
 
 	std::vector<BFComplex> out;
-	std::vector<BFComplex> invOut;			
+	std::vector<BFComplex> invOut;
 
 	BFComplex _a = BFComplex::Polar(1.0, 0.5f) * BFComplex::Polar(1.0, 2.01f);
 
 	for (int k = 0; k < N; k++)
 	{
-		BFComplex val;		
-		for (int n = 0; n < N; n++)		
-			val += test[n] * BFComplex::Polar(1.0, - 2 * BF_PI_D * k * n / (double) N);		
+		BFComplex val;
+		for (int n = 0; n < N; n++)
+			val += test[n] * BFComplex::Polar(1.0, - 2 * BF_PI_D * k * n / (double) N);
 		out.push_back(val);
 	}
 
-	for (int n = 0; n < N; n++)	
+	for (int n = 0; n < N; n++)
 	{
-		BFComplex val;		
-		for (int k = 0; k < N; k++)		
-			val += out[k] * BFComplex::Polar(1.0, 2 * BF_PI_D * k * n / (double) N);		
+		BFComplex val;
+		for (int k = 0; k < N; k++)
+			val += out[k] * BFComplex::Polar(1.0, 2 * BF_PI_D * k * n / (double) N);
 		invOut.push_back(BFComplex(1.0/N) * val);
 	}*/
 
-	
+
 }
 
 void FFTShift1D(BFComplex* array, int size, int pitch, int dir)
@@ -481,7 +481,7 @@ void FFTShift1D(BFComplex* array, int size, int pitch, int dir)
 	BFComplex* prev = new BFComplex[size];
 	for (int i = 0; i < size; i++)
 		prev[i] = array[i * pitch];
-	
+
 	while (dir < 0)
 		dir += size;
 
@@ -496,33 +496,33 @@ static void FFTShift2D(BFComplex* data, int cols, int rows)
 	for (int col = 0; col < cols; col++)
 		FFTShift1D(data + col, rows, cols, cols / 2);
 	for (int row = 0; row < rows; row++)
-		FFTShift1D(data + row*cols, cols, 1, rows / 2);	
+		FFTShift1D(data + row*cols, cols, 1, rows / 2);
 }
 
 static void FFTConvert(ImageData* source)
-{	
+{
 	int aCols = source->mWidth;
 	int aRows = source->mHeight;
 	int count = aCols * aRows;
 	BFComplex* nums = new BFComplex[count];
 	for (int i = 0; i < count; i++)
-	{		
+	{
 		PackedColor& color = *((PackedColor*) &source->mBits[i]);
 		nums[i].mR = PackedColorGetGray()(color);
 	}
-	
+
 	//FFT
 	for (int col = 0; col < aCols; col++)
-		FFD_1D(nums + col, aRows, aCols, -1);		
+		FFD_1D(nums + col, aRows, aCols, -1);
 	for (int row = 0; row < aRows; row++)
-		FFD_1D(nums + row*aCols, aCols, 1, -1);		
-	
+		FFD_1D(nums + row*aCols, aCols, 1, -1);
+
 	//INV FFT
 	/*for (int col = 0; col < aCols; col++)
-		FFD_1D(nums + col, aRows, aCols, 1);	
+		FFD_1D(nums + col, aRows, aCols, 1);
 	for (int row = 0; row < aRows; row++)
 		FFD_1D(nums + row*aCols, aCols, 1, 1);*/
-	
+
 	FFTShift2D(nums, aCols, aRows);
 
 	double* fFTLog = new double[count];
@@ -536,8 +536,8 @@ static void FFTConvert(ImageData* source)
 
 	for (int i = 0; i < count; i++)
 	{
-		//int val = (int) nums[i].Magnitude() / 1;			
-		int val = (int) (fFTLog[i] * 255 / maxLog); 
+		//int val = (int) nums[i].Magnitude() / 1;
+		int val = (int) (fFTLog[i] * 255 / maxLog);
 		val = std::min(255, std::max(0, val));
 
 		source->mBits[i] = 0xFF000000 | val | (val << 8) | (val << 16);
@@ -552,13 +552,13 @@ void DCT_1D(double* array, int size, int pitch)
 	double* prev = new double[size];
 	for (int i = 0; i < size; i++)
 		prev[i] = array[i*pitch];
-	
+
 	for (int idxOut = 0; idxOut < size; idxOut++)
-	{		
-		double val = 0;		
+	{
+		double val = 0;
 		double scale = (idxOut == 0) ? 1/sqrt(2.0) : 1;
-		
-		for (int idxIn = 0; idxIn < size; idxIn++)		
+
+		for (int idxIn = 0; idxIn < size; idxIn++)
 			val += prev[idxIn] * cos(idxOut * BF_PI * (2*idxIn + 1)/(2 * size));
 		array[idxOut*pitch] = 0.5 * scale * val;
 	}
@@ -571,11 +571,11 @@ void IDCT_1D(double* array, int size, int pitch)
 	double* prev = new double[size];
 	for (int i = 0; i < size; i++)
 		prev[i] = array[i*pitch];
-	
+
 	for (int idxOut = 0; idxOut < size; idxOut++)
-	{		
-		double val = 0;						
-		for (int idxIn = 0; idxIn < size; idxIn++)		
+	{
+		double val = 0;
+		for (int idxIn = 0; idxIn < size; idxIn++)
 		{
 			double scale = (idxIn == 0) ? 1/sqrt(2.0) : 1;
 			val += scale * prev[idxIn] * cos(idxIn * BF_PI * (2*idxOut + 1)/(2 * size));
@@ -586,15 +586,15 @@ void IDCT_1D(double* array, int size, int pitch)
 	delete [] prev;
 }
 
-const int DCT_1D_I_TABLE[64] = 
+const int DCT_1D_I_TABLE[64] =
 {
-	4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 
-	4017, 3405, 2275, 799, -799, -2275, -3405, -4017, 
-	3784, 1567, -1567, -3784, -3784, -1567, 1567, 3784, 
-	3405, -799, -4017, -2275, 2275, 4017, 799, -3405, 
-	2896, -2896, -2896, 2896, 2896, -2896, -2896, 2896, 
-	2275, -4017, 799, 3405, -3405, -799, 4017, -2275, 
-	1567, -3784, 3784, -1567, -1567, 3784, -3784, 1567, 
+	4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096,
+	4017, 3405, 2275, 799, -799, -2275, -3405, -4017,
+	3784, 1567, -1567, -3784, -3784, -1567, 1567, 3784,
+	3405, -799, -4017, -2275, 2275, 4017, 799, -3405,
+	2896, -2896, -2896, 2896, 2896, -2896, -2896, 2896,
+	2275, -4017, 799, 3405, -3405, -799, 4017, -2275,
+	1567, -3784, 3784, -1567, -1567, 3784, -3784, 1567,
 	799, -2275, 3405, -4017, 4017, -3405, 2275, -799
 };
 
@@ -603,18 +603,18 @@ void DCT_1D_I(int* array, int size, int pitch)
 	int* prev = new int[size];
 	for (int i = 0; i < size; i++)
 		prev[i] = array[i*pitch];
-		
+
 	int multIdx = 0;
 	for (int idxOut = 0; idxOut < size; idxOut++)
-	{		
-		int val = 0;		
-	
+	{
+		int val = 0;
+
 		for (int idxIn = 0; idxIn < size; idxIn++)
 			val += prev[idxIn] * DCT_1D_I_TABLE[multIdx++];
-		
-		if (idxOut == 0)		
+
+		if (idxOut == 0)
 			array[idxOut*pitch] = val / 0x2d41;
-		else		
+		else
 			array[idxOut*pitch] = val / 0x2000;
 
 	}
@@ -622,15 +622,15 @@ void DCT_1D_I(int* array, int size, int pitch)
 	delete [] prev;
 }
 
-const int IDCT_1D_I_TABLE[64] = 
+const int IDCT_1D_I_TABLE[64] =
 {
-	2896, 4017, 3784, 3405, 2896, 2275, 1567, 799, 
-	2896, 3405, 1567, -799, -2896, -4017, -3784, -2275, 
-	2896, 2275, -1567, -4017, -2896, 799, 3784, 3405, 
-	2896, 799, -3784, -2275, 2896, 3405, -1567, -4017, 
-	2896, -799, -3784, 2275, 2896, -3405, -1567, 4017, 
-	2896, -2275, -1567, 4017, -2896, -799, 3784, -3405, 
-	2896, -3405, 1567, 799, -2896, 4017, -3784, 2275, 
+	2896, 4017, 3784, 3405, 2896, 2275, 1567, 799,
+	2896, 3405, 1567, -799, -2896, -4017, -3784, -2275,
+	2896, 2275, -1567, -4017, -2896, 799, 3784, 3405,
+	2896, 799, -3784, -2275, 2896, 3405, -1567, -4017,
+	2896, -799, -3784, 2275, 2896, -3405, -1567, 4017,
+	2896, -2275, -1567, 4017, -2896, -799, 3784, -3405,
+	2896, -3405, 1567, 799, -2896, 4017, -3784, 2275,
 	2896, -4017, 3784, -3405, 2896, -2275, 1567, -799
 };
 
@@ -639,13 +639,13 @@ void IDCT_1D_I(int* array, int size, int pitch)
 	int prev[64];
 	for (int i = 0; i < size; i++)
 		prev[i] = array[i*pitch];
-		
+
 	int multIdx = 0;
 	for (int idxOut = 0; idxOut < size; idxOut++)
-	{		
-		int val = 0;				
+	{
+		int val = 0;
 		for (int idxIn = 0; idxIn < size; idxIn++)
-			val += prev[idxIn] * IDCT_1D_I_TABLE[multIdx++];		
+			val += prev[idxIn] * IDCT_1D_I_TABLE[multIdx++];
 		array[idxOut*pitch] = val / 0x2000;
 	}
 }
@@ -666,18 +666,18 @@ void BFIData::Compress(ImageData* source)
 	int pivotIdx[colCount] = {-1, -1, -1, -1};
 
 	int moveIdx = 0;
-	
-	
+
+
 	double pivotVals[colCount] = {0};
 
 	for (int pivot = 0; pivot < colCount; pivot++)
-	{	
+	{
 		bool moved = false;
 
 		for (int eq = moveIdx; eq < rowCount; eq++)
-		{			
+		{
 			if (!IS_ZERO(mat[eq][pivot]))
-			{				
+			{
 				pivotVals[pivot] = mat[eq][pivot];
 				for (int swapIdx = 0; swapIdx < colCount; swapIdx++)
 					std::swap(mat[eq][swapIdx], mat[moveIdx][swapIdx]);
@@ -693,11 +693,11 @@ void BFIData::Compress(ImageData* source)
 
 		for (int eq = moveIdx + 1; eq < rowCount; eq++)
 		{
-			double multFactor = -mat[eq][pivot] / mat[moveIdx][pivot];			
+			double multFactor = -mat[eq][pivot] / mat[moveIdx][pivot];
 			bool nonZero = false;
-			for (int multIdx = pivot; multIdx < colCount; multIdx++)						
+			for (int multIdx = pivot; multIdx < colCount; multIdx++)
 			{
-				mat[eq][multIdx] += mat[moveIdx][multIdx]*multFactor;			
+				mat[eq][multIdx] += mat[moveIdx][multIdx]*multFactor;
 				nonZero |= !IS_ZERO(mat[eq][multIdx]);
 			}
 			rightVals[eq] += rightVals[moveIdx]*multFactor;
@@ -715,32 +715,32 @@ void BFIData::Compress(ImageData* source)
 		if (pivotIdx[col] != -1)
 		{
 			int eq = pivotIdx[col];
-			double left = 0;			
+			double left = 0;
 			for (int multCol = col + 1; multCol < colCount; multCol++)
 				left += mat[eq][multCol] * result[multCol];
 			double right = rightVals[eq] - left;
 			right /= mat[eq][col];
 			result[col] = right;
-		}		
+		}
 	}
 
 	///*/
 
 
 	uint8 rawData[64] = {
-		52, 55, 61, 66, 70, 61, 64, 73, 
-		63, 59, 55, 90,109, 85, 69, 72, 
-		62, 59, 68,113,144,104, 66, 73, 
-		63, 58, 71,122,154,106, 70, 69, 
+		52, 55, 61, 66, 70, 61, 64, 73,
+		63, 59, 55, 90,109, 85, 69, 72,
+		62, 59, 68,113,144,104, 66, 73,
+		63, 58, 71,122,154,106, 70, 69,
 		67, 61, 68,104,126, 88, 68, 70,
-		79, 65, 60, 70, 77, 68, 58, 75, 
+		79, 65, 60, 70, 77, 68, 58, 75,
 		85, 71, 64, 59, 55, 61, 65, 83,
 		87, 79, 69, 68, 65, 76, 78, 94};
 
 	double dCTIn[64];
-	for (int i = 0; i < 64; i++)	
+	for (int i = 0; i < 64; i++)
 		dCTIn[i] = (int) rawData[i] - 128;
-	
+
 	//double dCTOut[64];
 
 	/*for (int v = 0; v < 8; v++)
@@ -764,45 +764,45 @@ void BFIData::Compress(ImageData* source)
 	}*/
 
 	double dCT[64];
-	for (int i = 0; i < 64; i++)		
-		dCT[i] = rawData[i] - 128;		
+	for (int i = 0; i < 64; i++)
+		dCT[i] = rawData[i] - 128;
 
 	int aCols = 8;
 	int aRows = 8;
 
 	for (int col = 0; col < aCols; col++)
-		DCT_1D(dCT + col, aRows, aCols);	
+		DCT_1D(dCT + col, aRows, aCols);
 	for (int row = 0; row < aRows; row++)
-		DCT_1D(dCT + row*aCols, aCols, 1);	
+		DCT_1D(dCT + row*aCols, aCols, 1);
 
 	for (int col = 0; col < aCols; col++)
-		IDCT_1D(dCT + col, aRows, aCols);	
+		IDCT_1D(dCT + col, aRows, aCols);
 	for (int row = 0; row < aRows; row++)
 		IDCT_1D(dCT + row*aCols, aCols, 1);
 
 	//
 
 	int dCT_I[64];
-	for (int i = 0; i < 64; i++)	
-		dCT_I[i] = (rawData[i] - 128) * 256;	
+	for (int i = 0; i < 64; i++)
+		dCT_I[i] = (rawData[i] - 128) * 256;
 
 	for (int col = 0; col < aCols; col++)
-		DCT_1D_I(dCT_I + col, aRows, aCols);	
+		DCT_1D_I(dCT_I + col, aRows, aCols);
 	for (int row = 0; row < aRows; row++)
-		DCT_1D_I(dCT_I + row*aCols, aCols, 1);	
+		DCT_1D_I(dCT_I + row*aCols, aCols, 1);
 
 	for (int col = 0; col < aCols; col++)
-		IDCT_1D_I(dCT_I + col, aRows, aCols);	
+		IDCT_1D_I(dCT_I + col, aRows, aCols);
 	for (int row = 0; row < aRows; row++)
-		IDCT_1D_I(dCT_I + row*aCols, aCols, 1);	
+		IDCT_1D_I(dCT_I + row*aCols, aCols, 1);
 
-	for (int i = 0; i < 64; i++)	
+	for (int i = 0; i < 64; i++)
 	{
 		int val = dCT_I[i];
 		if (val < 0)
-			dCT_I[i] = (val - 128) / 256;	
+			dCT_I[i] = (val - 128) / 256;
 		else
-			dCT_I[i] = (val + 128) / 256;	
+			dCT_I[i] = (val + 128) / 256;
 	}
 
 	///
@@ -833,7 +833,7 @@ void BFIData::Compress(ImageData* source)
 		zigZagDCT[i] = quantDCT[zigZag[i]];
 	}
 
-	
+
 
 	/*double dCTOutH[64];
 	double dCTOutV[64];
@@ -841,12 +841,12 @@ void BFIData::Compress(ImageData* source)
 	for (int v = 0; v < 8; v++)
 	{
 		for (int u = 0; u < 8; u++)
-		{	
+		{
 			dCTOutV[u+v*8] = 0;
 			for (int y = 0; y < 8; y++)
 			{
-				double av = (v == 0) ? sqrt(1.0/8.0) : sqrt(2.0/8.0);				
-				dCTOutV[u+v*8] += av*dCTIn[u+y*8]*						
+				double av = (v == 0) ? sqrt(1.0/8.0) : sqrt(2.0/8.0);
+				dCTOutV[u+v*8] += av*dCTIn[u+y*8]*
 						cos(BF_PI_D/8 * (y + 0.5)*v);
 			}
 		}
@@ -855,10 +855,10 @@ void BFIData::Compress(ImageData* source)
 	for (int v = 0; v < 8; v++)
 	{
 		for (int u = 0; u < 8; u++)
-		{	
+		{
 			dCTOutH[u+v*8] = 0;
 			for (int x = 0; x < 8; x++)
-			{				
+			{
 				double au = (u == 0) ? sqrt(1.0/8.0) : sqrt(2.0/8.0);
 				dCTOutH[u+v*8] += au*dCTOutV[x+v*8]*
 					cos(BF_PI_D/8 * (x + 0.5)*u);
@@ -868,5 +868,5 @@ void BFIData::Compress(ImageData* source)
 		}
 	}*/
 
-	
+
 }

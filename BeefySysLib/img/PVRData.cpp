@@ -4,18 +4,18 @@ USING_NS_BF;
 
 struct PVRTextureHeader
 {
-    unsigned int dwHeaderSize;			
-    unsigned int dwHeight;				
-    unsigned int dwWidth;				
-    unsigned int dwMipMapCount;			
-    unsigned int dwpfFlags;				
-    unsigned int dwTextureDataSize;		
-    unsigned int dwBitCount;			
-    unsigned int dwRBitMask;			
-    unsigned int dwGBitMask;			
-    unsigned int dwBBitMask;			
-    unsigned int dwAlphaBitMask;		
-    unsigned int dwPVR;					
+    unsigned int dwHeaderSize;
+    unsigned int dwHeight;
+    unsigned int dwWidth;
+    unsigned int dwMipMapCount;
+    unsigned int dwpfFlags;
+    unsigned int dwTextureDataSize;
+    unsigned int dwBitCount;
+    unsigned int dwRBitMask;
+    unsigned int dwGBitMask;
+    unsigned int dwBBitMask;
+    unsigned int dwAlphaBitMask;
+    unsigned int dwPVR;
     unsigned int dwNumSurfs;
 };
 
@@ -125,20 +125,20 @@ bool PVRData::ReadData()
 	if ((aHeader->dwpfFlags & PVR_TEXTURE_FLAG_TYPE_MASK) == PVR_TEXTURE_FLAG_TYPE_PVRTC_2)
 		mHWBitsType = HWBITS_PVRTC_2BPPV1;
 	else if ((aHeader->dwpfFlags & PVR_TEXTURE_FLAG_TYPE_MASK) == PVR_TEXTURE_FLAG_TYPE_PVRTC_4)
-	{		
+	{
 		if (aHeader->dwNumSurfs > 1)
 			mHWBitsType = HWBITS_PVRTC_2X4BPPV1;
 		else
 			mHWBitsType = HWBITS_PVRTC_4BPPV1;
 	}
-	
+
 	mHWBits = (uint8*)mSrcData + aHeader->dwHeaderSize;
 	mHWBitsLength = mSrcDataLen - aHeader->dwHeaderSize;
 	mWidth = aHeader->dwWidth;
 	mHeight = aHeader->dwHeight;
 	mKeepSrcDataValid = true;
 
-	/*mWidth = aHeader->dwWidth / 4;	
+	/*mWidth = aHeader->dwWidth / 4;
 	mHeight = aHeader->dwHeight / 4;
 	mBits = new uint32[mWidth*mHeight];
 
@@ -146,7 +146,7 @@ bool PVRData::ReadData()
 	int blockH = aHeader->dwHeight / 4;
 
 	int numBlocks = blockW * blockH;
-		
+
 	for (int blockNum = 0; blockNum < numBlocks; blockNum++)
 	{
 		int blockX = (blockNum % blockW);
@@ -155,12 +155,12 @@ bool PVRData::ReadData()
 		uint8* srcData = mSrcData + aHeader->dwHeaderSize + TwiddleUV(blockH, blockW, blockY, blockX)*8 + 4;
 		uint16 baseColorB = *((uint16*) (srcData));
 
-		uint32 color = 0xFF000000 | 
-			(((uint32) baseColorB & 0x7C00) >> 7) | 
+		uint32 color = 0xFF000000 |
+			(((uint32) baseColorB & 0x7C00) >> 7) |
 			(((uint32) baseColorB & 0x03E0) << 6) |
 			(((uint32) baseColorB & 0x001F) << 19);
 		mBits[blockNum] = color;
-	}*/	
+	}*/
 
 	return true;
 }

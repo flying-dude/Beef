@@ -117,7 +117,7 @@ PSDPattern* PSDPattern::GetNextMipLevel()
 	mip->mIntensityBits = new uint8[mw*mh];
 
 	for (int y = 0; y < mh; y++)
-	{		
+	{
 		uint8* destI = mip->mIntensityBits + y*mw;
 
 		uint8* srcI1 = mIntensityBits + y*2*mWidth;
@@ -126,10 +126,10 @@ PSDPattern* PSDPattern::GetNextMipLevel()
 		for (int x = 0; x < mw; x++)
 		{
 			int srcX1 = x*2;
-			int srcX2 = (srcX1+1)%mWidth;			
+			int srcX2 = (srcX1+1)%mWidth;
 
-			*(destI++) = (uint8) (((int) srcI1[srcX1] + (int) srcI1[srcX2] + 
-				(int) srcI2[srcX1] + (int) (srcI2[srcX2])) / 4);			
+			*(destI++) = (uint8) (((int) srcI1[srcX1] + (int) srcI1[srcX2] +
+				(int) srcI2[srcX1] + (int) (srcI2[srcX2])) / 4);
 		}
 	}
 
@@ -145,16 +145,16 @@ PSDPattern* PSDPattern::GetNextMipLevel()
 			for (int x = 0; x < mw; x++)
 			{
 				int srcX1 = x*2;
-				int srcX2 = (srcX1+1)%mWidth;			
+				int srcX2 = (srcX1+1)%mWidth;
 
-				*(destBits++) = 
+				*(destBits++) =
 					(((
-					 (srcBits1[srcX1] & 0x00FF00FF) + 
+					 (srcBits1[srcX1] & 0x00FF00FF) +
 					 (srcBits1[srcX2] & 0x00FF00FF) +
 					 (srcBits2[srcX1] & 0x00FF00FF) +
 					 (srcBits2[srcX2] & 0x00FF00FF)) / 4) & 0x00FF00FF) |
 					(((
-					 ((srcBits1[srcX1] >> 8) & 0x00FF00FF) + 
+					 ((srcBits1[srcX1] >> 8) & 0x00FF00FF) +
 					 ((srcBits1[srcX2] >> 8) & 0x00FF00FF) +
 					 ((srcBits2[srcX1] >> 8) & 0x00FF00FF) +
 					 ((srcBits2[srcX2] >> 8) & 0x00FF00FF)) / 4) & 0x00FF00FF) << 8;
@@ -270,11 +270,11 @@ void PSDReader::ReadPSDValue(PSDValue* value)
 		{
 			value->mType = PSDVal_Descriptor;
 			value->mDescriptor = new PSDDescriptor();
-			ReadPSDDescriptor(value->mDescriptor);				
+			ReadPSDDescriptor(value->mDescriptor);
 		}
 		break;
-	case 'TEXT':		
-		value->mType = PSDVal_String;			
+	case 'TEXT':
+		value->mType = PSDVal_String;
 		value->mString = mFS->ReadUnicode32SizedString();
 		break;
 	case 'VlLs':
@@ -326,7 +326,7 @@ void PSDReader::ReadPSDValue(PSDValue* value)
 			mFS->Seek(aSize);
 		}
 		break;
-	}		
+	}
 }
 
 void PSDReader::ReadPSDDescriptor(PSDDescriptor* descriptor)
@@ -346,12 +346,12 @@ void PSDReader::ReadPSDDescriptor(PSDDescriptor* descriptor)
 	if (classIdStr.length() == 0)
 		classIdType = mFS->ReadInt32();
 
-	String aString;							
-	int numItems = mFS->ReadInt32();							
+	String aString;
+	int numItems = mFS->ReadInt32();
 
 	for (int itemIdx = 0; itemIdx < numItems; itemIdx++)
 	{
-		String keyStr = ReadIdString();				
+		String keyStr = ReadIdString();
 		PSDValue* aValue = NULL;
 		{
 			//AutoPerf gPerf("PSDReader::ReadPSDDescriptor - insert");
@@ -378,18 +378,18 @@ bool PSDReader::ReadEffectGradient(PSDDescriptor* descriptor, ImageGradient* col
 		int gridF = gradDesc->Get("GrdF")->GetMulticharInt(); // CstS
 		double intr = gradDesc->Get("Intr")->mDouble;
 		int trns = gradDesc->Get("Trns")->mInteger;
-									
+
 		PSDValue* colors = gradDesc->Get("Clrs");
 		for (int colorIdx = 0; colorIdx < colors->mInteger; colorIdx++)
 		{
 			PSDDescriptor* colorDataDesc = colors->mList[colorIdx].mDescriptor;
-																				
+
 			PSDDescriptor* aColorDesc = colorDataDesc->GetDescriptor("Clr ");
 			int vals[3];
 			vals[0] = (int) aColorDesc->Get("Rd  ")->mDouble;
 			vals[1] = (int) aColorDesc->Get("Grn ")->mDouble;
 			vals[2] = (int) aColorDesc->Get("Bl  ")->mDouble;
-										
+
 			int loc = colorDataDesc->Get("Lctn")->mInteger;
 			int mdPn = colorDataDesc->Get("Mdpn")->mInteger;
 			int aType = colorDataDesc->Get("Type")->GetMulticharInt();
@@ -411,7 +411,7 @@ bool PSDReader::ReadEffectGradient(PSDDescriptor* descriptor, ImageGradient* col
 			colorGradient[i].mXSize = 4096;
 			colorGradient[i].mSmoothness = (float) intr / 4096.0f;
 		}
-									
+
 		PSDValue* transDesc = gradDesc->Get("Trns");
 		for (int transIdx = 0; transIdx < transDesc->mInteger; transIdx++)
 		{
@@ -425,18 +425,18 @@ bool PSDReader::ReadEffectGradient(PSDDescriptor* descriptor, ImageGradient* col
 			pt.mX = (float) loc;
 			pt.mValue = (int) (opacity * 255 / 100.0f + 0.5f);
 			colorGradient[3].mPoints.push_back(pt);
-		}									
+		}
 
 		return true;
 	}
 	else
-	{									
+	{
 		PSDDescriptor* aColorDesc = descriptor->GetDescriptor("Clr ");
 		int vals[4];
 		vals[0] = (int) aColorDesc->Get("Rd  ")->mDouble;
 		vals[1] = (int) aColorDesc->Get("Grn ")->mDouble;
 		vals[2] = (int) aColorDesc->Get("Bl  ")->mDouble;
-		vals[3] = 255;									
+		vals[3] = 255;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -508,14 +508,14 @@ int32 PSDReader::ReadBlendMode(PSDValue* value)
 			return 'divi';
 		BF_ASSERT("Unknown blend mode" == 0);
 	}
-	
+
 	return value->GetMulticharInt();
 }
 
 void PSDReader::ReadExtraInfo(int endPos)
-{	
+{
 	while (mFS->GetPos() < endPos)
-	{	
+	{
 		int addlSignature = mFS->ReadInt32();
 		BF_ASSERT(addlSignature == '8BIM');
 		int addlType = mFS->ReadInt32();
@@ -525,8 +525,8 @@ void PSDReader::ReadExtraInfo(int endPos)
 
 		if (addlSize == 0)
 			continue;
-			
-		if ((addlType == 'Patt') || (addlType == 'Pat2') || (addlType == 'Pat3'))		
+
+		if ((addlType == 'Patt') || (addlType == 'Pat2') || (addlType == 'Pat3'))
 		{
 			while (true)
 			{
@@ -536,7 +536,7 @@ void PSDReader::ReadExtraInfo(int endPos)
 
 				int aLength = mFS->ReadInt32();
 				int patternStartPos = mFS->GetPos();
-				
+
 				int version = mFS->ReadInt32();
 				BF_ASSERT(version == 1);
 				int aMode = mFS->ReadInt32();
@@ -558,7 +558,7 @@ void PSDReader::ReadExtraInfo(int endPos)
 				int maxChannels = mFS->ReadInt32();
 
 				int aSize = horz*vert;
-				pattern->mBits = new uint32[aSize];					
+				pattern->mBits = new uint32[aSize];
 				pattern->mIntensityBits = new uint8[aSize];
 				pattern->mWidth = horz;
 				pattern->mHeight = vert;
@@ -583,14 +583,14 @@ void PSDReader::ReadExtraInfo(int endPos)
 						int channelLen = mFS->ReadInt32();
 						int channelStart = mFS->GetPos();
 						int pixelDepth = mFS->ReadInt32();
-					
+
 						int compression = mFS->ReadInt32();
 						int val = mFS->ReadInt32();
 						int width = mFS->ReadInt32();
-						int height = mFS->ReadInt32();					
+						int height = mFS->ReadInt32();
 						int bits = mFS->ReadInt16();
 						compression = mFS->ReadInt8();
-					
+
 						if (compression == 0)
 						{
 							for (int pos = 0; pos < aSize; pos++)
@@ -608,7 +608,7 @@ void PSDReader::ReadExtraInfo(int endPos)
 							{
 								int pos = aY * horz;
 								int readSize = rowLengths[aY];
-			
+
 								while (readSize > 0)
 								{
 									int chunkSize = mFS->ReadInt8();
@@ -619,10 +619,10 @@ void PSDReader::ReadExtraInfo(int endPos)
 										chunkSize++;
 										readSize -= chunkSize;
 										while (chunkSize > 0)
-										{						
-											pattern->mBits[pos++] |= ((uint32) (uint8) mFS->ReadInt8()) << shift;							
+										{
+											pattern->mBits[pos++] |= ((uint32) (uint8) mFS->ReadInt8()) << shift;
 											chunkSize--;
-										}						
+										}
 									}
 									else if (chunkSize > -128)
 									{
@@ -632,19 +632,19 @@ void PSDReader::ReadExtraInfo(int endPos)
 										readSize--;
 										while (chunkSize > 0)
 										{
-											pattern->mBits[pos++] |= aData;							
+											pattern->mBits[pos++] |= aData;
 											chunkSize--;
-										}						
+										}
 									}
 								}
 							}
 						}
 
 						mFS->SetPos(channelStart + channelLen);
-					}						
-				}			
+					}
+				}
 
-				pos = mFS->GetPos();		
+				pos = mFS->GetPos();
 
 				if (usedChannels == 1)
 				{
@@ -672,7 +672,7 @@ void PSDReader::ReadExtraInfo(int endPos)
 						pattern->mBits[i] |= 0xFF000000;
 						uint8 r = (uint8) ((pattern->mBits[i]) & 0xFF);
 						uint8 g = (uint8) ((pattern->mBits[i] >> 8) & 0xFF);
-						uint8 b = (uint8) ((pattern->mBits[i] >> 16) & 0xFF);				
+						uint8 b = (uint8) ((pattern->mBits[i] >> 16) & 0xFF);
 						pattern->mIntensityBits[i] = (int) ((r * 0.299f) + (g * 0.587f) + (b * 0.114f) + 0.5f);
 					}
 				}
@@ -690,7 +690,7 @@ void PSDReader::ReadExtraInfo(int endPos)
 
 				delete rowLengths;
 
-				mPSDPatternMap[id] = pattern;			
+				mPSDPatternMap[id] = pattern;
 
 				int newPos = patternStartPos + ((aLength + 3) & ~3);
 				mFS->SetPos(newPos);
@@ -702,8 +702,8 @@ void PSDReader::ReadExtraInfo(int endPos)
 				//int padding = mFS->ReadInt8();
 			}
 		}
-		
-		addlSize = (addlSize + 3) & ~3;		
+
+		addlSize = (addlSize + 3) & ~3;
 		mFS->SetPos(addlStart + addlSize);
 	}
 }
@@ -714,7 +714,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 
 	if (desc->Get("masterFXSwitch")->mInteger == 0)
 		return;
-				
+
 	// Drop shadow
 	PSDDescriptor* effectDesc = desc->GetDescriptor("DrSh");
 	if (effectDesc->Get("enab")->mInteger != 0)
@@ -723,7 +723,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		effect->mBlendMode = ReadBlendMode(effectDesc->Get("Md  "));
 		effect->mOpacity = effectDesc->Get("Opct")->mDouble;
 		ReadEffectColor(effectDesc->GetDescriptor("Clr "), &effect->mColor);
-						
+
 		effect->mLocalAngle = effectDesc->Get("lagl")->mDouble;
 		effect->mUseGlobalLight = effectDesc->Get("uglg")->mInteger != 0;
 		effect->mDistance = effectDesc->Get("Dstn")->mDouble;
@@ -733,12 +733,12 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		ReadEffectContour(effectDesc->GetDescriptor("TrnS"), &effect->mContour);
 		effect->mNoise = effectDesc->Get("Nose")->mDouble;
 
-		effect->mAntiAliased = effectDesc->Get("AntA")->mInteger != 0;		
+		effect->mAntiAliased = effectDesc->Get("AntA")->mInteger != 0;
 		effect->mLayerKnocksOut = effectDesc->Get("layerConceals")->mInteger != 0;
 
 		anImageEffects->AddEffect(effect);
 	}
-	
+
 	// Outer glow
 	effectDesc = desc->GetDescriptor("OrGl");
 	if (effectDesc->Get("enab")->mInteger != 0)
@@ -750,7 +750,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 
 		effect->mHasGradient = ReadEffectGradient(effectDesc, effect->mColorGradient);
 
-		effect->mTechnique = effectDesc->Get("GlwT")->GetMulticharInt();								
+		effect->mTechnique = effectDesc->Get("GlwT")->GetMulticharInt();
 		effect->mSpread = effectDesc->Get("Ckmt")->mDouble;
 		effect->mSize = effectDesc->Get("blur")->mDouble;
 
@@ -769,7 +769,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 	{
 		ImagePatternOverlayEffect* effect = new ImagePatternOverlayEffect();
 		effect->mBlendMode = ReadBlendMode(effectDesc->Get("Md  "));
-		effect->mOpacity = effectDesc->Get("Opct")->mDouble;		
+		effect->mOpacity = effectDesc->Get("Opct")->mDouble;
 		ReadPatternFill(effectDesc, &effect->mPattern);
 		anImageEffects->AddEffect(effect);
 	}
@@ -780,7 +780,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 	{
 		ImageGradientOverlayEffect* effect = new ImageGradientOverlayEffect();
 		effect->mBlendMode = ReadBlendMode(effectDesc->Get("Md  "));
-		effect->mOpacity = effectDesc->Get("Opct")->mDouble;		
+		effect->mOpacity = effectDesc->Get("Opct")->mDouble;
 		ReadGradientFill(effectDesc, &effect->mGradientFill);
 		anImageEffects->AddEffect(effect);
 	}
@@ -791,7 +791,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 	{
 		ImageColorOverlayEffect* effect = new ImageColorOverlayEffect();
 		effect->mBlendMode = ReadBlendMode(effectDesc->Get("Md  "));
-		effect->mOpacity = effectDesc->Get("Opct")->mDouble;		
+		effect->mOpacity = effectDesc->Get("Opct")->mDouble;
 		ReadEffectColor(effectDesc->GetDescriptor("Clr "), &effect->mColorFill.mColor);
 		anImageEffects->AddEffect(effect);
 	}
@@ -807,7 +807,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		effect->mAngle = effectDesc->Get("lagl")->mDouble;
 		effect->mDistance = effectDesc->Get("Dstn")->mDouble;
 		effect->mSize = effectDesc->Get("blur")->mDouble;
-		
+
 		ReadEffectColor(effectDesc->GetDescriptor("Clr "), &effect->mColor);
 		ReadEffectContour(effectDesc->GetDescriptor("MpgS"), &effect->mContour);
 		effect->mInvert = effectDesc->Get("Invr")->mInteger != 0;
@@ -819,7 +819,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 	// Inner glow
 	effectDesc = desc->GetDescriptor("IrGl");
 	if (effectDesc->Get("enab")->mInteger != 0)
-	{								
+	{
 		ImageInnerGlowEffect* effect = new ImageInnerGlowEffect();
 		effect->mBlendMode = ReadBlendMode(effectDesc->Get("Md  "));
 		effect->mOpacity = effectDesc->Get("Opct")->mDouble;
@@ -828,7 +828,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		effect->mHasGradient = ReadEffectGradient(effectDesc, effect->mColorGradient);
 
 		effect->mIsCenter = effectDesc->Get("glwS")->mString == "SrcC";
-		effect->mTechnique = effectDesc->Get("GlwT")->GetMulticharInt();								
+		effect->mTechnique = effectDesc->Get("GlwT")->GetMulticharInt();
 		effect->mChoke = effectDesc->Get("Ckmt")->mDouble;
 		effect->mSize = effectDesc->Get("blur")->mDouble;
 
@@ -849,7 +849,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		effect->mBlendMode = ReadBlendMode(effectDesc->Get("Md  "));
 		effect->mOpacity = effectDesc->Get("Opct")->mDouble;
 		ReadEffectColor(effectDesc->GetDescriptor("Clr "), &effect->mColor);
-						
+
 		effect->mLocalAngle = effectDesc->Get("lagl")->mDouble;
 		effect->mUseGlobalLight = effectDesc->Get("uglg")->mInteger != 0;
 		effect->mDistance = effectDesc->Get("Dstn")->mDouble;
@@ -859,7 +859,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		ReadEffectContour(effectDesc->GetDescriptor("TrnS"), &effect->mContour);
 		effect->mNoise = effectDesc->Get("Nose")->mDouble;
 
-		effect->mAntiAliased = effectDesc->Get("AntA")->mInteger != 0;				
+		effect->mAntiAliased = effectDesc->Get("AntA")->mInteger != 0;
 
 		anImageEffects->AddEffect(effect);
 	}
@@ -874,7 +874,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 
 		effect->mSize = effectDesc->Get("Sz  ")->mDouble;
 		effect->mPosition = effectDesc->Get("Styl")->GetMulticharInt();
-				
+
 		effect->mFillType = effectDesc->Get("PntT")->GetMulticharInt();
 		ReadEffectColor(effectDesc->GetDescriptor("Clr "), &effect->mColorFill.mColor);
 		ReadGradientFill(effectDesc, &effect->mGradientFill);
@@ -902,7 +902,7 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		effect->mUseGlobalLight = effectDesc->Get("uglg")->mInteger != 0;
 		effect->mLocalAltitude = effectDesc->Get("Lald")->mDouble;
 		ReadEffectContour(effectDesc->GetDescriptor("TrnS"), &effect->mGlossContour);
-		effect->mAntiAliased = effectDesc->Get("antialiasGloss")->mInteger != 0;	
+		effect->mAntiAliased = effectDesc->Get("antialiasGloss")->mInteger != 0;
 		effect->mHiliteMode = ReadBlendMode(effectDesc->Get("hglM"));
 		ReadEffectColor(effectDesc->GetDescriptor("hglC"), &effect->mHiliteColor);
 		effect->mHiliteOpacity = effectDesc->Get("hglO")->mDouble;
@@ -910,15 +910,15 @@ void PSDReader::ReadEffectSection(ImageEffects* imageEffects, PSDDescriptor* des
 		effect->mShadowMode = ReadBlendMode(effectDesc->Get("sdwM"));
 		ReadEffectColor(effectDesc->GetDescriptor("sdwC"), &effect->mShadowColor);
 		effect->mShadowOpacity = effectDesc->Get("sdwO")->mDouble;
-								
+
 		effect->mUseContour = effectDesc->Get("useShape")->mInteger != 0;
 		effect->mUseTexture = effectDesc->Get("useTexture")->mInteger != 0;
-								
+
 		ReadEffectContour(effectDesc->GetDescriptor("MpgS"), &effect->mBevelContour);
 		effect->mBevelContourRange = effectDesc->Get("Inpr")->mDouble;
 
-		effect->mTextureDepth = effectDesc->Get("textureDepth")->mDouble;		
-		ReadPatternFill(effectDesc, &effect->mTexture);		
+		effect->mTextureDepth = effectDesc->Get("textureDepth")->mDouble;
+		ReadPatternFill(effectDesc, &effect->mTexture);
 
 		effect->mTextureInvert = effectDesc->Get("InvT")->mInteger != 0;
 		anImageEffects->AddEffect(effect);
@@ -943,16 +943,16 @@ void PSDReader::ReadPatternFill(PSDDescriptor* descriptor, ImagePatternFill* pat
 	PSDDescriptor* phaseDesc = descriptor->GetDescriptor("phase");
 	patternFill->mPhaseX = phaseDesc->Get("Hrzn")->mDouble;
 	patternFill->mPhaseY = phaseDesc->Get("Vrtc")->mDouble;
-	patternFill->mLinkWithLayer = true;	
+	patternFill->mLinkWithLayer = true;
 	if (descriptor->Contains("Algn"))
-		patternFill->mLinkWithLayer = descriptor->Get("Algn")->mInteger != 0;		
+		patternFill->mLinkWithLayer = descriptor->Get("Algn")->mInteger != 0;
 	if (descriptor->Contains("Lnkd"))
-		patternFill->mLinkWithLayer = descriptor->Get("Lnkd")->mInteger != 0;		
+		patternFill->mLinkWithLayer = descriptor->Get("Lnkd")->mInteger != 0;
 	patternFill->mScale = descriptor->Get("Scl ")->mDouble;
 	if (patternFill->mScale == 0)
-		patternFill->mScale = 100.0;		
+		patternFill->mScale = 100.0;
 	PSDDescriptor* patternDesc = descriptor->GetDescriptor("Ptrn");
-	patternFill->mPatternName = patternDesc->Get("Idnt")->mString;	
+	patternFill->mPatternName = patternDesc->Get("Idnt")->mString;
 }
 
 bool PSDReader::Init(const StringImpl& fileName)
@@ -976,16 +976,16 @@ bool PSDReader::Init(const StringImpl& fileName)
 	//mFS->SetCacheSize(4096);
 
 	mFS->mBigEndian = true;
-	
+
 	int32 header = mFS->ReadInt32();
 	if (header != '8BPS')
 		return false;
-	
+
 	mVersion = mFS->ReadInt16();
 	mFS->Seek(6);
 	mChannels = mFS->ReadInt16();
 	mHeight = mFS->ReadInt32();
-	mWidth = mFS->ReadInt32();	
+	mWidth = mFS->ReadInt32();
 	mBitDepthPerChannel = mFS->ReadInt16();
 	mMode = mFS->ReadInt16();
 
@@ -996,19 +996,19 @@ bool PSDReader::Init(const StringImpl& fileName)
 	int imageResourcesLen = mFS->ReadInt32();
 	int resourceStartPos = mFS->GetPos();
 	if (imageResourcesLen > 0)
-	{		
+	{
 		while (mFS->GetPos() < resourceStartPos + imageResourcesLen)
 		{
 			int signature = mFS->ReadInt32();
 			BF_ASSERT(signature == '8BIM');
-			int aType = mFS->ReadInt16();			
+			int aType = mFS->ReadInt16();
 			std::string aName = mFS->ReadAscii8SizedString();
 			int extra = (int)(((aName.length() + 2) & ~1) - (aName.length() + 1));
 			mFS->Seek(extra);
 			int dataSize = mFS->ReadInt32();
 			//BF_ASSERT(dataSize < 100000);
 			int curPos = mFS->GetPos();
-			
+
 			if (aType == 0x40D)
 			{
 				mGlobalAngle = mFS->ReadInt32();
@@ -1023,11 +1023,11 @@ bool PSDReader::Init(const StringImpl& fileName)
 
 		mFS->SetPos(resourceStartPos + imageResourcesLen);
 	}
-	
+
 	int layerAndMaskLen = mFS->ReadInt32();
 	int startPos = mFS->GetPos();
 	if (layerAndMaskLen > 0)
-	{		
+	{
 		int layersLen = mFS->ReadInt32();
 		int layerStart = mFS->GetPos();
 		if (layersLen > 0)
@@ -1040,11 +1040,11 @@ bool PSDReader::Init(const StringImpl& fileName)
 				pSDLayerInfo->mPSDReader = this;
 
 				pSDLayerInfo->mY = mFS->ReadInt32();
-				pSDLayerInfo->mX = mFS->ReadInt32();				
+				pSDLayerInfo->mX = mFS->ReadInt32();
 				pSDLayerInfo->mHeight = mFS->ReadInt32() - pSDLayerInfo->mY;
-				pSDLayerInfo->mWidth = mFS->ReadInt32() - pSDLayerInfo->mX;				
+				pSDLayerInfo->mWidth = mFS->ReadInt32() - pSDLayerInfo->mX;
 
-				int channelCount = mFS->ReadInt16();				
+				int channelCount = mFS->ReadInt16();
 				for (int channelIdx = 0; channelIdx < channelCount; channelIdx++)
 				{
 					PSDChannelInfo pSDChannelInfo;
@@ -1058,23 +1058,23 @@ bool PSDReader::Init(const StringImpl& fileName)
 				pSDLayerInfo->mIsAdditive = (blendMode == 'lddg');
 				pSDLayerInfo->mBlendMode = blendMode;
 				pSDLayerInfo->mOpacity = mFS->ReadInt8();
-				pSDLayerInfo->mBaseClipping = mFS->ReadInt8() == 0;				
+				pSDLayerInfo->mBaseClipping = mFS->ReadInt8() == 0;
 				int flags = mFS->ReadInt8();
 				int filler = mFS->ReadInt8();
 
 				pSDLayerInfo->mVisible = (flags & (1<<1)) == 0;
-				
+
 				int extraDataLen = mFS->ReadInt32();
 				int extraDataStart = mFS->GetPos();
-				
+
 				int layerMaskDataLen = mFS->ReadInt32();
 				int layerMaskStart = mFS->GetPos();
 				if (layerMaskDataLen != 0)
 				{
 					pSDLayerInfo->mLayerMaskY = mFS->ReadInt32();
-					pSDLayerInfo->mLayerMaskX = mFS->ReadInt32();					
+					pSDLayerInfo->mLayerMaskX = mFS->ReadInt32();
 					pSDLayerInfo->mLayerMaskHeight = mFS->ReadInt32() - pSDLayerInfo->mLayerMaskY;
-					pSDLayerInfo->mLayerMaskWidth = mFS->ReadInt32() - pSDLayerInfo->mLayerMaskX;					
+					pSDLayerInfo->mLayerMaskWidth = mFS->ReadInt32() - pSDLayerInfo->mLayerMaskX;
 
 					uint8 aColor = (uint8) mFS->ReadInt8();
 					int flags = (uint8) mFS->ReadInt8();
@@ -1085,7 +1085,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 
 					mFS->SetPos(layerMaskStart + layerMaskDataLen);
 				}
-				
+
 				int layerBlendingRangesLen = mFS->ReadInt32();
 				int layerBlendingRangesStart = mFS->GetPos();
 				if (layerBlendingRangesLen > 0)
@@ -1100,7 +1100,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 						pSDLayerInfo->mBlendingRangeSourceStart = (pSDLayerInfo->mBlendingRangeSourceStart & ~(0xFF<<shift)) | ((source>>16 & 0xFF)<<shift);
 						pSDLayerInfo->mBlendingRangeSourceEnd = (pSDLayerInfo->mBlendingRangeSourceEnd & ~(0xFF<<shift)) | ((source & 0xFF)<<shift);
 						pSDLayerInfo->mBlendingRangeDestStart = (pSDLayerInfo->mBlendingRangeDestStart & ~(0xFF<<shift)) | ((dest>>16 & 0xFF)<<shift);
-						pSDLayerInfo->mBlendingRangeDestEnd = (pSDLayerInfo->mBlendingRangeDestEnd & ~(0xFF<<shift)) | ((dest & 0xFF)<<shift);						
+						pSDLayerInfo->mBlendingRangeDestEnd = (pSDLayerInfo->mBlendingRangeDestEnd & ~(0xFF<<shift)) | ((dest & 0xFF)<<shift);
 						idx++;
 					}
 
@@ -1114,7 +1114,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 
 				AutoPerf gPerf("PSDReader::Init - Extras");
 				while (mFS->GetPos() < extraDataStart + extraDataLen)
-				{										
+				{
 					int addlSignature = mFS->ReadInt32();
 					BF_ASSERT(addlSignature == '8BIM');
 					int addlType = mFS->ReadInt32();
@@ -1134,7 +1134,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 							delete aDesc;
 						}
 						else if (addlType == 'lyid')
-						{							
+						{
 							pSDLayerInfo->mLayerId = mFS->ReadInt32();
 						}
 						else if (addlType == 'lrFX')
@@ -1152,10 +1152,10 @@ bool PSDReader::Init(const StringImpl& fileName)
 							double tx = mFS->ReadDouble();
 							double ty = mFS->ReadDouble();
 							int textVersion = mFS->ReadInt16();
-							
+
 							int descriptorVersion = mFS->ReadInt32();
 							PSDDescriptor* aDescriptor = new PSDDescriptor();
-							ReadPSDDescriptor(aDescriptor);							
+							ReadPSDDescriptor(aDescriptor);
 							delete aDescriptor;
 						}
 						else if (addlType == 'luni')
@@ -1165,7 +1165,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 						else if (addlType == 'lnsr')
 						{
 							NOP;
-						}						
+						}
 						else if (addlType == 'clbl')
 						{
 							pSDLayerInfo->mBlendClippedElementsAsGroup = mFS->ReadInt8() != 0;
@@ -1173,19 +1173,19 @@ bool PSDReader::Init(const StringImpl& fileName)
 						else if (addlType == 'infx')
 						{
 							pSDLayerInfo->mBlendInteriorEffectsAsGroup = mFS->ReadInt8() != 0;
-						}	
+						}
 						else if (addlType == 'knko')
 						{
 							pSDLayerInfo->mKnockout = mFS->ReadInt8();
-						}	
+						}
 						else if (addlType == 'lspf')
 						{
 							NOP;
-						}	
+						}
 						else if (addlType == 'tsly')
 						{
 							pSDLayerInfo->mTransparencyShapesLayer = mFS->ReadInt8() != 0;
-						}	
+						}
 						else if (addlType == 'lmgm')
 						{
 							pSDLayerInfo->mLayerMaskHidesEffects = mFS->ReadInt8() != 0;
@@ -1197,15 +1197,15 @@ bool PSDReader::Init(const StringImpl& fileName)
 						else if (addlType == 'lyvr')
 						{
 							NOP;
-						}	
+						}
 						else if (addlType == 'lclr')
 						{
 							NOP;
-						}	
+						}
 						else if (addlType == 'shmd') // Metadata
 						{
 							NOP;
-						}	
+						}
 						else if (addlType == 'fxrp')
 						{
 							pSDLayerInfo->mRefX = mFS->ReadDouble();
@@ -1256,7 +1256,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 							GradientImageAdjustement* adjustment = new GradientImageAdjustement();
 							adjustment->mFill = new ImageGradientFill();
 							adjustment->mFill->mAlignWithLayer = true;
-							ReadGradientFill(&aDescriptor, adjustment->mFill);							
+							ReadGradientFill(&aDescriptor, adjustment->mFill);
 							pSDLayerInfo->mImageAdjustment = adjustment;
 						}
 						else if (addlType == 'PtFl')
@@ -1266,12 +1266,12 @@ bool PSDReader::Init(const StringImpl& fileName)
 							ReadPSDDescriptor(&aDescriptor);
 
 							PatternImageAdjustement* adjustment = new PatternImageAdjustement();
-							adjustment->mFill = new ImagePatternFill();							
-							ReadPatternFill(&aDescriptor, adjustment->mFill);							
+							adjustment->mFill = new ImagePatternFill();
+							ReadPatternFill(&aDescriptor, adjustment->mFill);
 							pSDLayerInfo->mImageAdjustment = adjustment;
 						}
 						else if (addlType == 'brit')
-						{							
+						{
 							BrightnessContrastImageAdjustment* adjustment = new BrightnessContrastImageAdjustment();
 							adjustment->mBrightness = mFS->ReadInt16();
 							adjustment->mContrast = mFS->ReadInt16();
@@ -1280,11 +1280,11 @@ bool PSDReader::Init(const StringImpl& fileName)
 							pSDLayerInfo->mImageAdjustment = adjustment;
 						}
 						else if (addlType == 'CgEd')
-						{							
+						{
 							int version = mFS->ReadInt32();
 							PSDDescriptor aDescriptor;
 							ReadPSDDescriptor(&aDescriptor);
-							
+
 							BrightnessContrastImageAdjustment* brightnessAdjustment = dynamic_cast<BrightnessContrastImageAdjustment*>(pSDLayerInfo->mImageAdjustment);
 							if (brightnessAdjustment != NULL)
 							{
@@ -1317,7 +1317,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 									mFS->Seek(24);
 								}
 								else if ((aType == 1) || (aType == 2))
-								{	
+								{
 									PSDPathPoint point;
 
 									point.mCtlEnterX = (mFS->ReadInt32() / (double) 0x1000000) * mWidth;
@@ -1328,14 +1328,14 @@ bool PSDReader::Init(const StringImpl& fileName)
 
 									point.mCtlLeaveX = (mFS->ReadInt32() / (double) 0x1000000) * mWidth;
 									point.mCtlLeaveY = (mFS->ReadInt32() / (double) 0x1000000) * mHeight;
-									
+
 									pSDLayerInfo->mVectorMask->mPoints.push_back(point);
 									NOP;
 								}
 								else
 								{
 									mFS->Seek(24);
-								}								
+								}
 							}
 						}
 						else
@@ -1348,11 +1348,11 @@ bool PSDReader::Init(const StringImpl& fileName)
 				}
 
 				int pos = mFS->GetPos();
-				mFS->SetPos(extraDataStart + extraDataLen);				
-				
+				mFS->SetPos(extraDataStart + extraDataLen);
+
 				mPSDLayerInfoVector.insert(mPSDLayerInfoVector.begin(), pSDLayerInfo);
 			}
-			
+
 			int filePos = mFS->GetPos();
 			int channelsStart = filePos;
 			int channelsLen = 0;
@@ -1365,7 +1365,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 				for (int channelIdx = 0; channelIdx < (int) pSDLayerInfo->mChannels.size(); channelIdx++)
 				{
 					PSDChannelInfo* channel = &pSDLayerInfo->mChannels[channelIdx];
-					filePos += channel->mLength;										
+					filePos += channel->mLength;
 					channelsLen += channel->mLength;
 				}
 			}
@@ -1376,7 +1376,7 @@ bool PSDReader::Init(const StringImpl& fileName)
 				PSDLayerInfo* aLayer = mPSDLayerInfoVector[idx];
 				aLayer->mParent = parent;
 				aLayer->mIdx = idx;
-				if ((aLayer->mSectionDividerType == PSDDIVIDER_OPEN_FOLDER) || (aLayer->mSectionDividerType == PSDDIVIDER_CLOSED_FOLDER))				
+				if ((aLayer->mSectionDividerType == PSDDIVIDER_OPEN_FOLDER) || (aLayer->mSectionDividerType == PSDDIVIDER_CLOSED_FOLDER))
 					parent = aLayer;
 				else if (aLayer->mSectionDividerType == PSDDIVIDER_SECTION_END)
 				{
@@ -1385,12 +1385,12 @@ bool PSDReader::Init(const StringImpl& fileName)
 					delete aLayer;
 					mPSDLayerInfoVector.erase(mPSDLayerInfoVector.begin() + idx);
 					idx--;
-				}				
+				}
 			}
-			
-			mFS->SetPos(layerStart + layersLen);			
+
+			mFS->SetPos(layerStart + layersLen);
 			int posThing = mFS->GetPos();
-			int extraVersion = mFS->ReadInt32();			
+			int extraVersion = mFS->ReadInt32();
 			mFS->Seek(extraVersion);
 			ReadExtraInfo(startPos + layerAndMaskLen);
 		}
@@ -1399,8 +1399,8 @@ bool PSDReader::Init(const StringImpl& fileName)
 	mFS->SetPos(startPos + layerAndMaskLen);
 	pos = mFS->GetPos();
 
-	mImageDataSectStart = mFS->GetPos();	
-	
+	mImageDataSectStart = mFS->GetPos();
+
 	return true;
 }
 
@@ -1410,7 +1410,7 @@ ImageData* PSDReader::ReadImageData()
 
 	int compression = mFS->ReadInt16();
 	if ((compression != 0) && (compression != 1))
-		return NULL;	
+		return NULL;
 
 	ImageData* imageData = new ImageData();
 	imageData->CreateNew(mWidth, mHeight);
@@ -1424,7 +1424,7 @@ ImageData* PSDReader::ReadImageData()
 
 	if (compression == 1)
 	{
-		rowLengths = new int16*[mChannels];		
+		rowLengths = new int16*[mChannels];
 		for (int channel = 0; channel < mChannels; channel++)
 		{
 			rowLengths[channel] = new int16[vert];
@@ -1448,7 +1448,7 @@ ImageData* PSDReader::ReadImageData()
 				imageData->mBits[pos] |= ((uint32)(uint8)mFS->ReadInt8()) << shift;
 		}
 		else
-		{						
+		{
 			for (int aY = 0; aY < vert; aY++)
 			{
 				int pos = aY * horz;
@@ -1509,29 +1509,29 @@ ImageData* PSDReader::ReadImageData()
 Texture* PSDReader::LoadLayerTexture(int layerIdx, int* ofsX, int* ofsY) // -1 = composited image
 {
 	if ((layerIdx < 0) || (layerIdx >= (int) mPSDLayerInfoVector.size()))
-		return NULL;	
+		return NULL;
 
 	//TODO: This is a special case for flattening here, just on the first layer...
-	PSDLayerInfo* prevLayer = (layerIdx == 1) ? mPSDLayerInfoVector[layerIdx - 1] : NULL;	
+	PSDLayerInfo* prevLayer = (layerIdx == 1) ? mPSDLayerInfoVector[layerIdx - 1] : NULL;
 	if (prevLayer != NULL)
 	{
 		if (prevLayer->mBits == NULL)
 			prevLayer->ReadData();
 	}
 
-	PSDLayerInfo* aLayer = mPSDLayerInfoVector[layerIdx];	
+	PSDLayerInfo* aLayer = mPSDLayerInfoVector[layerIdx];
 	if (aLayer->mBits == NULL)
 		aLayer->ReadData();
-	
+
 	ImageData* anImageData = aLayer;
-	
+
 	anImageData = aLayer->mImageEffects->FlattenInto(prevLayer, aLayer, aLayer, NULL, NULL);
 
 	Texture* texture = gBFApp->mRenderDevice->LoadTexture(anImageData, false);
 	*ofsX = anImageData->mX;
 	*ofsY = anImageData->mY;
 	if (anImageData != aLayer)
-		delete anImageData;	
+		delete anImageData;
 	return texture;
 }
 
@@ -1545,13 +1545,13 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 
 	bool isImageAllocated = false;
 	ImageData* combinedImage = bottomImage;
-	
+
 	ImageData* prevBottom = NULL;
 	bool doPostGroupBlend = false;
 	bool needsPrevBottom = (group != NULL) && (group->mOpacity != 255);
 
 	for (int indexIdx = 0; indexIdx < (int) layerIndices.size(); indexIdx++)
-	{		
+	{
 		PSDLayerInfo* layerInfo = mPSDLayerInfoVector[layerIndices[indexIdx]];
 		if (layerInfo->mBits == NULL)
 			layerInfo->ReadData();
@@ -1562,9 +1562,9 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 	if ((group != NULL) && (bottomImage != NULL) && (group->mSectionBlendMode != 'pass'))
 	{
 		doPostGroupBlend = true;
-		combinedImage = NULL;	
-	}	
-	
+		combinedImage = NULL;
+	}
+
 	if (needsPrevBottom && (bottomImage != NULL))
 		prevBottom = bottomImage->Duplicate();
 
@@ -1573,32 +1573,32 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 	ImageData* clipBaseImage = NULL;
 
 	for (int indexIdx = 0; indexIdx <= (int) layerIndices.size(); indexIdx++)
-	{		
+	{
 		PSDLayerInfo* layerInfo = NULL;
-		
+
 		if (indexIdx < (int) layerIndices.size())
 			layerInfo = mPSDLayerInfoVector[layerIndices[indexIdx]];
 
 		PSDLayerInfo* pendingFlushLayer = NULL;
-		ImageData* pendingFlushImage = NULL;		
+		ImageData* pendingFlushImage = NULL;
 
 		if ((layerInfo != NULL) && (!layerInfo->mBaseClipping))
 		{
 			if (clipBaseLayer != NULL)
 			{
 				if (clipBaseLayer->mBlendClippedElementsAsGroup)
-				{					
+				{
 					ImageData* newImage = layerInfo->mImageEffects->FlattenInto(clipBaseImage, layerInfo, layerInfo, prevBottom, NULL);
-					SetImageAlpha(newImage, 255);					
+					SetImageAlpha(newImage, 255);
 
 					if (hasAllocatedClipBase)
 						delete clipBaseImage;
-					
+
 					hasAllocatedClipBase = true;
 					clipBaseImage = newImage;
 				}
 				else
-				{					
+				{
 					if (clipBaseImage == clipBaseLayer)
 					{
 						/*clipBaseImage = clipBaseImage->Duplicate();
@@ -1609,7 +1609,7 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 						//hasAllocatedClipBase = true;
 
 						//combinedImage = combinedImage->Duplicate();
-						
+
 						ImageData* newImage = NULL;
 						if (clipBaseLayer->mKnockout == 0) // No Knockout
 						{
@@ -1620,8 +1620,8 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 							newImage = CreateResizedImageUnion(prevBottom, clipBaseLayer->mX, clipBaseLayer->mY, clipBaseLayer->mWidth, clipBaseLayer->mHeight);
 						}
 						else // Deep Knockout
-						{							
-							newImage = CreateEmptyResizedImageUnion(combinedImage, clipBaseLayer->mX, clipBaseLayer->mY, clipBaseLayer->mWidth, clipBaseLayer->mHeight);							
+						{
+							newImage = CreateEmptyResizedImageUnion(combinedImage, clipBaseLayer->mX, clipBaseLayer->mY, clipBaseLayer->mWidth, clipBaseLayer->mHeight);
 						}
 
 						if (combinedImage != NULL)
@@ -1633,15 +1633,15 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 						hasAllocatedClipBase = true;
 						clipBaseImage = newImage;
 					}
-					
+
 					//ImageData* tempImage = layerInfo->Duplicate();
-					//SetImageAlpha(tempImage, 255);											
+					//SetImageAlpha(tempImage, 255);
 					//ImageData* newImage = layerInfo->mImageEffects->FlattenInto(clipBaseImage, layerInfo, tempImage, prevBottom);
 					ImageData* newImage = layerInfo->mImageEffects->FlattenInto(clipBaseImage, layerInfo, layerInfo, prevBottom, NULL);
-					
+
 					if (hasAllocatedClipBase)
 						delete clipBaseImage;
-					
+
 					hasAllocatedClipBase = true;
 					clipBaseImage = newImage;
 				}
@@ -1651,15 +1651,15 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 		{
 			pendingFlushImage = clipBaseImage;
 			pendingFlushLayer = clipBaseLayer;
-			
+
 			clipBaseImage = layerInfo;
 			clipBaseLayer = layerInfo;
 		}
-			
+
 		if (pendingFlushImage != NULL)
 		{
-			ImageData* newImage = NULL;			
-			
+			ImageData* newImage = NULL;
+
 			if ((pendingFlushLayer != pendingFlushImage) && (!pendingFlushLayer->mBlendClippedElementsAsGroup))
 			{
 				/*hasAllocatedClipBase = false;
@@ -1672,7 +1672,7 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 				if ((pendingFlushImage != pendingFlushLayer) && (pendingFlushLayer->mBlendClippedElementsAsGroup))
 					SetImageAlpha(pendingFlushImage, pendingFlushLayer);
 				newImage = pendingFlushLayer->mImageEffects->FlattenInto(combinedImage, pendingFlushLayer, pendingFlushImage, prevBottom, NULL);
-			}			
+			}
 
 			if (isImageAllocated)
 				delete combinedImage;
@@ -1692,12 +1692,12 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 			for (; indexIdx < (int) layerIndices.size(); indexIdx++)
 			{
 				layerInfo = mPSDLayerInfoVector[layerIndices[indexIdx]];
-				if (layerInfo->mParent == group)				
+				if (layerInfo->mParent == group)
 					break;
 
 				aChildren.push_back(layerInfo->mIdx);
 			}
-				
+
 			ImageData* newImage = MergeLayers(layerInfo, aChildren, combinedImage);
 
 			if (isImageAllocated)
@@ -1718,8 +1718,8 @@ ImageData* PSDReader::MergeLayers(PSDLayerInfo* group, const std::vector<int>& l
 		delete clipBaseImage;
 
 	if (doPostGroupBlend)
-	{			
-		ImageData* blendInto = CreateResizedImageUnion(bottomImage, combinedImage->mX, combinedImage->mY, combinedImage->mWidth, combinedImage->mHeight);				
+	{
+		ImageData* blendInto = CreateResizedImageUnion(bottomImage, combinedImage->mX, combinedImage->mY, combinedImage->mWidth, combinedImage->mHeight);
 
 		BlendImage(blendInto, combinedImage, combinedImage->mX - blendInto->mX, combinedImage->mY - blendInto->mY,
 			1.0f, group->mSectionBlendMode);
@@ -1747,7 +1747,7 @@ Texture* PSDReader::LoadMergedLayerTexture(const std::vector<int>& layerIndices,
 	LayerInfoMap groupMap;
 
 	if (layerIndices.size() == 0)
-		return NULL;	
+		return NULL;
 
 	IntSet layerSet;
 
@@ -1755,14 +1755,14 @@ Texture* PSDReader::LoadMergedLayerTexture(const std::vector<int>& layerIndices,
 	for (int indexIdx = 0; indexIdx < (int) layerIndices.size(); indexIdx++)
 	{
 		PSDLayerInfo* layerInfo = mPSDLayerInfoVector[layerIndices[indexIdx]];
-		layerSet.insert(layerInfo->mIdx);		
+		layerSet.insert(layerInfo->mIdx);
 	}
-	
-	
+
+
 	for (int indexIdx = 0; indexIdx < (int) layerIndices.size(); indexIdx++)
 	{
 		PSDLayerInfo* layerInfo = mPSDLayerInfoVector[layerIndices[indexIdx]];
-		
+
 		PSDLayerInfo* parentCheck = layerInfo->mParent;
 		bool includeLayer = true;
 
@@ -1788,7 +1788,7 @@ Texture* PSDReader::LoadMergedLayerTexture(const std::vector<int>& layerIndices,
 		}
 
 		if (!includeLayer)
-			layerSet.erase(layerSet.find(layerInfo->mIdx));				
+			layerSet.erase(layerSet.find(layerInfo->mIdx));
 	}
 
 	std::vector<int> aLayerIndices;
@@ -1802,14 +1802,14 @@ Texture* PSDReader::LoadMergedLayerTexture(const std::vector<int>& layerIndices,
 		aLayerIndices.push_back(*revItr);
 		revItr++;
 	}
-	
+
 	ImageData* combinedImage = MergeLayers(NULL, aLayerIndices, NULL);
 
 	Texture* texture = gBFApp->mRenderDevice->LoadTexture(combinedImage, false);
 	*ofsX = combinedImage->mX;
-	*ofsY = combinedImage->mY;	
+	*ofsY = combinedImage->mY;
 	if (dynamic_cast<PSDLayerInfo*>(combinedImage) == NULL)
-		delete combinedImage;	
+		delete combinedImage;
 	return texture;
 }
 
@@ -1819,7 +1819,7 @@ PSDLayerInfo::PSDLayerInfo()
 {
 	mLayerId = 0;
 	mSectionDividerType = 0;
-	mSectionBlendMode = 0;	
+	mSectionBlendMode = 0;
 	mPSDDescriptor = NULL;
 	mRefX = 0;
 	mRefY = 0;
@@ -1838,7 +1838,7 @@ PSDLayerInfo::PSDLayerInfo()
 	mBlendClippedElementsAsGroup = true;
 	mTransparencyShapesLayer = true;
 	mLayerMaskHidesEffects = false;
-	mVectorMaskHidesEffects = false;		
+	mVectorMaskHidesEffects = false;
 	mBlendingRangeSourceStart = 0;
 	mBlendingRangeSourceEnd = 0xFFFFFFFF;
 	mBlendingRangeDestStart = 0;
@@ -1878,9 +1878,9 @@ bool PSDLayerInfo::ReadData()
 			mBits[i] = 0x00000000;
 	}
 
-		
+
 	short* rowLengths = new short[std::max(mLayerMaskHeight, mHeight)];
-		
+
 	for (int channelIdx = 0; channelIdx < (int) mChannels.size(); channelIdx++)
 	{
 		PSDChannelInfo* channel = &mChannels[channelIdx];
@@ -1896,7 +1896,7 @@ bool PSDLayerInfo::ReadData()
 					mLayerMask[pos] = fS->ReadInt8();
 			}
 			else
-			{				
+			{
 				for (int aY = 0; aY < mLayerMaskHeight; aY++)
 					rowLengths[aY] = fS->ReadInt16();
 
@@ -1904,7 +1904,7 @@ bool PSDLayerInfo::ReadData()
 				{
 					int pos = aY * mLayerMaskWidth;
 					int readSize = rowLengths[aY];
-			
+
 					while (readSize > 0)
 					{
 						int chunkSize = fS->ReadInt8();
@@ -1915,10 +1915,10 @@ bool PSDLayerInfo::ReadData()
 							chunkSize++;
 							readSize -= chunkSize;
 							while (chunkSize > 0)
-							{						
+							{
 								mLayerMask[pos++] = fS->ReadInt8();
 								chunkSize--;
-							}						
+							}
 						}
 						else if (chunkSize > -128)
 						{
@@ -1928,9 +1928,9 @@ bool PSDLayerInfo::ReadData()
 							readSize--;
 							while (chunkSize > 0)
 							{
-								mLayerMask[pos++] = aData;							
+								mLayerMask[pos++] = aData;
 								chunkSize--;
-							}						
+							}
 						}
 					}
 				}
@@ -1953,23 +1953,23 @@ bool PSDLayerInfo::ReadData()
 					mBits[pos] |= ((uint32) (uint8) fS->ReadInt8()) << shift;
 			}
 			else
-			{				
+			{
 				int maxSize = 0;
 				for (int aY = 0; aY < mHeight; aY++)
 				{
 					rowLengths[aY] = fS->ReadInt16();
 					maxSize = std::max(maxSize, (int) rowLengths[aY]);
-				}				
+				}
 				uint8* rowData = new uint8[maxSize];
 
 				for (int aY = 0; aY < mHeight; aY++)
-				{					
+				{
 					int pos = aY * mWidth;
 					int readSize = rowLengths[aY];
-					int readPos = 0;			
+					int readPos = 0;
 
 					int fileOfs = fS->GetPos();
-					fS->Read(rowData, readSize);					
+					fS->Read(rowData, readSize);
 
 					/*auto FixAlpha = [&]()
 					{
@@ -1984,36 +1984,36 @@ bool PSDLayerInfo::ReadData()
 
 					while (readPos < readSize)
 					{
-						int chunkSize = (int8) rowData[readPos++];						
+						int chunkSize = (int8) rowData[readPos++];
 						if (chunkSize >= 0)
 						{
 							// String of literal data
-							chunkSize++;							
+							chunkSize++;
 							while (chunkSize > 0)
-							{						
+							{
 								//FixAlpha();
-								mBits[pos++] |= ((uint32) rowData[readPos++]) << shift;							
+								mBits[pos++] |= ((uint32) rowData[readPos++]) << shift;
 								chunkSize--;
-							}						
+							}
 						}
 						else if (chunkSize > -128)
 						{
 							// One byte repeated
 							chunkSize = 1 - chunkSize;
 							//FixAlpha();
-							uint32 aData = ((uint32) rowData[readPos++]) << shift;							
+							uint32 aData = ((uint32) rowData[readPos++]) << shift;
 							while (chunkSize > 0)
 							{
 								mBits[pos++] |= aData;
 								chunkSize--;
-							}						
+							}
 						}
 					}
 				}
 
 				delete [] rowData;
 			}
-		}				
+		}
 	}
 
 	delete [] rowLengths;
@@ -2030,10 +2030,10 @@ bool PSDLayerInfo::ReadData()
 		int r = (aColor & 0x00FF0000) >> 16;
 		int g = (aColor & 0x0000FF00) >> 8 ;
 		int b = (aColor & 0x000000FF)      ;
-			
+
 		*(ptr++) = (a << 24) | (b << 16) | (g << 8) | r;
 	}
-	
+
 	return true;
 }
 
@@ -2047,14 +2047,14 @@ void PSDLayerInfo::ApplyVectorMask(ImageData* imageData)
     g_alpha_mask_rbuf.attach(aBuffer, mWidth, mHeight, mWidth);
 
 	typedef agg::pixfmt_gray8 pixfmt;
-	typedef agg::renderer_base<pixfmt> renderer_base;	
+	typedef agg::renderer_base<pixfmt> renderer_base;
 	typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_scanline;
 	typedef agg::scanline_u8 scanline;
-	
+
 	agg::rasterizer_scanline_aa<> g_rasterizer;
 
-	pixfmt pixf(g_alpha_mask_rbuf);	
-	
+	pixfmt pixf(g_alpha_mask_rbuf);
+
 	agg::path_storage m_path;
 	agg::gamma_lut<> m_gamma;
 
@@ -2069,9 +2069,9 @@ void PSDLayerInfo::ApplyVectorMask(ImageData* imageData)
     int i;
     for(i = 0; i < 10; i++)
     {
-        ell.init(rand() % mWidth, 
-                    rand() % mHeight, 
-                    rand() % 100 + 20, 
+        ell.init(rand() % mWidth,
+                    rand() % mHeight,
+                    rand() % 100 + 20,
                     rand() % 100 + 20,
                     100);
 
@@ -2083,7 +2083,7 @@ void PSDLayerInfo::ApplyVectorMask(ImageData* imageData)
 	int aSize = mWidth*mHeight;
 
 	for (int i = 0; i < aSize; i++)
-	{		
+	{
 		uint8 aMask = aBuffer[i];
 		PackedColor* aColor = (PackedColor*) (&mBits[i]);
 		aColor->a = (aColor->a * aMask) / 255;
@@ -2128,7 +2128,7 @@ void PSDLayerInfo::ApplyMask(ImageData* imageData)
 		// Top
 		for (int y = imageData->mY; y < maskStartY; y++)
 		{
-			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;				
+			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;
 			for (int x = imageData->mX; x < imageData->mX + imageData->mWidth; x++)
 			{
 				PackedColor* aColor = (PackedColor*) (&colorBits[x - imageData->mX]);
@@ -2139,7 +2139,7 @@ void PSDLayerInfo::ApplyMask(ImageData* imageData)
 		// Bottom
 		for (int y = mLayerMaskY + mLayerMaskHeight; y < imageData->mY + imageData->mHeight; y++)
 		{
-			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;				
+			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;
 			for (int x = imageData->mX; x < imageData->mX + imageData->mWidth; x++)
 			{
 				PackedColor* aColor = (PackedColor*) (&colorBits[x - imageData->mX]);
@@ -2150,7 +2150,7 @@ void PSDLayerInfo::ApplyMask(ImageData* imageData)
 		// Left
 		for (int y = imageData->mY; y < imageData->mY + imageData->mHeight; y++)
 		{
-			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;				
+			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;
 			for (int x = imageData->mX; x < mLayerMaskX; x++)
 			{
 				PackedColor* aColor = (PackedColor*) (&colorBits[x - imageData->mX]);
@@ -2161,7 +2161,7 @@ void PSDLayerInfo::ApplyMask(ImageData* imageData)
 		// Right
 		for (int y = imageData->mY; y < imageData->mY + imageData->mHeight; y++)
 		{
-			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;				
+			uint32* colorBits = imageData->mBits + (y - imageData->mY)*imageData->mWidth;
 			for (int x = mLayerMaskX + mLayerMaskWidth; x < imageData->mX + imageData->mWidth; x++)
 			{
 				PackedColor* aColor = (PackedColor*) (&colorBits[x - imageData->mX]);

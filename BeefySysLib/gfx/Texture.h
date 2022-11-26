@@ -9,7 +9,7 @@ class ImageData;
 
 class Texture : public RenderTarget
 {
-public:	
+public:
 	int						mRefCount;
 
 public:

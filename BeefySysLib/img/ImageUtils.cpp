@@ -48,29 +48,29 @@ inline PackedColor SetSat(PackedColor color, int satVal)
 			} \
 		}
 
-	if (color.r <= color.g) 
+	if (color.r <= color.g)
 	{
 		if (color.g <= color.b)
 			SetSatComponents(color.r, color.g, color.b)
 		else if (color.r < color.b)
 			SetSatComponents(color.r, color.b, color.g)
 		else
-			SetSatComponents(color.b, color.r, color.g);					
-	} 
-	else 
+			SetSatComponents(color.b, color.r, color.g);
+	}
+	else
 	{
-		if (color.r <= color.b) 
+		if (color.r <= color.b)
 			SetSatComponents(color.g, color.r, color.b)
 		else if (color.g < color.b)
 			SetSatComponents(color.g, color.b, color.r)
-		else 
-			SetSatComponents(color.b, color.g, color.r);					
+		else
+			SetSatComponents(color.b, color.g, color.r);
 	}
 
 	return color;
 }
 
-#define max3( x, y, z ) ( std::max((x), std::max((y), (z))) )				
+#define max3( x, y, z ) ( std::max((x), std::max((y), (z))) )
 #define min3( x, y, z ) ( std::min((x), std::min((y), (z))) )
 #define Sat(C) ( (max3(((C).r), ((C).g), ((C).b)) - min3(((C).r), ((C).g), ((C).b))) )
 #define Lum(C) ( ((((C).r) * 300) + (((C).g) * 586) + (((C).b) * 113)) / 1000 )
@@ -81,20 +81,20 @@ inline PackedColor SetLum(PackedColor color, int lum)
 
 	//int lum_cl = luminance(color);
 	int d = lum - Lum(color);
-	
+
 	WideColor color_cl = {color.r + d, color.g + d, color.b + d, color.a};
 
 	int aLum = Lum(color_cl);
 
 	int mini = min3(color_cl.r, color_cl.g, color_cl.b);
 	int maxi = max3(color_cl.r, color_cl.g, color_cl.b);
-	if (mini < 0) 
-	{		
+	if (mini < 0)
+	{
 		color.r = (int) aLum + (color_cl.r - aLum)*aLum/std::max(aLum - mini, 1);
 		color.g = (int) aLum + (color_cl.g - aLum)*aLum/std::max(aLum - mini, 1);
 		color.b = (int) aLum + (color_cl.b - aLum)*aLum/std::max(aLum - mini, 1);
 	}
-	else if (maxi > 255) 
+	else if (maxi > 255)
 	{
 		color.r = aLum + (color_cl.r - aLum)*(255 - aLum)/std::max(maxi - aLum, 1);
 		color.g = aLum + (color_cl.g - aLum)*(255 - aLum)/std::max(maxi - aLum, 1);
@@ -106,7 +106,7 @@ inline PackedColor SetLum(PackedColor color, int lum)
 		color.g = color_cl.g;
 		color.b = color_cl.b;
 	}
-	
+
 	return color;
 }
 
@@ -117,7 +117,7 @@ inline int ClampedOffset(int cur, int to, int maxDelta)
 		return to;
 	if (cur < to)
 		return cur + maxDelta;
-	return cur - maxDelta;	
+	return cur - maxDelta;
 }
 
 ImageData* Beefy::CreateResizedImageUnion(ImageData* src, int x, int y, int width, int height)
@@ -138,14 +138,14 @@ ImageData* Beefy::CreateResizedImageUnion(ImageData* src, int x, int y, int widt
 	for (int y = src->mY; y < src->mY + src->mHeight; y++)
 	{
 		for (int x = src->mX; x < src->mX + src->mWidth; x++)
-		{			
+		{
 			PackedColor* aDest = (PackedColor*) &imageData->mBits[(x - imageData->mX) + (y - imageData->mY)*imageData->mWidth];
 			PackedColor* aSrc = (PackedColor*) &src->mBits[(x - src->mX) + (y - src->mY)*src->mWidth];
 			*aDest = *aSrc;
 		}
 	}
 
-	return imageData;	
+	return imageData;
 }
 
 ImageData* Beefy::CreateEmptyResizedImageUnion(ImageData* src, int x, int y, int width, int height)
@@ -162,16 +162,16 @@ ImageData* Beefy::CreateEmptyResizedImageUnion(ImageData* src, int x, int y, int
 	int minY = std::min(src->mY, y);
 	int maxX = std::max(src->mX + src->mWidth, x + width);
 	int maxY = std::max(src->mY + src->mHeight, y + height);
-		
+
 	imageData->CreateNew(maxX - minX, maxY - minY);
 	imageData->mX = minX;
 	imageData->mY = minY;
 
-	return imageData;	
+	return imageData;
 }
 
 void Beefy::CrossfadeImage(ImageData* origImage, ImageData* newImage, float opacity)
-{	
+{
 	AutoPerf gPerf("Beefy::CrossfadeImage");
 
 	int a = (int) (opacity * 255 + 0.5f);
@@ -193,7 +193,7 @@ void Beefy::CrossfadeImage(ImageData* origImage, ImageData* newImage, float opac
 		}
 	}
 	else
-	{		
+	{
 		for (int x = newImage->mX; x < newImage->mX + newImage->mWidth; x++)
 		{
 			// Top
@@ -206,7 +206,7 @@ void Beefy::CrossfadeImage(ImageData* origImage, ImageData* newImage, float opac
 
 			// Bottom
 			for (int y = origImage->mY + origImage->mHeight; y < newImage->mY + newImage->mHeight; y++)
-			{			
+			{
 				PackedColor* aDest = (PackedColor*) &newImage->mBits[(x - newImage->mX) + (y - newImage->mY)*newImage->mWidth];
 				aDest->a = (aDest->a * a) / 255;
 				aDest++;
@@ -218,7 +218,7 @@ void Beefy::CrossfadeImage(ImageData* origImage, ImageData* newImage, float opac
 		{
 			// Left
 			for (int x = newImage->mX; x < origImage->mX; x++)
-			{			
+			{
 				PackedColor* aDest = (PackedColor*) &newImage->mBits[(x - newImage->mX) + (y - newImage->mY)*newImage->mWidth];
 				aDest->a = (aDest->a * a) / 255;
 				aDest++;
@@ -226,7 +226,7 @@ void Beefy::CrossfadeImage(ImageData* origImage, ImageData* newImage, float opac
 
 			// Right
 			for (int x = origImage->mX + origImage->mWidth; x < newImage->mX + newImage->mWidth; x++)
-			{			
+			{
 				PackedColor* aDest = (PackedColor*) &newImage->mBits[(x - newImage->mX) + (y - newImage->mY)*newImage->mWidth];
 				aDest->a = (aDest->a * a) / 255;
 				aDest++;
@@ -236,15 +236,15 @@ void Beefy::CrossfadeImage(ImageData* origImage, ImageData* newImage, float opac
 		for (int y = origImage->mY; y < origImage->mY + origImage->mHeight; y++)
 		{
 			for (int x = origImage->mX; x < origImage->mX + origImage->mWidth; x++)
-			{			
+			{
 				PackedColor* aDest = (PackedColor*) &newImage->mBits[(x - newImage->mX) + (y - newImage->mY)*newImage->mWidth];
 				PackedColor* aSrc = (PackedColor*) &origImage->mBits[(x - origImage->mX) + (y - origImage->mY)*origImage->mWidth];
 
 				int newDestAlpha = ((aDest->a * a) + (aSrc->a * oma)) / 255;
-				
+
 				if (newDestAlpha != 0)
 				{
-					int ca = (255 * a * aDest->a) / (aDest->a * a + aSrc->a * oma);					
+					int ca = (255 * a * aDest->a) / (aDest->a * a + aSrc->a * oma);
 					int coma = 255 - ca;
 
 					aDest->a = newDestAlpha;
@@ -252,7 +252,7 @@ void Beefy::CrossfadeImage(ImageData* origImage, ImageData* newImage, float opac
 					aDest->g = ((aDest->g * ca) + (aSrc->g * coma)) / 255;
 					aDest->b = ((aDest->b * ca) + (aSrc->b * coma)) / 255;
 				}
-								
+
 				aSrc++;
 				aDest++;
 			}
@@ -281,21 +281,21 @@ public:
 	{
 		int newDestAlpha = 255;
 		int a = blendedColor.a;
-					
+
 		if (destColor->a != 255)
 			newDestAlpha = destColor->a + ((255 - destColor->a) * blendedColor.a) / 255;
 
 		if (newDestAlpha != 0)
-		{						
+		{
 			a = 255 * blendedColor.a / newDestAlpha;
-						
+
 			int ba = destColor->a;
 			int boma = 255 - destColor->a;
 			blendedColor.r = ((blendedColor.r * ba) + (srcColor->r * boma)) / 255;
 			blendedColor.g = ((blendedColor.g * ba) + (srcColor->g * boma)) / 255;
 			blendedColor.b = ((blendedColor.b * ba) + (srcColor->b * boma)) / 255;
 		}
-					
+
 		int oma = 255 - a;
 		destColor->a = newDestAlpha;
 		destColor->r = ((blendedColor.r * a) + (destColor->r * oma)) / 255;
@@ -320,11 +320,11 @@ static void BlendImage_Fast_T(ImageData* dest, ImageData* src, int destX, int de
 			gDissolveTable[i] = rand() % 1023;
 		gDissolveInitialized = true;
 
-		for (int i = 0; i < 256; i++)		
-			gSqrtTable[i] = (int) (sqrt(i / 255.0f) * 255.0f + 0.5f);		
+		for (int i = 0; i < 256; i++)
+			gSqrtTable[i] = (int) (sqrt(i / 255.0f) * 255.0f + 0.5f);
 	}
 
-	int aBlendAlpha = (int) (255 * alpha);	
+	int aBlendAlpha = (int) (255 * alpha);
 
 	for (int y = 0; y < src->mHeight; y++)
 	{
@@ -332,7 +332,7 @@ static void BlendImage_Fast_T(ImageData* dest, ImageData* src, int destX, int de
 		PackedColor* aDestColor = (PackedColor*) (dest->mBits + destX + (y + destY) * dest->mWidth);
 
 		for (int x = 0; x < src->mWidth; x++)
-		{	
+		{
 			int aSrcAlpha = (int) (aSrcColor->a * alpha + 0.5f);
 
 			if (fullAlpha)
@@ -340,7 +340,7 @@ static void BlendImage_Fast_T(ImageData* dest, ImageData* src, int destX, int de
 
 			PackedColor aBlendedColor = GetColorFunctor()(aSrcColor, aDestColor, aSrcAlpha, aBlendAlpha);
 			MixFunctor()(aSrcColor, aDestColor, aBlendedColor, aSrcAlpha, aBlendAlpha);
-				
+
 			aDestColor++;
 			aSrcColor++;
 		}
@@ -353,7 +353,7 @@ static void BlendImage_Fast(ImageData* dest, ImageData* src, int destX, int dest
 }
 
 void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, float alpha, int mixType, bool fullAlpha)
-{	
+{
 	/*BlendImage_Fast(dest, src, destX, destY, alpha, mixType, fullAlpha);
 	return;*/
 
@@ -370,11 +370,11 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 			gDissolveTable[i] = rand() % 1023;
 		gDissolveInitialized = true;
 
-		for (int i = 0; i < 256; i++)		
-			gSqrtTable[i] = (int) (sqrt(i / 255.0f) * 255.0f + 0.5f);		
+		for (int i = 0; i < 256; i++)
+			gSqrtTable[i] = (int) (sqrt(i / 255.0f) * 255.0f + 0.5f);
 	}
 
-	int aBlendAlpha = (int) (255 * alpha);	
+	int aBlendAlpha = (int) (255 * alpha);
 
 	for (int y = 0; y < src->mHeight; y++)
 	{
@@ -382,7 +382,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 		PackedColor* aDestColor = (PackedColor*) (dest->mBits + destX + (y + destY) * dest->mWidth);
 
 		for (int x = 0; x < src->mWidth; x++)
-		{	
+		{
 			int aSrcAlpha = (int) (aSrcColor->a * alpha + 0.5f);
 
 			if (fullAlpha)
@@ -393,9 +393,9 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 			bool doReverseBlend = false;
 			bool doAltBlend = false;
 			bool doFullBlend = false;
-			
+
 			if ((mixType == 'Nrml') || (mixType == 'norm')) // Normal
-			{				
+			{
 			}
 			else if ((mixType == 'Lghn') || (mixType == 'lite')) // Lighten
 			{
@@ -416,20 +416,20 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				aBlendedColor.b = std::max(0, (int) aDestColor->b - (int) aSrcColor->b);
 			}
 			else if ((mixType == 'Dslv') || (mixType == 'diss')) // Disolve
-			{	
+			{
 				if ((dest->mX + x == 132) && (dest->mY + y == 19))
 				{
 					/*aBlendedColor.a = 255;
 					aBlendedColor.r = 0;
 					aBlendedColor.g = 255;
-					aBlendedColor.b = 0;						*/					
+					aBlendedColor.b = 0;						*/
 				}
 
 				int dissolveIdx = ((dest->mX + x) * 179 + (dest->mY + y) * 997) % DISSOLVE_SIZE;
 				if ((int) (aSrcColor->a * alpha + 0.5f) < gDissolveTable[dissolveIdx])
-					aBlendedColor.a = 0;				
+					aBlendedColor.a = 0;
 				else
-					aBlendedColor.a = 255;				
+					aBlendedColor.a = 255;
 			}
 			else if ((mixType == 'Mltp') || (mixType == 'mul ')) // Multiply
 			{
@@ -440,7 +440,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 			else if ((mixType == 'CBrn') || (mixType == 'idiv')) // Color Burn
 			{
 				if (mixType == 'CBrn') // Effect
-				{					 
+				{
 					int blendVal = (aBlendAlpha * aSrcColor->a / 255);
 					#define Blend_ColorBurn_Effect(A,B) \
 						std::max(0, 255 - (((255 - (int) A) << 8 ) / std::max((((B * blendVal) + (255 * (255 - blendVal))) / 255), 1)))
@@ -452,14 +452,14 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				{
 					#define Blend_ColorBurn(A,B) \
 						std::max(0, 255 - (((255 - (int) A) << 8 ) / std::max((((B * aBlendAlpha) + (255 * (255 - aBlendAlpha))) / 255), 1)))
-					
+
 					Blend_Apply(Blend_ColorBurn);
 					doFullBlend = true;
 				}
-			}						
+			}
 			else if ((mixType == 'lnDg') || (mixType == 'lddg')) // Linear Dodge
 			{
-				// Uses alternate blend methdod				
+				// Uses alternate blend methdod
 			}
 			else if (mixType == 'lbrn') // Linear Burn (Layer)
 			{
@@ -474,11 +474,11 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				// Uses alternate blend methdod
 			}
 			else if (mixType == 'dkCl') // Darker Color
-			{					
+			{
 				// 299, 587, 144 is "correct"
 				int intensityDest = (aDestColor->r * 300) + (aDestColor->g * 586) + (aDestColor->b * 113);
-				int intensitySrc = (aSrcColor->r * 300) + (aSrcColor->g * 586) + (aSrcColor->b * 113);				
-				if (intensityDest <= intensitySrc)				
+				int intensitySrc = (aSrcColor->r * 300) + (aSrcColor->g * 586) + (aSrcColor->b * 113);
+				if (intensityDest <= intensitySrc)
 					doReverseBlend = true;
 			}
 			else if ((mixType == 'ltCl') || (mixType == 'lgCl')) // Lighter Color
@@ -489,14 +489,14 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 					aDestColor->r = 0;
 					aDestColor->g = 255;
 					aDestColor->b = 0;						*/
-					
+
 				}
 
 				// 299, 587, 144 is "correct"
 				int intensityDest = (aDestColor->r * 300) + (aDestColor->g * 586) + (aDestColor->b * 113);
-				int intensitySrc = (aSrcColor->r * 300) + (aSrcColor->g * 586) + (aSrcColor->b * 113);				
-				if (intensityDest >= intensitySrc)				
-					doReverseBlend = true;	
+				int intensitySrc = (aSrcColor->r * 300) + (aSrcColor->g * 586) + (aSrcColor->b * 113);
+				if (intensityDest >= intensitySrc)
+					doReverseBlend = true;
 			}
 			else if ((mixType == 'Scrn') || (mixType == 'scrn')) // Screen
 			{
@@ -505,23 +505,23 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				aBlendedColor.b = 255 - ((255 - aDestColor->b) * (255 - aSrcColor->b) / 255);
 			}
 			else if ((mixType == 'CDdg') || (mixType == 'div ')) // Color Dodge
-			{				
+			{
 				if (mixType == 'CDdg') // Effect
 				{
 					int blendVal = (aBlendAlpha * aSrcColor->a / 255);
 
 					#define Blend_ColorDodge_Effect(A,B) \
 							std::min(255, ((((int) A) << 8 ) / std::max((((255 - B) * blendVal) + (255 * (255 - blendVal))) / 255, 1)))
-					
-					Blend_Apply(Blend_ColorDodge_Effect);					
+
+					Blend_Apply(Blend_ColorDodge_Effect);
 					doFullBlend = true;
 				}
 				else
 				{
 					#define Blend_ColorDodge_Layer(A,B) \
 							std::min(255, ((((int) A) << 8 ) / std::max((((255 - B) * aBlendAlpha) + (255 * (255 - aBlendAlpha))) / 255, 1)))
-					
-					Blend_Apply(Blend_ColorDodge_Layer);					
+
+					Blend_Apply(Blend_ColorDodge_Layer);
 					doFullBlend = true;
 				}
 			}
@@ -535,13 +535,13 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				Blend_Apply(ChannelBlend_Overlay);
 			}
 			else if ((mixType == 'SftL') || (mixType == 'sLit')) // Soft Light
-			{				
+			{
 				#define ChannelBlend_SoftLight(A,B) \
 					(B < 128) ? (A - (255 - clamp(2 * B, 0, 255))*A*(255 - A)/255/255) : \
 					(A < 64) ? A + ((2*B - 255) * ((((16*A - 12*255)*A/255 + 4*255) * A / 255) - A) / 255) : \
 					A + ((2*B - 255) * (gSqrtTable[A] - A) / 255)
 
-				Blend_Apply(ChannelBlend_SoftLight);				
+				Blend_Apply(ChannelBlend_SoftLight);
 			}
 			else if ((mixType == 'HrdL') || (mixType == 'hLit')) // Hard Light
 			{
@@ -550,7 +550,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 						(2 * B * A / 255) : \
 						(255 - (2 * (255 - B) * (255 - A) / 255))
 
-				Blend_Apply(Blend_HardLight);				
+				Blend_Apply(Blend_HardLight);
 			}
 			else if ((mixType == 'vivL') || (mixType == 'vLit')) // Vivid Light
 			{
@@ -560,7 +560,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 					aDestColor->r = 0;
 					aDestColor->g = 255;
 					aDestColor->b = 0;*/
-					
+
 				}
 
 				if (mixType == 'vivL') // Effect
@@ -592,7 +592,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				}
 			}
 			else if (mixType == 'lLit') // Linear Light (Layer)
-			{	
+			{
 				// Alternate blend mode
 				/*#define Blend_LinearLight_Layer(A,B) \
 					(B < 128) ? \
@@ -602,7 +602,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				Blend_Apply(Blend_LinearLight_Layer);					*/
 			}
 			else if (mixType == 'linL') // Linear Light (Effect)
-			{								
+			{
 				int newDestAlpha = aDestColor->a + ((255 - aDestColor->a) * aBlendedColor.a) / 255;
 				if (newDestAlpha > 0)
 				{
@@ -611,7 +611,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 							(255 - std::min(255, \
 								(((255 - B*2) * aSrcAlpha) + ((255 - A) * aDestColor->a)) / newDestAlpha)) : \
 							std::min(255, (((B - 128)*2 * aSrcAlpha) + (A * aDestColor->a)) / newDestAlpha)
-					Blend_Apply(Blend_LinearLight);					
+					Blend_Apply(Blend_LinearLight);
 				}
 				doFullBlend = true;
 			}
@@ -626,9 +626,9 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				aBlendedColor.b = ChannelBlend_PinLight((int) aDestColor->b, (int) aSrcColor->b);
 			}
 			else if ((mixType == 'hdMx') || (mixType == 'hMix')) // Hard Mix
-			{	
+			{
 				if (mixType == 'hdMx') // Effect
-				{					
+				{
 					int scale = 255 * 255 / std::max(255 - (aBlendAlpha * aSrcColor->a)/255, 1);
 
 					#define Blend_Scale(A,S) \
@@ -638,7 +638,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 						clamp(Blend_Scale(A,scale) - Blend_Scale(255 - B,scale) + (255 - B), 0, 255)
 
 					Blend_Apply(Blend_HardMix);
-																	
+
 					doFullBlend = true;
 				}
 				else // Layer
@@ -652,12 +652,12 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 						clamp(Blend_Scale(A,scale) - Blend_Scale(255 - B,scale) + (255 - B), 0, 255)
 
 					Blend_Apply(Blend_HardMix_Layer);
-																	
+
 					doFullBlend = true;
 				}
 			}
 			else if ((mixType == 'Dfrn') || (mixType == 'diff')) // Difference
-			{				
+			{
 				/*#define ChannelBlend_Difference(A,B) \
 					abs(A - B*aBlendAlpha/255)
 				Blend_Apply(ChannelBlend_Difference);
@@ -674,10 +674,10 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				doFullBlend = true;
 			}
 			else if ((mixType == 'Xclu') || (mixType == 'smud')) // Exclusion
-			{				
+			{
 				#define ChannelBlend_Exclusion(A,B) \
 					(A + B*aBlendAlpha/255 - 2*A*B*aBlendAlpha/255/255)
-				Blend_Apply(ChannelBlend_Exclusion);						
+				Blend_Apply(ChannelBlend_Exclusion);
 				doAltBlend = (mixType == 'Xclu');
 				doFullBlend = !doAltBlend;
 			}
@@ -687,13 +687,13 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				{
 					#define ChannelBlend_Subtract(A,B) \
 						std::max(0, A - B)
-					Blend_Apply(ChannelBlend_Subtract);									
+					Blend_Apply(ChannelBlend_Subtract);
 				}
 				else //TODO: Double check the Effect version here...
 				{
 					#define ChannelBlend_Subtract_Effect(A,B) \
 						std::max(0, A - B*aBlendAlpha/255)
-					Blend_Apply(ChannelBlend_Subtract_Effect);				
+					Blend_Apply(ChannelBlend_Subtract_Effect);
 					doAltBlend = (mixType == 'subt');
 				}
 			}
@@ -701,7 +701,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 			{
 				#define ChannelBlend_Divide(A,B) \
 					std::min(255, A*255 / std::max(B, 1))
-				Blend_Apply(ChannelBlend_Divide);				
+				Blend_Apply(ChannelBlend_Divide);
 			}
 			else if ((mixType == 'H   ') || (mixType == 'hue ')) // Hue
 			{
@@ -725,11 +725,11 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 			}
 			else
 			{
-				BF_FATAL("Unknown blend type");			
+				BF_FATAL("Unknown blend type");
 			}
 
 			//if (aDestColor->a != 0)
-			{					
+			{
 				if ((mixType == 'lddg') || (mixType == 'lnDg')) // Linear Dodge
 				{
 					int newDestAlpha = 255;
@@ -742,42 +742,42 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 
 					#define LinearDodge_Layer(A,B) \
 						std::min(255, A + B * blendThing / 255) + ((255 - blendThing) * B) / 255
-						
-					WideColor blendWColor = 
+
+					WideColor blendWColor =
 						{LinearDodge_Layer((int) aDestColor->r, (int) aSrcColor->r),
 						LinearDodge_Layer((int) aDestColor->g, (int) aSrcColor->g),
 						LinearDodge_Layer((int) aDestColor->b, (int) aSrcColor->b),
 						aSrcAlpha};
 
-					
+
 
 					if (newDestAlpha != 0)
 					{
 						a = 255 * blendWColor.a / newDestAlpha;
-												
+
 						int ba = aDestColor->a;
 						int boma = 255 - ba;
 						blendWColor.r = ((blendWColor.r * ba) + (aSrcColor->r * boma)) / 255;
 						blendWColor.g = ((blendWColor.g * ba) + (aSrcColor->g * boma)) / 255;
-						blendWColor.b = ((blendWColor.b * ba) + (aSrcColor->b * boma)) / 255;						
+						blendWColor.b = ((blendWColor.b * ba) + (aSrcColor->b * boma)) / 255;
 					}
-					
+
 					int oma = 255 - a;
 					aDestColor->a = newDestAlpha;
-															
+
 					aDestColor->r = std::min(255, ((blendWColor.r * a) + (aDestColor->r * oma)) / 255);
 					aDestColor->g = std::min(255, ((blendWColor.g * a) + (aDestColor->g * oma)) / 255);
 					aDestColor->b = std::min(255, ((blendWColor.b * a) + (aDestColor->b * oma)) / 255);
 				}
 				else if ((mixType == 'lbrn') || (mixType == 'lnBn')) // Linear Burn
-				{	
+				{
 					int blendThing = 255 - ((255 - aBlendAlpha) * aDestColor->a / 255);
 
 					#define Blend_LinearDodge_Layer(A,B) \
 						255 - (std::min(255, ((255 - A) + (255 - B) * blendThing / 255)) + ((255 - blendThing) * (255 - B)) / 255)
 						//255 - ((255 - A) + (255 - B))
 
-					WideColor blendWColor = 
+					WideColor blendWColor =
 						{Blend_LinearDodge_Layer((int) aDestColor->r, (int) aSrcColor->r),
 						Blend_LinearDodge_Layer((int) aDestColor->g, (int) aSrcColor->g),
 						Blend_LinearDodge_Layer((int) aDestColor->b, (int) aSrcColor->b),
@@ -785,21 +785,21 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 
 					int newDestAlpha = 255;
 					int a = blendWColor.a;
-					
+
 					if (aDestColor->a != 255)
 						newDestAlpha = aDestColor->a + ((255 - aDestColor->a) * blendWColor.a) / 255;
 
 					if (newDestAlpha != 0)
-					{						
+					{
 						a = 255 * blendWColor.a / newDestAlpha;
-						
+
 						int ba = aDestColor->a;
 						int boma = 255 - aDestColor->a;
 						blendWColor.r = ((blendWColor.r * ba) + (aSrcColor->r * boma)) / 255;
 						blendWColor.g = ((blendWColor.g * ba) + (aSrcColor->g * boma)) / 255;
 						blendWColor.b = ((blendWColor.b * ba) + (aSrcColor->b * boma)) / 255;
 					}
-					
+
 					int oma = 255 - a;
 					aDestColor->a = newDestAlpha;
 					aDestColor->r = std::max(0, ((blendWColor.r * a) + (aDestColor->r * oma)) / 255);
@@ -807,7 +807,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 					aDestColor->b = std::max(0, ((blendWColor.b * a) + (aDestColor->b * oma)) / 255);
 				}
 				else if ((mixType == 'lLit') || (mixType == 'linL')) // Linear Light
-				{	
+				{
 					int blendThing = 255 - ((255 - aBlendAlpha) * aDestColor->a / 255);
 
 					#define LinearLight_Contrib(A,B) \
@@ -816,7 +816,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 							(std::min(255, A + (B - 128)*2 * blendThing / 255) + ((255 - blendThing) * (B - 128)*2) / 255)
 					//((B - 128)*2 + A)
 
-					WideColor blendWColor = 
+					WideColor blendWColor =
 						{LinearLight_Contrib((int) aDestColor->r, (int) aSrcColor->r),
 						LinearLight_Contrib((int) aDestColor->g, (int) aSrcColor->g),
 						LinearLight_Contrib((int) aDestColor->b, (int) aSrcColor->b),
@@ -824,44 +824,44 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 
 					int newDestAlpha = 255;
 					int a = blendWColor.a;
-					
+
 					if (aDestColor->a != 255)
 						newDestAlpha = aDestColor->a + ((255 - aDestColor->a) * blendWColor.a) / 255;
 
 					if (newDestAlpha != 0)
-					{						
+					{
 						a = 255 * blendWColor.a / newDestAlpha;
-						
+
 						int ba = aDestColor->a;
 						int boma = 255 - aDestColor->a;
 						blendWColor.r = ((blendWColor.r * ba) + (aSrcColor->r * boma)) / 255;
 						blendWColor.g = ((blendWColor.g * ba) + (aSrcColor->g * boma)) / 255;
 						blendWColor.b = ((blendWColor.b * ba) + (aSrcColor->b * boma)) / 255;
 					}
-					
+
 					int oma = 255 - a;
 					aDestColor->a = newDestAlpha;
 					aDestColor->r = clamp((((blendWColor.r * a) + (aDestColor->r * oma)) / 255), 0, 255);
 					aDestColor->g = clamp((((blendWColor.g * a) + (aDestColor->g * oma)) / 255), 0, 255);
 					aDestColor->b = clamp((((blendWColor.b * a) + (aDestColor->b * oma)) / 255), 0, 255);
-				}				
+				}
 				else if (doReverseBlend)
-				{						
+				{
 					int newDestAlpha = 255;
 					int a = aDestColor->a;
-					
+
 					if (aDestColor->a != 255)
 						newDestAlpha = aBlendedColor.a + ((255 - aBlendedColor.a) * aDestColor->a) / 255;
 
-					if (newDestAlpha != 0)					
+					if (newDestAlpha != 0)
 						a = 255 * aDestColor->a / newDestAlpha;
-											
+
 					int oma = 255 - a;
 					aDestColor->a = newDestAlpha;
 					aDestColor->r = ((aDestColor->r * a) + (aBlendedColor.r * oma)) / 255;
 					aDestColor->g = ((aDestColor->g * a) + (aBlendedColor.g * oma)) / 255;
 					aDestColor->b = ((aDestColor->b * a) + (aBlendedColor.b * oma)) / 255;
-				}				
+				}
 				else if (doFullBlend)
 				{
 					if ((dest->mX + x == 231) && (dest->mY + y == 183))
@@ -870,19 +870,19 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 						aBlendedColor.r = 0;
 						aBlendedColor.g = 255;
 						aBlendedColor.b = 0;*/
-						
+
 					}
 
 					int newDestAlpha = 255;
 					int a = aBlendedColor.a;
-					
+
 					if (aDestColor->a != 255)
 						newDestAlpha = aDestColor->a + ((255 - aDestColor->a) * aBlendedColor.a) / 255;
 
 					/*if (newDestAlpha != 0)
-					{						
+					{
 						//a = 255 * aSrcColor->a / newDestAlpha;
-						
+
 						int ba = aDestColor->a;
 						int boma = 255 - ba;
 						aBlendedColor.r = ((aBlendedColor.r * ba) + (aSrcColor->r * boma)) / 255;
@@ -891,9 +891,9 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 					}*/
 
 					if (newDestAlpha != 0)
-					{						
+					{
 						//a = 255 * aSrcColor->a / newDestAlpha;
-						
+
 						int ba = 255 * aDestColor->a / newDestAlpha;
 						int boma = 255 - ba;
 						aBlendedColor.r = ((aBlendedColor.r * ba) + (aSrcColor->r * boma)) / 255;
@@ -902,7 +902,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 					//}
 
 					//if (aBlendedColor.a
-					
+
 						/*int coma = (255 * 255 * a) / (255 * a + aDestColor->a * (255 - a));
 						//int ca = 255 - aBlendedColor.a;
 						//coma = gSqrtTable[coma];
@@ -911,7 +911,7 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 
 						if (coma != 255)
 						{
-							
+
 						}
 
 						coma = 255;
@@ -941,10 +941,10 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 
 					/*int newDestAlpha = 255;
 					int a = aBlendedColor.a;
-					
+
 					if (aDestColor->a != 255)
 						newDestAlpha = aDestColor->a + ((255 - aDestColor->a) * aBlendedColor.a) / 255;
-										
+
 					int oma = 255 - a;
 					aDestColor->a = newDestAlpha;
 					aDestColor->r = aBlendedColor.r;
@@ -952,9 +952,9 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 					aDestColor->b = aBlendedColor.b;
 
 					if (newDestAlpha != 0)
-					{						
+					{
 						a = 255 * aBlendedColor.a / newDestAlpha;
-												
+
 						int ba = aDestColor->a;
 						int boma = 255 - ba;
 						aBlendedColor.r = ((aDestColor->r * ba) + (aSrcColor->r * boma)) / 255;
@@ -970,13 +970,13 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 						aDestColor->r = 0;
 						aDestColor->g = 255;
 						aDestColor->b = 0;*/
-						
+
 					}
 
-					int newDestAlpha = 255;					
+					int newDestAlpha = 255;
 					if (aDestColor->a != 255)
 						newDestAlpha = aDestColor->a + ((255 - aDestColor->a) * aSrcAlpha) / 255;
-					
+
 					int destContrib = (255 - aSrcColor->a)*aDestColor->a;
 					int srcContrib = (255 - aDestColor->a)*aSrcColor->a;
 					int blendContrib = aSrcColor->a * aDestColor->a;
@@ -993,34 +993,34 @@ void Beefy::BlendImage(ImageData* dest, ImageData* src, int destX, int destY, fl
 				{
 					if ((x == 140) && (y == 83))
 					{
-						
+
 					}
 
 					int newDestAlpha = 255;
 					int a = aBlendedColor.a;
-					
+
 					if (aDestColor->a != 255)
 						newDestAlpha = aDestColor->a + ((255 - aDestColor->a) * aBlendedColor.a) / 255;
 
 					if (newDestAlpha != 0)
-					{						
+					{
 						a = 255 * aBlendedColor.a / newDestAlpha;
-						
+
 						int ba = aDestColor->a;
 						int boma = 255 - aDestColor->a;
 						aBlendedColor.r = ((aBlendedColor.r * ba) + (aSrcColor->r * boma)) / 255;
 						aBlendedColor.g = ((aBlendedColor.g * ba) + (aSrcColor->g * boma)) / 255;
 						aBlendedColor.b = ((aBlendedColor.b * ba) + (aSrcColor->b * boma)) / 255;
 					}
-					
+
 					int oma = 255 - a;
 					aDestColor->a = newDestAlpha;
 					aDestColor->r = ((aBlendedColor.r * a) + (aDestColor->r * oma)) / 255;
 					aDestColor->g = ((aBlendedColor.g * a) + (aDestColor->g * oma)) / 255;
 					aDestColor->b = ((aBlendedColor.b * a) + (aDestColor->b * oma)) / 255;
 				}
-			}			
-				
+			}
+
 			aDestColor++;
 			aSrcColor++;
 		}
@@ -1040,7 +1040,7 @@ void Beefy::BlendImagesTogether(ImageData* bottomImage, ImageData* topImage, Ima
 			int a = alphaColor->a;
 			int oma = 255 - a;
 
-			int newDestAlpha = ((topColor->a * a) + (botColor->a * oma)) / 255;				
+			int newDestAlpha = ((topColor->a * a) + (botColor->a * oma)) / 255;
 			if (newDestAlpha != 0)
 			{
 				int ca = (255 * topColor->a * a) / ((topColor->a * a) + (botColor->a * oma));
@@ -1051,7 +1051,7 @@ void Beefy::BlendImagesTogether(ImageData* bottomImage, ImageData* topImage, Ima
 				botColor->g = ((topColor->g * ca) + (botColor->g * coma)) / 255;
 				botColor->b = ((topColor->b * ca) + (botColor->b * coma)) / 255;
 			}
-			
+
 			topColor++;
 			botColor++;
 			alphaColor++;
@@ -1066,7 +1066,7 @@ void Beefy::SetImageAlpha(ImageData* image, ImageData* alphaImage)
 
 	for (int y = alphaImage->mY; y < alphaImage->mY + alphaImage->mHeight; y++)
 	{
-		PackedColor* aColor = (PackedColor*) (image->mBits + (alphaImage->mX - image->mX) + ((y - image->mY) * image->mWidth));		
+		PackedColor* aColor = (PackedColor*) (image->mBits + (alphaImage->mX - image->mX) + ((y - image->mY) * image->mWidth));
 		PackedColor* alphaColor = (PackedColor*) (alphaImage->mBits + (alphaImage->mX - alphaImage->mX) + ((y - alphaImage->mY) * alphaImage->mWidth));
 
 		for (int x = 0; x < alphaImage->mWidth; x++)
@@ -1079,10 +1079,10 @@ void Beefy::SetImageAlpha(ImageData* image, ImageData* alphaImage)
 }
 
 void Beefy::MultiplyImageAlpha(ImageData* image, ImageData* alphaImage)
-{	
+{
 	for (int y = alphaImage->mY; y < alphaImage->mY + alphaImage->mHeight; y++)
 	{
-		PackedColor* aColor = (PackedColor*) (image->mBits + (alphaImage->mX - image->mX) + ((y - image->mY) * image->mWidth));		
+		PackedColor* aColor = (PackedColor*) (image->mBits + (alphaImage->mX - image->mX) + ((y - image->mY) * image->mWidth));
 		PackedColor* alphaColor = (PackedColor*) (alphaImage->mBits + (alphaImage->mX - alphaImage->mX) + ((y - alphaImage->mY) * alphaImage->mWidth));
 
 		for (int x = 0; x < alphaImage->mWidth; x++)
@@ -1095,10 +1095,10 @@ void Beefy::MultiplyImageAlpha(ImageData* image, ImageData* alphaImage)
 }
 
 void Beefy::SetImageAlpha(ImageData* image, int alpha)
-{	
+{
 	int size = image->mWidth * image->mHeight;
 	for (int i = 0; i < size; i++)
-		image->mBits[i] |= 0xFF000000;	
+		image->mBits[i] |= 0xFF000000;
 }
 
 void Beefy::CopyImageBits(ImageData* dest, ImageData* src)
@@ -1107,7 +1107,7 @@ void Beefy::CopyImageBits(ImageData* dest, ImageData* src)
 	{
 		PackedColor* aDestColor = (PackedColor*) (dest->mBits + (src->mX - dest->mX) + ((y - dest->mY) * dest->mWidth));
 		PackedColor* aSrcColor = (PackedColor*) (src->mBits + (src->mX - src->mX) + ((y - src->mY) * src->mWidth));
-		
+
 		for (int x = 0; x < src->mWidth; x++)
 		{
 			*aDestColor = *aSrcColor;

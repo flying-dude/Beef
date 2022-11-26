@@ -49,13 +49,13 @@ static uint32* CreateGradientDataTable(ImageGradient* colorGradient)
 			float gradientPos = 1.0f - yVal;
 			if ((colorIdx == 3) && (colorGradient[colorIdx].mPoints.size() > 2))
 			{
-				// Strange effect where alpha gradient never fully reaches end when there's more than one stop				
+				// Strange effect where alpha gradient never fully reaches end when there's more than one stop
 				gradientPos = std::min(gradientPos, 0.95f);
 			}
 
 			color |= (colorGradient[colorIdx].GetVal(gradientPos * colorGradient[colorIdx].mXSize)) << (colorIdx * 8);
 		}
-		
+
 		gradientData[i] = color;
 	}
 
@@ -101,13 +101,13 @@ void ImageCurve::Init()
 
 			pt->mSpline = curSpline;
 			curSpline->AddPt(pt->mX, pt->mY);
-		}		
+		}
 	}
 
 	/*{
 		std::fstream stream("c:\\temp\\curve.csv", std::ios::out);
 		for (int i = 0; i < (int) 255; i++)
-		{					
+		{
 			float aVal = GetVal(i);
 			stream << aVal << std::endl;
 		}
@@ -129,12 +129,12 @@ float ImageCurve::GetVal(float x)
 			return nextPt->mY;
 
 		if ((x <= nextPt->mX) && (prevPt != NULL))
-		{			
+		{
 			if (prevPt->mSpline != NULL)
 				return prevPt->mSpline->Evaluate(x);
 				//return BFClamp(prevPt->mSpline->Evaluate(x), 0.0f, 255.0f);
 
-			return prevPt->mY + 
+			return prevPt->mY +
 				((x - prevPt->mX) / (nextPt->mX - prevPt->mX)) * (nextPt->mY - prevPt->mY);
 		}
 
@@ -166,20 +166,20 @@ static uint32 LerpColor(uint32 color1, uint32 color2, float pct)
 }
 
 int ImageGradient::GetVal(float x)
-{	
+{
 	if (mSpline.mInputPoints.size() == 0)
-	{	
+	{
 		int n = (int)mPoints.size() - 1;
-		
+
 		mSpline.AddPt((float) mPoints[0].mValue);
 		for (int i = 0; i < (int) mPoints.size(); i++)
-			mSpline.AddPt((float) mPoints[i].mValue);		
+			mSpline.AddPt((float) mPoints[i].mValue);
 		mSpline.AddPt((float) mPoints[n].mValue);
 
 		/*{
 			std::fstream stream("c:\\temp\\curve.csv", std::ios::out);
 			for (int i = 0; i < (int) 256; i++)
-			{					
+			{
 				int aVal = GetVal((float) i * 4096 / 256);
 				stream << aVal << std::endl;
 			}
@@ -195,7 +195,7 @@ int ImageGradient::GetVal(float x)
 		if (x < mPoints[i].mX)
 		{
 			if (i == 0)
-				return mPoints[i].mValue;	
+				return mPoints[i].mValue;
 
 			float prevVal = (float) mPoints[i - 1].mValue;
 			float nextVal = (float) mPoints[i].mValue;
@@ -213,7 +213,7 @@ int ImageGradient::GetVal(float x)
 				result = BFClamp(result, nextVal, prevVal);
 
 			return (int) (result + 0.5f);
-		}		
+		}
 	}
 
 	return mPoints.back().mValue;
@@ -221,7 +221,7 @@ int ImageGradient::GetVal(float x)
 
 
 ImageEffects::ImageEffects()
-{	
+{
 	mSwapImages[0] = NULL;
 	mSwapImages[1] = NULL;
 }
@@ -229,7 +229,7 @@ ImageEffects::ImageEffects()
 ImageEffects::~ImageEffects()
 {
 	for (int i = 0; i < (int) mImageEffectVector.size(); i++)
-		delete mImageEffectVector[i];	
+		delete mImageEffectVector[i];
 }
 
 
@@ -239,7 +239,7 @@ ImageData* ImageEffects::GetDestImage(ImageData* usingImage)
 		return mSwapImages[0];
 	if ((mSwapImages[1] != usingImage) && (mSwapImages[1] != NULL))
 		return mSwapImages[1];
-	
+
 	ImageData* anImage = new ImageData();
 	anImage->mWidth = usingImage->mWidth;
 	anImage->mHeight = usingImage->mHeight;
@@ -255,7 +255,7 @@ ImageData* ImageEffects::GetDestImage(ImageData* usingImage)
 
 #define BOXBLUR_IN(x) (((x < 0) || (x >= width)) ? edgeValue : in[inIndex + x])
 
-static void BoxBlur(uint32* in, uint32* out, int width, int height, float radius, uint32 edgeValue) 
+static void BoxBlur(uint32* in, uint32* out, int width, int height, float radius, uint32 edgeValue)
 {
 	AutoPerf gPerf("ImgEffects - BoxBlur");
 
@@ -266,19 +266,19 @@ static void BoxBlur(uint32* in, uint32* out, int width, int height, float radius
 
 	int a = (int) (frac * 256);
 	int oma = 256 - a;
-	
+
 	int div = (2*r+1)*256 + a*2;
 
 	int inIndex = 0;
 
 	if (radius > 1)
 	{
-		for ( int y = 0; y < height; y++ ) 
+		for ( int y = 0; y < height; y++ )
 		{
 			int outIndex = y;
 			uint32 ta = 0;
 
-			for ( int i = -r; i <= r; i++ ) 
+			for ( int i = -r; i <= r; i++ )
 			{
 				int rgb = BOXBLUR_IN(i);
 				ta += rgb * 256;
@@ -286,7 +286,7 @@ static void BoxBlur(uint32* in, uint32* out, int width, int height, float radius
 			ta += a * BOXBLUR_IN(-r-1);
 			ta += a * BOXBLUR_IN(r+1);
 
-			for ( int x = 0; x < width; x++ ) 
+			for ( int x = 0; x < width; x++ )
 			{
 				out[outIndex] = ta / div;
 
@@ -308,7 +308,7 @@ static void BoxBlur(uint32* in, uint32* out, int width, int height, float radius
 				uint32 l2Value = edgeValue;
 				int l1 = x-r-1;
 				int l2 = l1+1;
-				
+
 				if (l1 >= 0)
 				{
 					l1Value = in[inIndex + l1];
@@ -327,24 +327,24 @@ static void BoxBlur(uint32* in, uint32* out, int width, int height, float radius
 				outIndex += height;
 			}
 			inIndex += width;
-		}	
+		}
 	}
 	else
 	{
-		for ( int y = 0; y < height; y++ ) 
+		for ( int y = 0; y < height; y++ )
 		{
 			int outIndex = y;
-			
-			for ( int x = 0; x < width; x++ ) 
-			{				
+
+			for ( int x = 0; x < width; x++ )
+			{
 				int r = x+1;
 				if (r > widthMinus1)
 					r = widthMinus1;
-				
+
 				int l = x-1;
 				if (l < 0)
 					l = 0;
-			
+
 				int rgbL = in[inIndex+l] * a;
 				int rgbR = in[inIndex+r] * a;
 				int rgbM = in[inIndex+x] * 256;
@@ -353,7 +353,7 @@ static void BoxBlur(uint32* in, uint32* out, int width, int height, float radius
 				outIndex += height;
 			}
 			inIndex += width;
-		}	
+		}
 	}
 }
 
@@ -389,17 +389,17 @@ void SoftBlurInit(ImageData* inImage, ImageData* outImage, bool invert)
 
 	int ox = inImage->mX - outImage->mX;
 	int oy = inImage->mY - outImage->mY;
-	
+
 	if (!invert)
 	{
-		for (int y = 0; y < oh; y++)			
+		for (int y = 0; y < oh; y++)
 			for (int x = 0; x < ow; x++)
 				out[x+y*ow] = 0;
 
-		for (int y = 0; y < ih; y++)	
+		for (int y = 0; y < ih; y++)
 		{
 			for (int x = 0; x < iw; x++)
-			{				
+			{
 				int anAlpha = in[x+y*iw]>>24;
 				out[(x+ox)+(y+oy)*ow] = anAlpha * 256;
 			}
@@ -407,14 +407,14 @@ void SoftBlurInit(ImageData* inImage, ImageData* outImage, bool invert)
 	}
 	else
 	{
-		for (int y = 0; y < oh; y++)			
+		for (int y = 0; y < oh; y++)
 			for (int x = 0; x < ow; x++)
 				out[x+y*ow] = 255*256;
 
-		for (int y = 0; y < ih; y++)	
+		for (int y = 0; y < ih; y++)
 		{
 			for (int x = 0; x < iw; x++)
-			{				
+			{
 				int anAlpha = in[x+y*iw]>>24;
 				out[(x+ox)+(y+oy)*ow] =  (255 - (anAlpha)) * 256;
 			}
@@ -431,16 +431,16 @@ void SoftBlur(uint32* data, int w, int h, float radius, uint32 defaultValue)
 
 	int itrCount = (radius < 0.9f) ? 1 : 2;
 
-	
+
 	float d = radius / itrCount;
 	if (d > 0)
-	{		
+	{
 		for (int i = 0; i < itrCount; i++)
 		{
 			BoxBlur(data, tempBuffer, w, h, d, defaultValue);
 			BoxBlur(tempBuffer, data, h, w, d, defaultValue);
 		}
-	}	
+	}
 	delete [] tempBuffer;
 }
 
@@ -454,21 +454,21 @@ static int gAlphaScaleVals [] =
 	254,      256,
 	358, 254, 358};
 
-static int gKernelOfsFwd[][2] = 
-	{          {-1, -2},          {1, -2}, 
-	 {-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {2, -1}, 
-	           {-1, 0}}; 
+static int gKernelOfsFwd[][2] =
+	{          {-1, -2},          {1, -2},
+	 {-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {2, -1},
+	           {-1, 0}};
 
 static int gKernelValsFwd[] =
 	{567, 567,
 	567, 358, 254, 358, 567,
 	254};
 
-static int gKernelOfsRev[][2] = 
-	{                            
+static int gKernelOfsRev[][2] =
+	{
 		                          {1, 0},
-	  {-2, 1},  {-1, 1}, {0, 1},  {1, 1}, {2, 1}, 
-	            {-1, 2},          {1, 2}}; 
+	  {-2, 1},  {-1, 1}, {0, 1},  {1, 1}, {2, 1},
+	            {-1, 2},          {1, 2}};
 
 static int gKernelValsRev[] =
 	{    254,
@@ -495,62 +495,62 @@ static void ChamferedDistanceTransformInit(ImageData* inImage, ImageData* outIma
 
 	if (!invert)
 	{
-		for (int y = 0; y < oh; y++)			
+		for (int y = 0; y < oh; y++)
 			for (int x = 0; x < ow; x++)
 				out[x+y*ow] = inf;
 
-		for (int y = 0; y < ih; y++)	
+		for (int y = 0; y < ih; y++)
 		{
 			for (int x = 0; x < iw; x++)
 			{
 				int anAlpha = in[x+y*iw]>>24;
 				if (anAlpha != 0)
-				{					
+				{
 					int aVal = (255 - anAlpha);
-					out[(x+ox)+(y+oy)*ow] = aVal + aVal / 32;					
+					out[(x+ox)+(y+oy)*ow] = aVal + aVal / 32;
 				}
 				else
 					out[(x+ox)+(y+oy)*ow] = inf;
-			}	
+			}
 		}
 	}
 	else
 	{
-		for (int y = 0; y < oh; y++)			
+		for (int y = 0; y < oh; y++)
 			for (int x = 0; x < ow; x++)
 				out[x+y*ow] = 0;
 
 		if (softSize != 0)
 		{
-			for (int y = 0; y < ih; y++)	
+			for (int y = 0; y < ih; y++)
 			{
 				for (int x = 0; x < iw; x++)
 				{
 					int anAlpha = in[x+y*iw]>>24;
 					int aVal;
 
-					if (anAlpha > 128)					
+					if (anAlpha > 128)
 						aVal = (anAlpha - 128) * (softSize + 1)*2;
-					else 					
+					else
 						aVal = 0;
-					
-					out[(x+ox)+(y+oy)*ow] = aVal;					
+
+					out[(x+ox)+(y+oy)*ow] = aVal;
 				}
 			}
 		}
 		else
 		{
-			for (int y = 0; y < ih; y++)	
+			for (int y = 0; y < ih; y++)
 			{
 				for (int x = 0; x < iw; x++)
 				{
 					int anAlpha = in[x+y*iw]>>24;
 					if (anAlpha == 255)
-					{					
+					{
 						out[(x+ox)+(y+oy)*ow] = inf;
 					}
 					else
-					{					
+					{
 						out[(x+ox)+(y+oy)*ow] = anAlpha + anAlpha / 32;
 					}
 				}
@@ -565,7 +565,7 @@ static void ChamferedDistanceTransformSlow(uint32* out, int width, int height, i
 
 	int kernelCountFwd = sizeof(gKernelValsFwd) / sizeof(int);
 	int kernelCountRev = sizeof(gKernelValsRev) / sizeof(int);
-			
+
 	for (int y = startY; y < endY; y++)
 	{
 		for (int x = startX; x < endX; x++)
@@ -579,7 +579,7 @@ static void ChamferedDistanceTransformSlow(uint32* out, int width, int height, i
 					out[x+y*width] = aVal;
 			}
 		}
-	}	
+	}
 
 	for (int y = endY - 1; y >= startY; y--)
 	{
@@ -616,7 +616,7 @@ static void ChamferedDistanceTransform(uint32* out, int width, int height)
 	// Do inner region (no clamping)
 	int kernelCountFwd = sizeof(gKernelValsFwd) / sizeof(int);
 	int kernelCountRev = sizeof(gKernelValsRev) / sizeof(int);
-	
+
 	int aStartX = 2;
 	int aStartY = 2;
 	int aEndX = width - 2;
@@ -635,7 +635,7 @@ static void ChamferedDistanceTransform(uint32* out, int width, int height)
 					out[x+y*width] = aVal;
 			}
 		}
-	}	
+	}
 
 	for (int y = aEndY - 1; y >= aStartY; y--)
 	{
@@ -683,12 +683,12 @@ static void CreateNormalMap(uint32* in, uint32* out, int width, int height, floa
             const float b = (float)(bottom);
             const float bl = (float)(bottomLeft);
             const float l = (float) (left);
-			
+
             // sobel filter
             float dX = (tr + 2.0f * r + br) - (tl + 2.0f * l + bl);
             float dY = (bl + 2.0f * b + br) - (tl + 2.0f * t + tr);
             float dZ = depth * 10 * 0x100;
-			
+
 			float len = sqrt(dX*dX + dY*dY + dZ*dZ);
 			dX /= len;
 			dY /= len;
@@ -703,10 +703,10 @@ static void CreateNormalMap(uint32* in, uint32* out, int width, int height, floa
 			}
 			else
 			{
-				out[x+y*width] = 
+				out[x+y*width] =
 					((int) (dX * 0x7F + 0x80 + 0.5f)) |
 					((int) (dY * 0x7F + 0x80 + 0.5f) << 8) |
-					((int) (dZ * 0xFF) << 16) | 
+					((int) (dZ * 0xFF) << 16) |
 					0xFF000000;
 			}
 		}
@@ -726,19 +726,19 @@ static void AntiAliasIndices(uint32* in, int width, int height)
 			int val2 = in[(x+1)+y*w];
 			int val3 = in[x+(y+1)*w];
 			int val4 = in[(x+1)+(y+1)*w];
-			in[x+y*w] = ((val1 * 114) + (val2 * 57) + (val3 * 57) + (val4 * 28)) / 256;			
+			in[x+y*w] = ((val1 * 114) + (val2 * 57) + (val3 * 57) + (val4 * 28)) / 256;
 		}
 	}
 }
 
 static inline void BlendColors(PackedColor* destColor, PackedColor* underColor, PackedColor* overColor)
-{	
-	int a = 255 - overColor->a;			
+{
+	int a = 255 - overColor->a;
 	int oma = 255 - a;
 
 	destColor->r = ((underColor->r * a) + (overColor->r * oma)) / 255;
 	destColor->g = ((underColor->g * a) + (overColor->g * oma)) / 255;
-	destColor->b = ((underColor->b * a) + (overColor->b * oma)) / 255;		
+	destColor->b = ((underColor->b * a) + (overColor->b * oma)) / 255;
 }
 
 template <class CompareFunctor>
@@ -763,7 +763,7 @@ void ApplyBlendingRange(ImageData* origImage, ImageData* destImage, ImageData* c
 			for (int x = aStartX; x < aEndX; x++)
 			{
 				if ((functor(*checkColor) < rangeStart) || (functor(*checkColor) > rangeEnd))
-					*aDestColor = *origColor;			
+					*aDestColor = *origColor;
 				aDestColor++;
 				origColor++;
 				checkColor++;
@@ -781,7 +781,7 @@ void ApplyBlendingRange(ImageData* origImage, ImageData* destImage, ImageData* c
 			for (int x = aStartX; x < aEndX; x++)
 			{
 				if ((functor(*checkColor) < rangeStart) && (functor(*checkColor) > rangeEnd))
-					*aDestColor = *origColor;			
+					*aDestColor = *origColor;
 				aDestColor++;
 				origColor++;
 				checkColor++;
@@ -802,9 +802,9 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 	ImageData* aSrcImage = srcImage;
 
 	if (srcLayer->mImageAdjustment != NULL)
-	{	
+	{
 		if (((srcLayer->mLayerMask != NULL) && (srcLayer->mLayerMaskEnabled)) || (srcLayer->mVectorMask != NULL))
-		{			
+		{
 			if (srcLayer->mWidth == 0)
 			{
 				aSrcImage = new ImageData();
@@ -829,9 +829,9 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 			aCtx.mBlendHeight = dest->mHeight;
 			aCtx.mInnerImage = NULL;
 			aCtx.mOuterImage = NULL;
-			aCtx.mLayerInfo = srcLayer;	
+			aCtx.mLayerInfo = srcLayer;
 			aCtx.mLayerImage = NULL;
-			
+
 			return aDestImage;
 		}
 	}
@@ -851,7 +851,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		hasComplexBlending |= anEffect->mBlendMode != 'Nrml';
 	}
 
-	bool hasBlendingRanges = 
+	bool hasBlendingRanges =
 		(srcLayer->mBlendingRangeSourceStart != 0x00000000) ||
 		(srcLayer->mBlendingRangeSourceEnd != 0xFFFFFFFF) ||
 		(srcLayer->mBlendingRangeDestStart != 0x00000000) ||
@@ -868,23 +868,23 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 	hasInnerEffect = true;
 	hasOuterEffect = true;
 
-	needsOrigBits |= srcLayer->mLayerMaskHidesEffects;	
+	needsOrigBits |= srcLayer->mLayerMaskHidesEffects;
 
-	if (!srcLayer->mTransparencyShapesLayer)	
-		hasOuterEffect = false;	
+	if (!srcLayer->mTransparencyShapesLayer)
+		hasOuterEffect = false;
 
 	int minDestX = aSrcImage->mX - borderSize;
 	int maxDestX = aSrcImage->mX + aSrcImage->mWidth + borderSize;
 	int minDestY = aSrcImage->mY - borderSize;
 	int maxDestY = aSrcImage->mY + aSrcImage->mHeight + borderSize;
-	if (dest != NULL)	
+	if (dest != NULL)
 	{
 		minDestX = std::min(dest->mX, minDestX);
 		maxDestX = std::max(dest->mX + dest->mWidth, maxDestX);
 		minDestY = std::min(dest->mY, minDestY);
 		maxDestY = std::max(dest->mY + dest->mHeight, maxDestY);
-	}	
-	
+	}
+
 	ImageEffectCtx aCtx;
 	aCtx.mOrigImage = NULL;
 	aCtx.mBlendX = minDestX;
@@ -893,11 +893,11 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 	aCtx.mBlendHeight = maxDestY - minDestY;
 	aCtx.mInnerImage = NULL;
 	aCtx.mOuterImage = NULL;
-	aCtx.mLayerInfo = srcLayer;	
+	aCtx.mLayerInfo = srcLayer;
 	aCtx.mLayerImage = aSrcImage;
-	
+
 	ImageData* aDestImage = NULL;
-		
+
 	int minCopyX = aSrcImage->mX - borderSize;
 	int maxCopyX = aSrcImage->mX + aSrcImage->mWidth + borderSize;
 	int minCopyY = aSrcImage->mY - borderSize;
@@ -908,18 +908,18 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 
 	for (int i = 0; i < 4; i++)
 	{
-		bool needed = ((i == 0) && (hasInnerEffect)) || ((i == 1) && (hasOuterEffect)) || 
+		bool needed = ((i == 0) && (hasInnerEffect)) || ((i == 1) && (hasOuterEffect)) ||
 			((i == 2) && (needsOrigBits)) || ((i == 3) && (needsDestInit));
 		if (!needed)
 			continue;
-		
+
 		ImageData* effectImage = new ImageData();
 		effectImage->mX = aCtx.mBlendX;
 		effectImage->mY = aCtx.mBlendY;
-		effectImage->CreateNew(aCtx.mBlendWidth, aCtx.mBlendHeight);		
+		effectImage->CreateNew(aCtx.mBlendWidth, aCtx.mBlendHeight);
 
 		if (dest != NULL)
-		{						
+		{
 			int minX = dest->mX;
 			int maxX = dest->mX + dest->mWidth;
 			int minY = dest->mY;
@@ -968,7 +968,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		else if (i == 2)
 			aCtx.mOrigImage = effectImage;
 		else
-			aDestImage = effectImage;		
+			aDestImage = effectImage;
 	}
 
 	if (aDestImage == NULL)
@@ -976,24 +976,24 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		aDestImage = new ImageData();
 		aDestImage->mX = aCtx.mBlendX;
 		aDestImage->mY = aCtx.mBlendY;
-		aDestImage->CreateNew(aCtx.mBlendWidth, aCtx.mBlendHeight);	
+		aDestImage->CreateNew(aCtx.mBlendWidth, aCtx.mBlendHeight);
 	}
 
 	if (aCtx.mInnerImage != NULL)
 	{
 		if (insideImage != NULL)
-		{			
+		{
 			//BlendImage(aCtx.mInnerImage, aSrcImage, insideImage->mX - aCtx.mBlendX, insideImage->mY - aCtx.mBlendY, 1.0f, 'Nrml');
 		}
 		else if (srcLayer->mImageAdjustment != NULL)
-		{			
+		{
 			srcLayer->mImageAdjustment->ApplyImageAdjustment(srcLayer, aCtx.mInnerImage);
 			CrossfadeImage(dest, aCtx.mInnerImage, srcLayer->mFillOpacity / 255.0f);
-		}		
+		}
 		else
 		{
 			int blendMode = srcLayer->mBlendMode;
-				
+
 			float anAlpha = srcLayer->mFillOpacity / 255.0f;
 			if (srcLayer->mBlendInteriorEffectsAsGroup)
 				anAlpha = 1.0f;
@@ -1001,8 +1001,8 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 				anAlpha *= (srcLayer->mOpacity / 255.0f);
 			BlendImage(aCtx.mInnerImage, aSrcImage, aSrcImage->mX - aCtx.mBlendX, aSrcImage->mY - aCtx.mBlendY, anAlpha, blendMode, true);
 		}
-	}	
-	else 
+	}
+	else
 	{
 		float anAlpha = srcLayer->mFillOpacity / 255.0f;
 		if (srcLayer->mBlendInteriorEffectsAsGroup)
@@ -1011,24 +1011,24 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 			anAlpha *= (srcLayer->mOpacity / 255.0f);
 		BlendImage(aDestImage, aSrcImage, aSrcImage->mX - aCtx.mBlendX, aSrcImage->mY - aCtx.mBlendY, anAlpha, srcLayer->mBlendMode, aCtx.mOuterImage != NULL);
 	}
-	
+
 	if ((srcLayer->mLayerMaskHidesEffects) && (srcLayer->mLayerMaskEnabled))
 	{
 		aMask = new uint8[aCtx.mBlendWidth * aCtx.mBlendHeight];
 		memset(aMask, srcLayer->mLayerMaskDefault, aCtx.mBlendWidth * aCtx.mBlendHeight);
 		ImageData* anImage = aCtx.mOrigImage;
-				
+
 		int maskStartX = std::max(srcLayer->mLayerMaskX, anImage->mX);
 		int maskStartY = std::max(srcLayer->mLayerMaskY, anImage->mY);
 		int maskEndX = std::min(srcLayer->mLayerMaskX + srcLayer->mLayerMaskWidth, anImage->mX + anImage->mWidth);
 		int maskEndY = std::min(srcLayer->mLayerMaskY + srcLayer->mLayerMaskHeight, anImage->mY + anImage->mHeight);
-		
+
 		for (int y = maskStartY; y < maskEndY; y++)
-		{			
+		{
 			uint8* maskSrc = srcLayer->mLayerMask + (y - srcLayer->mLayerMaskY)*srcLayer->mLayerMaskWidth;
 			uint8* maskDest = aMask + (y - anImage->mY)*anImage->mWidth;
-			for (int x = maskStartX; x < maskEndX; x++)			
-				maskDest[x - anImage->mX] = maskSrc[x - srcLayer->mLayerMaskX];							
+			for (int x = maskStartX; x < maskEndX; x++)
+				maskDest[x - anImage->mX] = maskSrc[x - srcLayer->mLayerMaskX];
 		}
 	}
 
@@ -1058,16 +1058,16 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 
 	//aCtx.mOuterImage->mBits[0] = 0xFFFFFFFF;
 	//aCtx.mOuterImage->mBits[aCtx.mBlendWidth*aCtx.mBlendHeight-1] = 0xFFFFFFFF;
-	
+
 	if (srcLayer->mBlendInteriorEffectsAsGroup)
 	{
 		for (int y = 0; y < aSrcImage->mHeight; y++)
 		{
-			PackedColor* srcColor = (PackedColor*) (aSrcImage->mBits + y*aSrcImage->mWidth);			
+			PackedColor* srcColor = (PackedColor*) (aSrcImage->mBits + y*aSrcImage->mWidth);
 
-			for (int x = 0; x < aSrcImage->mWidth; x++)			
+			for (int x = 0; x < aSrcImage->mWidth; x++)
 			{
-				srcColor->a = (srcColor->a * srcLayer->mFillOpacity) / 255;			
+				srcColor->a = (srcColor->a * srcLayer->mFillOpacity) / 255;
 				srcColor++;
 			}
 		}
@@ -1080,7 +1080,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		{
 			for (int y = 0; y < borderSize; y++)
 				aDestImage->mBits[x+y*aCtx.mBlendWidth] = aCtx.mOuterImage->mBits[x+y*aCtx.mBlendWidth];
-			for (int y = aCtx.mBlendHeight-borderSize; y < aCtx.mBlendHeight; y++)							
+			for (int y = aCtx.mBlendHeight-borderSize; y < aCtx.mBlendHeight; y++)
 				aDestImage->mBits[x+y*aCtx.mBlendWidth] = aCtx.mOuterImage->mBits[x+y*aCtx.mBlendWidth];
 		}
 
@@ -1096,7 +1096,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		{
 			for (int x = aCtx.mBlendX; x < aCtx.mBlendX + aCtx.mBlendWidth; x++)
 			{
-				aDestImage->mBits[(x-aCtx.mBlendX)+(y-aCtx.mBlendY)*aCtx.mBlendWidth] = 
+				aDestImage->mBits[(x-aCtx.mBlendX)+(y-aCtx.mBlendY)*aCtx.mBlendWidth] =
 					aCtx.mOuterImage->mBits[(x-aCtx.mBlendX)+(y-aCtx.mBlendY)*aCtx.mBlendWidth];
 			}
 		}
@@ -1105,8 +1105,8 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		/*int aSize = aCtx.mBlendWidth*aCtx.mBlendHeight;
 		for (int i = 0; i < aSize; i++)
 			aDestImage->mBits[i] = aCtx.mOuterImage->mBits[i];*/
-			
-			
+
+
 		if (aCtx.mInnerImage == NULL)
 		{
 			for (int y = 0; y < aSrcImage->mHeight; y++)
@@ -1116,10 +1116,10 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 				PackedColor* effectOutsideColor = (PackedColor*) (aCtx.mOuterImage->mBits + borderSize + ((y + borderSize) * aCtx.mBlendWidth));
 
 				for (int x = 0; x < aSrcImage->mWidth; x++)
-				{						
-					int a = srcColor->a;			
-					
-					int oma = 255 - a;												
+				{
+					int a = srcColor->a;
+
+					int oma = 255 - a;
 
 					int newDestAlpha = ((aDestColor->a * a) + (effectOutsideColor->a * oma)) / 255;
 					if (newDestAlpha != 0)
@@ -1135,10 +1135,10 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 
 					srcColor++;
 					aDestColor++;
-					effectOutsideColor++;							
+					effectOutsideColor++;
 				}
 			}
-		}			
+		}
 	}
 
 	if (aCtx.mInnerImage != NULL)
@@ -1148,7 +1148,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 			if (aMask != NULL)
 			{
 				for (int y = 0; y < aSrcImage->mHeight; y++)
-				{	
+				{
 					uint8* maskData = (aMask + borderSize + ((y + borderSize) * aCtx.mBlendWidth));
 					PackedColor* srcColor = (PackedColor*) (aSrcImage->mBits + y*aSrcImage->mWidth);
 					PackedColor* aDestColor = (PackedColor*) (aDestImage->mBits + borderSize + (y + borderSize) * aDestImage->mWidth);
@@ -1163,11 +1163,11 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 						{
 							_asm nop;
 						}*/
-						
+
 						uint32 insidePct = srcColor->a * (*maskData);
 						uint32 outsidePct = (255 - srcColor->a) * (*maskData);
 						uint32 origPct = 255 * (255 - *maskData);
-							
+
 						uint32 insideContrib = effectInsideColor->a * insidePct;
 						uint32 outsideContrib = effectOutsideColor->a * outsidePct;
 						uint32 origContrib = origColor->a * origPct;
@@ -1175,23 +1175,23 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 
 						int newDestAlpha = (insideContrib + outsideContrib + origContrib) / 255 / 255;
 						if (newDestAlpha != 0)
-						{	
+						{
 							int ma = *maskData;
 							int moma = 255 - ma;
-														
+
 							aDestColor->r = ((insideContrib * effectInsideColor->r) + (outsideContrib * effectOutsideColor->r) + (origContrib * origColor->r)) / totalContrib;
 							aDestColor->g = ((insideContrib * effectInsideColor->g) + (outsideContrib * effectOutsideColor->g) + (origContrib * origColor->g)) / totalContrib;
-							aDestColor->b = ((insideContrib * effectInsideColor->b) + (outsideContrib * effectOutsideColor->b) + (origContrib * origColor->b)) / totalContrib;								
+							aDestColor->b = ((insideContrib * effectInsideColor->b) + (outsideContrib * effectOutsideColor->b) + (origContrib * origColor->b)) / totalContrib;
 						}
-						
+
 						aDestColor->a = newDestAlpha;
-					
+
 						origColor++;
 						maskData++;
 						srcColor++;
 						aDestColor++;
 						effectInsideColor++;
-						effectOutsideColor++;				
+						effectOutsideColor++;
 					}
 				}
 			}
@@ -1204,7 +1204,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 					PackedColor* aDestColor = (PackedColor*) (aDestImage->mBits + ctxOffset);
 					PackedColor* effectInsideColor = (PackedColor*) (aCtx.mInnerImage->mBits + ctxOffset);
 					PackedColor* effectOutsideColor = (PackedColor*) (aCtx.mOuterImage->mBits + ctxOffset);
-					
+
 					for (int x = 0; x < aSrcImage->mWidth; x++)
 					{
 						if (srcColor->a == 0)
@@ -1213,12 +1213,12 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 						}
 						else
 						{
-							int a = srcColor->a;			
+							int a = srcColor->a;
 							int oma = 255 - a;
-											
-							int newDestAlpha = ((effectInsideColor->a * a) + (effectOutsideColor->a * oma)) / 255;					
+
+							int newDestAlpha = ((effectInsideColor->a * a) + (effectOutsideColor->a * oma)) / 255;
 							if (newDestAlpha != 0)
-							{									
+							{
 								int ca = (255 * effectInsideColor->a * a) / (effectInsideColor->a * a + effectOutsideColor->a * oma);
 								int coma = 255 - ca;
 
@@ -1231,12 +1231,12 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 							{
 								*aDestColor = *effectOutsideColor;
 							}
-						}							
-						
+						}
+
 						srcColor++;
 						aDestColor++;
 						effectInsideColor++;
-						effectOutsideColor++;				
+						effectOutsideColor++;
 					}
 				}
 			}
@@ -1244,16 +1244,16 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		else
 		{
 			for (int y = 0; y < aSrcImage->mHeight; y++)
-			{			
+			{
 				PackedColor* srcColor = (PackedColor*) (aSrcImage->mBits + y*aSrcImage->mWidth);
 				PackedColor* aDestColor = (PackedColor*) (aDestImage->mBits + borderSize + (y + borderSize) * aDestImage->mWidth);
-				PackedColor* effectInsideColor = (PackedColor*) (aCtx.mInnerImage->mBits + borderSize + ((y + borderSize) * aCtx.mBlendWidth));					
+				PackedColor* effectInsideColor = (PackedColor*) (aCtx.mInnerImage->mBits + borderSize + ((y + borderSize) * aCtx.mBlendWidth));
 
 				for (int x = 0; x < aSrcImage->mWidth; x++)
 				{
 					//if (srcColor->a != 0)
 					{
-						int a = 255 - srcColor->a;						
+						int a = 255 - srcColor->a;
 
 						if (!srcLayer->mTransparencyShapesLayer)
 							a = 0;
@@ -1275,7 +1275,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 
 					srcColor++;
 					aDestColor++;
-					effectInsideColor++;							
+					effectInsideColor++;
 				}
 			}
 		}
@@ -1300,10 +1300,10 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		PackedColor* blendingRangeSourceEnd = (PackedColor*) &(srcLayer->mBlendingRangeSourceEnd);
 		PackedColor* blendingRangeDestStart = (PackedColor*) &(srcLayer->mBlendingRangeDestStart);
 		PackedColor* blendingRangeDestEnd = (PackedColor*) &(srcLayer->mBlendingRangeDestEnd);
-		
+
 		ApplyBlendingRange(dest, aDestImage, aSrcImage, blendingRangeSourceStart->r, blendingRangeSourceEnd->r, PackedColorGetR());
 		ApplyBlendingRange(dest, aDestImage, dest, blendingRangeDestStart->r, blendingRangeDestEnd->r, PackedColorGetR());
-		
+
 		ApplyBlendingRange(dest, aDestImage, aSrcImage, blendingRangeSourceStart->g, blendingRangeSourceEnd->g, PackedColorGetG());
 		ApplyBlendingRange(dest, aDestImage, dest, blendingRangeDestStart->g, blendingRangeDestEnd->g, PackedColorGetG());
 
@@ -1315,7 +1315,7 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 	}
 
 	if (srcLayer->mChannelMask != 0xFFFFFFFF)
-	{		
+	{
 		for (int i = 0; i < aDestImage->mWidth*aDestImage->mHeight; i++)
 			aDestImage->mBits[i] &= srcLayer->mChannelMask;
 
@@ -1323,17 +1323,17 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		int aStartY = dest->mY;
 		int aEndX = dest->mX + dest->mWidth;
 		int aEndY = dest->mY + dest->mHeight;
-		
+
 		for (int y = aStartY; y < aEndY; y++)
 		{
 			uint32* aDestColor = aDestImage->mBits + (aStartX - aDestImage->mX) + ((y - aDestImage->mY) * aDestImage->mWidth);
 			uint32* origColor = dest->mBits + (aStartX - dest->mX) + ((y - dest->mY) * dest->mWidth);
-			
+
 			for (int x = aStartX; x < aEndX; x++)
 			{
-				*aDestColor |= (*origColor & ~srcLayer->mChannelMask);				
+				*aDestColor |= (*origColor & ~srcLayer->mChannelMask);
 				aDestColor++;
-				origColor++;				
+				origColor++;
 			}
 		}
 	}
@@ -1347,8 +1347,8 @@ ImageData* ImageEffects::FlattenInto(ImageData* dest, PSDLayerInfo* srcLayer, Im
 		delete aSrcImage;
 	}
 
-	delete aMask;	
-	return aDestImage;	
+	delete aMask;
+	return aDestImage;
 }
 
 void ImageEffects::AddEffect(BaseImageEffect* effect)
@@ -1359,7 +1359,7 @@ void ImageEffects::AddEffect(BaseImageEffect* effect)
 //
 
 BaseImageEffect::BaseImageEffect()
-{	
+{
 	mContourData = NULL;
 	mGradientData = NULL;
 	mInitialized = false;
@@ -1379,14 +1379,14 @@ void BaseImageEffect::Apply(ImageEffectCtx* ctx)
 {
 	ImageData* effectImage = new ImageData();
 
-	effectImage->CreateNew(ctx->mBlendWidth, ctx->mBlendHeight);	
+	effectImage->CreateNew(ctx->mBlendWidth, ctx->mBlendHeight);
 	effectImage->mX = ctx->mBlendX;
 	effectImage->mY = ctx->mBlendY;
 	Apply(ctx->mLayerInfo, ctx->mLayerImage, effectImage);
-	
+
 	int mixType = GetMixType();
-	if ((mixType == IMAGEMIX_INNER) || (mixType == IMAGEMIX_OVER))	
-		BlendImage(ctx->mInnerImage, effectImage, 0, 0, (float) mOpacity / 100.0f, mBlendMode);	
+	if ((mixType == IMAGEMIX_INNER) || (mixType == IMAGEMIX_OVER))
+		BlendImage(ctx->mInnerImage, effectImage, 0, 0, (float) mOpacity / 100.0f, mBlendMode);
 	if ((mixType == IMAGEMIX_OUTER) || (mixType == IMAGEMIX_OVER))
 		BlendImage(ctx->mOuterImage, effectImage, 0, 0, (float) mOpacity / 100.0f, mBlendMode);
 
@@ -1423,7 +1423,7 @@ void ImageShadowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 
 	float spread = (float) mSpread / 100.0f;
 
-	float spreadSize = (float) (int) (mSize * spread + 0.5f);		
+	float spreadSize = (float) (int) (mSize * spread + 0.5f);
 	int distTransSize = 0;
 
 	ImageData* tempImage = new ImageData();
@@ -1446,15 +1446,15 @@ void ImageShadowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 		ChamferedDistanceTransformInit(imageData, tempImage, isInside);
 		ChamferedDistanceTransform(tempImage->mBits, w, h);
 		for (int i = 0; i < aSize; i++)
-		{				
+		{
 			float dist = tempImage->mBits[i] / 256.0f;
 			dist -= spreadSize;
 			if (dist < 0)
 				tempImage->mBits[i] = 0xFF00;
 			else if (dist < 1.0f)
-				tempImage->mBits[i] = BFClamp((int) ((1.0f - dist) * 255.0f * 256.0f), 0, 0xFF00);				
+				tempImage->mBits[i] = BFClamp((int) ((1.0f - dist) * 255.0f * 256.0f), 0, 0xFF00);
 			else
-				tempImage->mBits[i] = 0;				
+				tempImage->mBits[i] = 0;
 		}
 
 		aRadiusLeft -= spreadSize;
@@ -1463,14 +1463,14 @@ void ImageShadowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 	{
 		SoftBlurInit(imageData, tempImage, isInside);
 	}
-	
+
 	float radiusOffset = 1.2f;
 	float blurRadius = aRadiusLeft - radiusOffset;
 	if (aRadiusLeft <= 2)
 		blurRadius = 0.5f;
 	if (aRadiusLeft != 0)
 		SoftBlur(tempImage->mBits, w, h, blurRadius, 0);
-	
+
 	bool doFrontTaper = (!isInside) &&
 		(((mContour.GetVal(0) != 0) || (mNoise != 0)));
 
@@ -1479,7 +1479,7 @@ void ImageShadowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 
 	memset(destImageData->mBits, 0, w*h*sizeof(uint32));
 
-	float noise = (float) mNoise / 100.0f;	
+	float noise = (float) mNoise / 100.0f;
 
 	float angle = mUseGlobalLight ? (float) layerInfo->mPSDReader->mGlobalAngle : (float) mLocalAngle;
 	angle *= BF_PI / 180.0f;
@@ -1493,29 +1493,29 @@ void ImageShadowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 		for (int x = std::max(0, ofsX); x < maxX; x++)
 		{
 			int i = x+y*w;
-			
+
 			PackedColor* aDestColor = (PackedColor*) (destImageData->mBits + i);
-		
+
 			int blurVal = tempImage->mBits[(x-ofsX)+(y-ofsY)*w];
 
 			int idx = (blurVal * (CONTOUR_DATA_SIZE - 1) / 255) / 256;
-		
+
 			BF_ASSERT(idx >= 0);
-			BF_ASSERT(idx < CONTOUR_DATA_SIZE);		
+			BF_ASSERT(idx < CONTOUR_DATA_SIZE);
 
 			int gradientIdx = mContourData[idx];
-					
+
 			BF_ASSERT(gradientIdx >= 0);
-			BF_ASSERT(gradientIdx < GRADIENT_DATA_SIZE);	
+			BF_ASSERT(gradientIdx < GRADIENT_DATA_SIZE);
 
 			destImageData->mBits[i] = ((gradientIdx * 255 / (GRADIENT_DATA_SIZE - 1)) << 24) | (mColor & 0x00FFFFFF);
-			//TODO: Apply 'front taper?'				
+			//TODO: Apply 'front taper?'
 
 			if (mNoise > 0)
-			{				
+			{
 				if (rand() % 5 < 4)
-				{				
-					float pixNoise = 256 * noise;				
+				{
+					float pixNoise = 256 * noise;
 					if (aDestColor->a > 0)
 					{
 						float randPct = ((Rand() % 10000) / 5000.0f) - 1.0f;
@@ -1536,14 +1536,14 @@ void ImageShadowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 				aDestColor->r = 255;
 			}*/
 		}
-	}		
+	}
 
 	delete tempImage;
 }
 
 int ImageShadowEffect::GetNeededBorderSize()
 {
-	return (int) mSize + (int) mDistance;	
+	return (int) mSize + (int) mDistance;
 }
 
 int ImageDropShadowEffect::GetMixType()
@@ -1559,9 +1559,9 @@ void ImageGlowEffect::Init()
 ///
 
 void ImageGlowEffect::CreateContourAndGradientData()
-{		
+{
 	mContourData = CreateContourDataTable(&mContour, (float) mRange / 100.0f);
-	mGradientData = CreateGradientDataTable(mColorGradient);	
+	mGradientData = CreateGradientDataTable(mColorGradient);
 }
 
 int ImageGlowEffect::GetNeededBorderSize()
@@ -1576,16 +1576,16 @@ void ChokedPixelTransform(ImageData* src, ImageData* dest, float radius, float c
 	int h =  dest->mHeight;
 	uint32* aDest = dest->mBits;
 
-	ChamferedDistanceTransformInit(src, dest, invert, soften ? (int) radius : 0);	
+	ChamferedDistanceTransformInit(src, dest, invert, soften ? (int) radius : 0);
 	ChamferedDistanceTransform(dest->mBits, w, h);
-		
+
 	int aSize = w*h;
 
 	int chokePixels = (int) (radius * chokePct + 0.5f);
-	
+
 	bool fullChoke = chokePixels == radius;
 
-	uint32* tempBuffer = new uint32[w*h]; 
+	uint32* tempBuffer = new uint32[w*h];
 	uint32* exterior = dest->mBits;
 	uint32* anInterior = tempBuffer;
 
@@ -1594,31 +1594,31 @@ void ChokedPixelTransform(ImageData* src, ImageData* dest, float radius, float c
 
 	if (soften)
 	{
-		uint32* in = src->mBits;		
+		uint32* in = src->mBits;
 
 		int iw = src->mWidth;
 		int ih = src->mHeight;
-		
+
 		int ox = src->mX - dest->mX;
 		int oy = src->mY - dest->mY;
-		
-		for (int y = 0; y < ih; y++)	
+
+		for (int y = 0; y < ih; y++)
 		{
 			for (int x = 0; x < iw; x++)
 			{
 				int anAlpha = in[x+y*iw]>>24;
-		
+
 				int i = (x+ox)+(y+oy)*w;
 
-				float dist = aDest[i] / 256.0f;		
-				dist -= chokePixels + 0.001f;		
+				float dist = aDest[i] / 256.0f;
+				dist -= chokePixels + 0.001f;
 
-				if (dist < 0)					
-					anInterior[i] = 0;				
-				else if (dist < 1.0f)				
-					anInterior[i] = (int) (dist * 256);				
-				else				
-					anInterior[i] = (int) (dist * 256);					
+				if (dist < 0)
+					anInterior[i] = 0;
+				else if (dist < 1.0f)
+					anInterior[i] = (int) (dist * 256);
+				else
+					anInterior[i] = (int) (dist * 256);
 
 				if (anAlpha <= 128)
 					exterior[i] = (int) ((128.0f - anAlpha) * (radius * 2 + 2) + 0.5f);
@@ -1626,14 +1626,14 @@ void ChokedPixelTransform(ImageData* src, ImageData* dest, float radius, float c
 					exterior[i] = 0;
 			}
 		}
-				
+
 		inf = (int) (128.0f * (radius * 2 + 2) + 0.5f);
 		for (int x = 0; x < w; x++)
 		{
-			for (int y = 0; y < oy; y++)			
-				exterior[x+y*w] = inf;			
-			for (int y = oy+ih; y < h; y++)			
-				exterior[x+y*w] = inf;			
+			for (int y = 0; y < oy; y++)
+				exterior[x+y*w] = inf;
+			for (int y = oy+ih; y < h; y++)
+				exterior[x+y*w] = inf;
 		}
 
 		for (int y = oy; y < oy+ih; y++)
@@ -1647,18 +1647,18 @@ void ChokedPixelTransform(ImageData* src, ImageData* dest, float radius, float c
 	else
 	{
 		for (int i = 0; i < aSize; i++)
-		{	
-			float dist = aDest[i] / 256.0f;		
-			dist -= chokePixels + 0.001f;		
+		{
+			float dist = aDest[i] / 256.0f;
+			dist -= chokePixels + 0.001f;
 
 			if (dist < 0)
-			{			
+			{
 				exterior[i] = inf;
 				anInterior[i] = 0;
 			}
 			else if (dist < 1.0f)
 			{
-				exterior[i] = BFClamp((int) ((1.0f - dist) * 256.0f), 0, 0xFF);								
+				exterior[i] = BFClamp((int) ((1.0f - dist) * 256.0f), 0, 0xFF);
 				anInterior[i] = (int) (dist * 256);
 			}
 			else
@@ -1668,41 +1668,41 @@ void ChokedPixelTransform(ImageData* src, ImageData* dest, float radius, float c
 			}
 		}
 	}
-	
+
 	ChamferedDistanceTransform(exterior, w, h);
 
-	float interiorDiv = (rad + 0.5f);		
+	float interiorDiv = (rad + 0.5f);
 
 	float interiorOffset = 0;
 
 	float exteriorOffset = -255;
 	float exteriorDivide = (radius + 1.0f - chokePixels);
-	
-	if (soften)	
+
+	if (soften)
 	{
-		exteriorOffset = 0;			
+		exteriorOffset = 0;
 	}
 
 	if (fullChoke)
 	{
-		for (int i = 0; i < aSize; i++)		
-			aDest[i] = std::min((uint32)0xFF00, exterior[i] * 256);		
+		for (int i = 0; i < aSize; i++)
+			aDest[i] = std::min((uint32)0xFF00, exterior[i] * 256);
 	}
 	else
 	{
 		for (int i = 0; i < aSize; i++)
-		{	
-			uint32 alphaVal = (uint32) (std::max(0.0f, (int) exterior[i] + exteriorOffset ) * 256 / exteriorDivide);			
+		{
+			uint32 alphaVal = (uint32) (std::max(0.0f, (int) exterior[i] + exteriorOffset ) * 256 / exteriorDivide);
 			alphaVal = std::min((uint32) 0xFF00, (uint32) (alphaVal * 0.5f + 0x7F00));
-			
-			uint32 alphaVal2 = (uint32) (std::max(0.0f, (int) anInterior[i] + interiorOffset) * 256 / interiorDiv);			
+
+			uint32 alphaVal2 = (uint32) (std::max(0.0f, (int) anInterior[i] + interiorOffset) * 256 / interiorDiv);
 
 			if (alphaVal <= 0x7F80)
 				alphaVal = (uint32) std::min((uint32) 0xFF00, (uint32) std::max(0.0f, (0xFF00 - (int) alphaVal2) * 0.5f));
-			
+
 			aDest[i] = alphaVal;
 			BF_ASSERT(alphaVal <= 0xFF00);
-		}	
+		}
 	}
 
 	delete [] tempBuffer;
@@ -1715,24 +1715,24 @@ void ImageOuterGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 
 	int w = destImageData->mWidth;
 	int h = destImageData->mHeight;
-	
+
 	ImageData* newImage = destImageData;
 
 	float radius = (float) mSize;
-	
+
 	int aSize = w*h;
-		
+
 	float spread = (float) mSpread / 100.0f;
 
-	float spreadSize = (float) (int) (mSize * spread + 0.5f);		
+	float spreadSize = (float) (int) (mSize * spread + 0.5f);
 	int distTransSize = 0;
 
 	if (mTechnique == 'PrBL')
 	{
 		ChokedPixelTransform(imageData, newImage, radius, spread, false);
-	}	
+	}
 	else if (mTechnique == 'SfBL')
-	{	
+	{
 		radius = std::max(radius, 2.0f); // Radius of '1' gets bumped up to 2
 		float aRadiusLeft = radius;
 
@@ -1746,15 +1746,15 @@ void ImageOuterGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 			ChamferedDistanceTransformInit(imageData, newImage, false);
 			ChamferedDistanceTransform(newImage->mBits, w, h);
 			for (int i = 0; i < aSize; i++)
-			{				
+			{
 				float dist = newImage->mBits[i] / 256.0f;
 				dist -= spreadSize;
 				if (dist < 0)
 					newImage->mBits[i] = 0xFF00;
 				else if (dist < 1.0f)
-					newImage->mBits[i] = BFClamp((int) ((1.0f - dist) * 255.0f * 256.0f), 0, 0xFF00);				
+					newImage->mBits[i] = BFClamp((int) ((1.0f - dist) * 255.0f * 256.0f), 0, 0xFF00);
 				else
-					newImage->mBits[i] = 0;				
+					newImage->mBits[i] = 0;
 			}
 
 			aRadiusLeft -= spreadSize;
@@ -1763,20 +1763,20 @@ void ImageOuterGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 		{
 			SoftBlurInit(imageData, newImage, false);
 		}
-		
+
 		float radiusOffset = 1.2f;
 		float blurRadius = aRadiusLeft - radiusOffset;
 		if (aRadiusLeft <= 2)
 			blurRadius = 0.5f;
 		if ((aRadiusLeft != 0) && (mSize != 0))
 			SoftBlur(newImage->mBits, w, h, blurRadius, 0);
-	}		
+	}
 
 	//OutputDebugStrF("Contour Time: %d\r\n", timeGetTime() - tickStart);
-		
-	bool doFrontTaper = 
+
+	bool doFrontTaper =
 		((mColorGradient[3].GetVal((1.0f - mContour.GetVal(0) / 255.0f) * mColorGradient[3].mXSize) != 0) || (mNoise != 0));
-	
+
 	if ((mAntiAliased) && (!mContour.IsDefault()) && (!doFrontTaper))
 		AntiAliasIndices(newImage->mBits, w, h);
 
@@ -1784,23 +1784,23 @@ void ImageOuterGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 	float jitter = (float) mJitter / 100.0f;
 
 	for (int i = 0; i < aSize; i++)
-	{		
+	{
 		PackedColor* srcColor = (PackedColor*) (imageData->mBits + i);
 		PackedColor* aDestColor = (PackedColor*) (newImage->mBits + i);
-		
-		int blurVal = newImage->mBits[i];			
+
+		int blurVal = newImage->mBits[i];
 
 		int idx = (blurVal * (CONTOUR_DATA_SIZE - 1) / 255) / 256;
-		
+
 		BF_ASSERT(idx >= 0);
-		BF_ASSERT(idx < CONTOUR_DATA_SIZE);		
+		BF_ASSERT(idx < CONTOUR_DATA_SIZE);
 
 		int gradientIdx = mContourData[idx];
 
 		if ((jitter > 0) && (mHasGradient))
 		{
 			if (rand() % 5 < 4)
-			{	
+			{
 				float idxJitter = GRADIENT_DATA_SIZE * jitter;
 				if (idx != 0)
 				{
@@ -1811,15 +1811,15 @@ void ImageOuterGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 		}
 
 		BF_ASSERT(gradientIdx >= 0);
-		BF_ASSERT(gradientIdx < GRADIENT_DATA_SIZE);	
+		BF_ASSERT(gradientIdx < GRADIENT_DATA_SIZE);
 
 		newImage->mBits[i] = mGradientData[gradientIdx];
 
 		if (mNoise > 0)
 		{
 			if (rand() % 5 < 4)
-			{				
-				float pixNoise = 256 * noise;				
+			{
+				float pixNoise = 256 * noise;
 				if (aDestColor->a > 0)
 				{
 					float randPct = ((Rand() % 10000) / 5000.0f) - 1.0f;
@@ -1832,7 +1832,7 @@ void ImageOuterGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 		{
 			float minAlpha = std::min(1.0f, (idx / 4095.0f) * 8.4f);
 			aDestColor->a = std::min(aDestColor->a, (uint8) (minAlpha * 255));
-		}		
+		}
 	}
 }
 
@@ -1850,34 +1850,34 @@ void ImageInnerGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 
 	int w = sw;
 	int h = sh;
-	
-	ImageData* newImage = destImageData;	
+
+	ImageData* newImage = destImageData;
 
 	float radius = (float) mSize;
-	
+
 	int aSize = w*h;
 	float choke = (float) mChoke / 100.0f;
-		
+
 	float chokePixels = (float) (int) (choke * mSize + 0.5f);
-	
+
 	bool fullChoke = chokePixels == mSize;
-	
+
 	float rad = radius + 0.5f - chokePixels;
 	float inf = (radius + 1.5f) * 256;
-	
+
 	if (mTechnique == 'PrBL')
-	{		
+	{
 		ChokedPixelTransform(imageData, newImage, radius, choke, true);
-	}	
+	}
 	else if (mTechnique == 'SfBL')
-	{	
+	{
 		// Soft blur
 		float aRadiusLeft = radius;
-				
+
 		if (chokePixels > 0)
 		{
 			aRadiusLeft -= chokePixels;
-			
+
 			ChamferedDistanceTransformInit(imageData, newImage, true);
 			ChamferedDistanceTransform(newImage->mBits, w, h);
 
@@ -1886,28 +1886,28 @@ void ImageInnerGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 				float dist = newImage->mBits[i] / 256.0f;
 				dist -= chokePixels + 0.001f;
 
-				/*if (((int) (imageData->mBits[i] >> 24) == 255) && (dist >= 0))				
-					newImage->mBits[i] = std::max(0, 256 - (int) (dist * 256)) * 256;					
-				else	
+				/*if (((int) (imageData->mBits[i] >> 24) == 255) && (dist >= 0))
+					newImage->mBits[i] = std::max(0, 256 - (int) (dist * 256)) * 256;
+				else
 					newImage->mBits[i] = 255*256;				*/
 				if (dist < 0)
 					newImage->mBits[i] = 0xFF00;
 				else if (dist < 1.0f)
-					newImage->mBits[i] = BFClamp((int) ((1.0f - dist) * 255.0f * 256.0f), 0, 0xFF00);				
+					newImage->mBits[i] = BFClamp((int) ((1.0f - dist) * 255.0f * 256.0f), 0, 0xFF00);
 				else
-					newImage->mBits[i] = 0;				
+					newImage->mBits[i] = 0;
 			}
 		}
 		else
 		{
 			SoftBlurInit(imageData, newImage, true);
 		}
-		
-		SoftBlur(newImage->mBits, w, h, GetSoftBlurRadius(radius, aRadiusLeft), 0xFF00);		
-	}	
+
+		SoftBlur(newImage->mBits, w, h, GetSoftBlurRadius(radius, aRadiusLeft), 0xFF00);
+	}
 
 	//OutputDebugStrF("Contour Time: %d\r\n", timeGetTime() - tickStart);
-	
+
 	if ((mAntiAliased) && (!mContour.IsDefault()))
 		AntiAliasIndices(newImage->mBits, w, h);
 
@@ -1917,20 +1917,20 @@ void ImageInnerGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 	for (int i = 0; i < aSize; i++)
 	{
 		PackedColor* aDestColor = (PackedColor*) (newImage->mBits + i);
-		
-		int blurVal = newImage->mBits[i];			
+
+		int blurVal = newImage->mBits[i];
 
 		int idx = (blurVal * (CONTOUR_DATA_SIZE - 1) / 255) / 256;
-		
+
 		BF_ASSERT(idx >= 0);
-		BF_ASSERT(idx < CONTOUR_DATA_SIZE);		
-		
+		BF_ASSERT(idx < CONTOUR_DATA_SIZE);
+
 		int gradientIdx = mContourData[idx];
 
 		if ((jitter > 0) && (mHasGradient))
 		{
 			if (rand() % 5 < 4)
-			{	
+			{
 				float idxJitter = GRADIENT_DATA_SIZE * jitter;
 				if (idx != 0)
 				{
@@ -1941,18 +1941,18 @@ void ImageInnerGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 		}
 
 		BF_ASSERT(gradientIdx >= 0);
-		BF_ASSERT(gradientIdx < GRADIENT_DATA_SIZE);		
-				
+		BF_ASSERT(gradientIdx < GRADIENT_DATA_SIZE);
+
 		newImage->mBits[i] = mGradientData[gradientIdx];
-		
+
 		if (mIsCenter)
 			aDestColor->a = std::max(0, 255 - aDestColor->a);
-		
+
 		if (mNoise > 0)
 		{
 			if (rand() % 5 < 4)
-			{				
-				float pixNoise = 256 * noise;				
+			{
+				float pixNoise = 256 * noise;
 				if (aDestColor->a > 0)
 				{
 					float randPct = ((Rand() % 10000) / 5000.0f) - 1.0f;
@@ -1960,7 +1960,7 @@ void ImageInnerGlowEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, 
 				}
 			}
 		}
-	}	
+	}
 }
 
 ///
@@ -1977,7 +1977,7 @@ ImageBevelEffect::~ImageBevelEffect()
 
 void ImageBevelEffect::Init()
 {
-	mGlossContourData = CreateContourDataTable(&mGlossContour);	
+	mGlossContourData = CreateContourDataTable(&mGlossContour);
 
 	if (mUseContour)
 	{
@@ -2001,7 +2001,7 @@ void ImageBevelEffect::Init()
 
 void ImageBevelEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* destImageData)
 {
-	
+
 }
 
 int ImageBevelEffect::GetMixType()
@@ -2027,10 +2027,10 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 	ImageData* anImageData = imageData;
 
 	ImageData* newImage = hiliteImage;
-		
+
 	float aDepth = (float) mDepth / 100.0f;
 	float aRadius = (float) mSize;
-		
+
 	float angle = mUseGlobalLight ? (float) aLayerInfo->mPSDReader->mGlobalAngle : (float) mLocalAngle;
 	float altitude = mUseGlobalLight ? (float) aLayerInfo->mPSDReader->mGlobalAltitude : (float) mLocalAltitude;
 
@@ -2042,42 +2042,42 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 		doFlip = !doFlip;
 
 	if (doFlip)
-		lightAngle = lightAngle + BF_PI;	
+		lightAngle = lightAngle + BF_PI;
 
 	Vector3 shadowVec(cosf((float) lightElevation) * -cosf(lightAngle),
 		cosf(lightElevation) * sinf(lightAngle),
-		sinf(lightElevation));	
-	
+		sinf(lightElevation));
+
 	bool doOuterTaper = (style == 'OtrB') || (style == 'Embs') || (style == 'PlEb');
 	float blurRadius = aRadius;
 
-	if ((style == 'Embs') || (style == 'PlEb'))		
+	if ((style == 'Embs') || (style == 'PlEb'))
 		blurRadius = (float) (int) (blurRadius / 2 + 0.75f);
 
 	if (mTechnique == 'SfBL') // Technique:Smooth
 	{
 		SoftBlurInit(anImageData, newImage, false);
 		SoftBlur(newImage->mBits, w, h, blurRadius - 1.0f, 0);
-			
+
 		for (int i = 0; i < aSize; i++)
 		{
 			uint32 aVal = newImage->mBits[i];
 			newImage->mBits[i] = std::min(0xFF00, (int) (aVal + 256 / blurRadius));
-		}		
+		}
 	}
 	else
 	{
 		ChokedPixelTransform(anImageData, newImage, blurRadius, 0, true, mTechnique == 'Slmt');
-			
+
 		for (int i = 0; i < aSize; i++)
 		{
-			uint32 aVal = newImage->mBits[i];			
+			uint32 aVal = newImage->mBits[i];
 			newImage->mBits[i] = 0xFF00 - aVal;
-		}		
+		}
 	}
 
 	if (mUseContour)
-	{		
+	{
 		for (int i = 0; i < aSize; i++)
 		{
 			uint32 aVal = newImage->mBits[i];
@@ -2087,7 +2087,7 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 	}
 
 	if (mUseTexture)
-	{		
+	{
 		PSDPattern* pattern = aLayerInfo->mPSDReader->mPSDPatternMap[mTexture.mPatternName];
 
 		int32 texMultiply = (int32) (0x100 * mTextureDepth / 100.0f);
@@ -2104,10 +2104,10 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 		float virtPH = (float) pattern->mHeight;
 
 		while (dU > 1.0001f)
-		{			
+		{
 			// Select next mip level
 			mipLevel++;
-			PSDPattern* aMip = pattern->GetNextMipLevel();			
+			PSDPattern* aMip = pattern->GetNextMipLevel();
 			dU /= 2.0f;
 			dV /= 2.0f;
 			virtPW /= 2.0f;
@@ -2124,22 +2124,22 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 		float startV = (float) (newImage->mY - (int) BFRound((float) mTexture.mPhaseY)) * dV;
 		if (startV < 0)
 			startV += virtPH;
-		
+
 		float aU = startU;
 		float aV = startV;
-						
+
 		for (int y = 0; y < h; y++)
 		{
 			aU = startU;
 
 			uint32* aBits = newImage->mBits + (y*w);
-			
+
 			for (int x = 0; x < w; x++)
-			{								
+			{
 				int u1 = ((int) aU) % pw;
 				int v1 = ((int) aV) % ph;
 
-				float ua = aU - (int) aU;				
+				float ua = aU - (int) aU;
 				float va = aV - (int) aV;
 
 				int u2 = (u1 + 1) % pw;
@@ -2151,14 +2151,14 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 					((float) pattern->mIntensityBits[u1+v2*pw] * (1.0f - ua) * (       va)) +
 					((float) pattern->mIntensityBits[u2+v2*pw] * (       ua) * (       va))
 					) * texMultiply + 0.5f);
-				
+
 				*aBits = *aBits + intensity + texOffset;
-				
-				aBits++;				
+
+				aBits++;
 				aU += dU;
 				aU -= (int) (aU / virtPW) * virtPW;
 			}
-			
+
 			aV += dV;
 			aV -= (int) (aV / virtPH) * virtPH;
 		}
@@ -2168,23 +2168,23 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 
 	// Shadows need to be weightedly differently for 'softening' purposes
 	//  This equation fits the proper curve, but I don't really understand why
-	float shadowWeighting = sin(lightElevation) / (1.0f - sin(lightElevation));	
+	float shadowWeighting = sin(lightElevation) / (1.0f - sin(lightElevation));
 
 	if ((mAntiAliased) && (!mGlossContour.IsDefault()))
 		AntiAliasIndices(normalMap, w, h);
 
 	for (int i = 0; i < aSize; i++)
-	{			
+	{
 		float dot = (int) (normalMap[i] - 0x100000) / (float) 0xFF00;
-			
-		float zeroPt = shadowVec.mZ;		
+
+		float zeroPt = shadowVec.mZ;
 
 		//TODO: Cache gloss contour
 		float curvePos = mGlossContour.GetVal(255.0f * dot) / 255.0f;
 		curvePos -= zeroPt;
 
 		float curveIdx = 0;
-		
+
 		if (curvePos > 0)
 		{
 			float hilitePct = curvePos / (1.0f - zeroPt);
@@ -2200,7 +2200,7 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 
 		float lightVal = curvePos;
 		lightVal = BFClamp(lightVal, -1.0f, 1.0f);
-		
+
 		if (lightVal < 0)
 			lightVal *= shadowWeighting;
 
@@ -2210,20 +2210,20 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 	float aSoften = (float) mSoften;
 	if (aSoften > 0)
 	{
-		float d = GetSoftBlurRadius(aSoften) / 2;		
+		float d = GetSoftBlurRadius(aSoften) / 2;
 		if (d > 0)
-		{		
+		{
 			uint32* tempBuffer = newImage->mBits;
 			for (int i = 0; i < 2; i++)
 			{
 				BoxBlur(normalMap, tempBuffer, w, h, d, 0);
 				BoxBlur(tempBuffer, normalMap, h, w, d, 0);
-			}			
+			}
 		}
 	}
-	
+
 	for (int i = 0; i < aSize; i++)
-	{	
+	{
 		float lightVal = (int) (normalMap[i] - 0x100000) / (float) 0xFF00;
 
 		if (lightVal < 0)
@@ -2232,13 +2232,13 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 		if (doOuterTaper)
 		{
 			float taperVal = newImage->mBits[i] / 256.0f / 255.0f * 7.85f;
-			
+
 			if (lightVal > 0)
 				lightVal = std::min(lightVal, taperVal);
-			else 
+			else
 				lightVal = std::max(lightVal, -taperVal);
 		}
-		
+
 		if (lightVal > 0)
 		{
 			hiliteImage->mBits[i] = ((int) (BFClamp(lightVal, 0.0f, 1.0f) * 255.0f + 0.5f) << 24) | (mHiliteColor & 0x00FFFFFF);
@@ -2257,7 +2257,7 @@ void ImageBevelEffect::Apply(int pass, int style, PSDLayerInfo* layerInfo, Image
 void ImageBevelEffect::Apply(ImageEffectCtx* ctx)
 {
 	if (mStyle == 'stro')
-		return; 
+		return;
 
 	ImageData* hiliteEffectImage = new ImageData();
 	hiliteEffectImage->CreateNew(ctx->mBlendWidth, ctx->mBlendHeight);
@@ -2268,18 +2268,18 @@ void ImageBevelEffect::Apply(ImageEffectCtx* ctx)
 	shadowEffectImage->CreateNew(ctx->mBlendWidth, ctx->mBlendHeight);
 	shadowEffectImage->mX = ctx->mBlendX;
 	shadowEffectImage->mY = ctx->mBlendY;
-	
+
 	// Pillow emboss takes two passes, the others only take one
 	for (int aPass = 0; aPass < 2; aPass++)
 	{
 		bool needsMorePasses = false;
 
-		Apply(aPass, mStyle, ctx->mLayerInfo, ctx->mLayerImage, hiliteEffectImage, shadowEffectImage);		
-		
+		Apply(aPass, mStyle, ctx->mLayerInfo, ctx->mLayerImage, hiliteEffectImage, shadowEffectImage);
+
 		if ((aPass == 0) && ((mStyle == 'Embs') || (mStyle == 'PlEb') || (mStyle == 'InrB') || (mStyle == 'PlEb'))) // Emboss or pillow emboss or inner
 		{
-			BlendImage(ctx->mInnerImage, hiliteEffectImage, 0, 0, (float) mHiliteOpacity / 100.0f, mHiliteMode);	
-			BlendImage(ctx->mInnerImage, shadowEffectImage, 0, 0, (float) mShadowOpacity / 100.0f, mShadowMode);	
+			BlendImage(ctx->mInnerImage, hiliteEffectImage, 0, 0, (float) mHiliteOpacity / 100.0f, mHiliteMode);
+			BlendImage(ctx->mInnerImage, shadowEffectImage, 0, 0, (float) mShadowOpacity / 100.0f, mShadowMode);
 
 			needsMorePasses |= (mStyle == 'PlEb');
 		}
@@ -2317,17 +2317,17 @@ void ImageSatinEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Imag
 
 	int w = sw;
 	int h = sh;
-	
-	ImageData* newImage = destImageData;	
-	
+
+	ImageData* newImage = destImageData;
+
 	int aSize = w*h;
-	
+
 	ImageData* tempImage = new ImageData();
 	tempImage->CreateNew(w, h);
 
-	SoftBlurInit(imageData, tempImage, false);							
+	SoftBlurInit(imageData, tempImage, false);
 	SoftBlur(tempImage->mBits, w, h, GetSoftBlurRadius((float) mSize), 0);
-	
+
 	float angle = (float) mAngle * BF_PI / 180.0f;
 	int ofsx = (int) (BFRound(cosf(angle) * (float) mDistance));
 	int ofsy = (int) (BFRound(-sinf(angle) * (float) mDistance));
@@ -2337,18 +2337,18 @@ void ImageSatinEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Imag
 	for (int y = 0; y < h; y++)
 	{
 		for (int x = 0; x < w; x++)
-		{			
+		{
 			int x1 = BFClamp(x + ofsx, 0, w - 1);
-			int y1 = BFClamp(y + ofsy, 0, h - 1);						
+			int y1 = BFClamp(y + ofsy, 0, h - 1);
 			int idx1 = (tempData[x1+y1*w] * (CONTOUR_DATA_SIZE - 1) / 255) / 256;
 			int val1 = mContourData[idx1] * 255 / (GRADIENT_DATA_SIZE - 1);
-			
-			int x2 = BFClamp(x - ofsx, 0, w - 1);
-			int y2 = BFClamp(y - ofsy, 0, h - 1);			
-			int idx2 = (tempData[x2+y2*w] * (CONTOUR_DATA_SIZE - 1) / 255) / 256;
-			int val2 = mContourData[idx2] * 255 / (GRADIENT_DATA_SIZE - 1);			
 
-			uint32 aVal = (uint32) abs((int) val1 - (int) val2);			
+			int x2 = BFClamp(x - ofsx, 0, w - 1);
+			int y2 = BFClamp(y - ofsy, 0, h - 1);
+			int idx2 = (tempData[x2+y2*w] * (CONTOUR_DATA_SIZE - 1) / 255) / 256;
+			int val2 = mContourData[idx2] * 255 / (GRADIENT_DATA_SIZE - 1);
+
+			uint32 aVal = (uint32) abs((int) val1 - (int) val2);
 			newImage->mBits[x+y*w] = aVal;
 		}
 	}
@@ -2359,7 +2359,7 @@ void ImageSatinEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Imag
 	if (mInvert)
 	{
 		for (int i = 0; i < aSize; i++)
-			newImage->mBits[i] = ((255 - newImage->mBits[i]) << 24) | (mColor & 0x00FFFFFF);			
+			newImage->mBits[i] = ((255 - newImage->mBits[i]) << 24) | (mColor & 0x00FFFFFF);
 	}
 	else
 	{
@@ -2440,9 +2440,9 @@ void ImageGradientFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 	for (int y = 0; y < ih; y++)
 	{
 		uint32* checkBits = imageData->mBits + (y*iw);
-		
+
 		bool hadPixel = false;
-		
+
 		for (int x = 0; x < iw; x++)
 		{
 			if ((checkBits[x] >> 24) >= 128)
@@ -2478,15 +2478,15 @@ void ImageGradientFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 	//  There's a large gap between 180 degrees and 179 degrees than there should be, for example
 	//  This is not yet simulated here.  Offsets are also slightly effected.
 	float angle = BF_PI * angleDeg / 180.0f;
-	
+
 	float matA = -cosf(angle);
-	float matB = sinf(angle);		
+	float matB = sinf(angle);
 	float matC = sin(angle);
-	float matD = cos(angle);	
+	float matD = cos(angle);
 
 	float xOfs = 0;
 	float yOfs = 0;
-	
+
 	float gradWidth;
 	float gradHeight;
 
@@ -2494,14 +2494,14 @@ void ImageGradientFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 
 	float sizeBasis;
 	if (mAlignWithLayer)
-	{		
+	{
 		gradWidth = (float) contentW;
-		gradHeight = (float) contentH;		
+		gradHeight = (float) contentH;
 		xOfs = -(float)contentW/2 - minX;
-		yOfs = -(float)contentH/2 - minY;		
+		yOfs = -(float)contentH/2 - minY;
 	}
-	else	
-	{		
+	else
+	{
 		gradWidth = (float) layerInfo->mPSDReader->mWidth;
 		gradHeight = (float) layerInfo->mPSDReader->mHeight;
 		xOfs = destImageData->mX - (float) gradWidth/2;
@@ -2515,14 +2515,14 @@ void ImageGradientFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 	float sizeBasisY = gradHeight / fabs(matB);
 	sizeBasis = std::min(sizeBasisX, sizeBasisY);
 
-	float scale = (float) mScale / 100.0f;	
-	
+	float scale = (float) mScale / 100.0f;
+
 	float gradientScale = (float) (GRADIENT_DATA_SIZE - 1) / sizeBasis / scale * 2;
 
 	for (int y = 0; y < h; y++)
 	{
 		uint32* aBits = destImageData->mBits + (y*w);
-			
+
 		for (int x = 0; x < w; x++)
 		{
 			float aX = (float) x + xOfs;
@@ -2551,21 +2551,21 @@ void ImageGradientFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 				break;
 			case 'Rflc':
 				gradientIdx = (GRADIENT_DATA_SIZE - 1) - BFClamp((int) (fabs(xRot) * gradientScale + 0.5f), 0, GRADIENT_DATA_SIZE - 1);
-				break;			
-			case 'Dmnd':				
-				gradientIdx = (GRADIENT_DATA_SIZE - 1) - BFClamp((int) ((fabs(xRot) + fabs(yRot)) * gradientScale + 0.5f), 0, GRADIENT_DATA_SIZE - 1);				
+				break;
+			case 'Dmnd':
+				gradientIdx = (GRADIENT_DATA_SIZE - 1) - BFClamp((int) ((fabs(xRot) + fabs(yRot)) * gradientScale + 0.5f), 0, GRADIENT_DATA_SIZE - 1);
 				break;
 			}
-						
+
 			aBits[x] = mGradientData[gradientIdx];
 		}
 	}
 }
 
 void ImagePatternFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, ImageData* destImageData)
-{		
+{
 	PSDPattern* pattern = layerInfo->mPSDReader->mPSDPatternMap[mPatternName];
-		
+
 	int mipLevel = 0;
 
 	int w = destImageData->mWidth;
@@ -2578,10 +2578,10 @@ void ImagePatternFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Imag
 	float virtPH = (float) pattern->mHeight;
 
 	while ((dU > 1.0001f) && (pattern->mWidth >= 4) && (pattern->mHeight >= 4))
-	{			
+	{
 		// Select next mip level
 		mipLevel++;
-		PSDPattern* aMip = pattern->GetNextMipLevel();			
+		PSDPattern* aMip = pattern->GetNextMipLevel();
 		dU /= 2.0f;
 		dV /= 2.0f;
 		virtPW /= 2.0f;
@@ -2607,22 +2607,22 @@ void ImagePatternFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Imag
 	float startV = (float) (destImageData->mY - (int) BFRound((float) phaseY)) * dV;
 	if (startV < 0)
 		startV += virtPH;
-		
+
 	float aU = startU;
 	float aV = startV;
-						
+
 	for (int y = 0; y < h; y++)
 	{
 		aU = startU;
 
 		uint32* aBits = destImageData->mBits + (y*w);
-			
+
 		for (int x = 0; x < w; x++)
-		{								
+		{
 			int u1 = ((int) aU) % pw;
 			int v1 = ((int) aV) % ph;
 
-			float ua = aU - (int) aU;				
+			float ua = aU - (int) aU;
 			float va = aV - (int) aV;
 
 			int u2 = (u1 + 1) % pw;
@@ -2639,18 +2639,18 @@ void ImagePatternFill::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Imag
 			uint32 a4 = (int) ((       ua) * (       va) * 256 + 0.5f);
 
 			*aBits =
-                (((((aColor1 & 0x00FF00FF) * a1) + ((aColor2 & 0x00FF00FF) * a2) + 
-					((color3 & 0x00FF00FF) * a3) + ((color4 & 0x00FF00FF) * a4)) >> 8) & 0x00FF00FF) |                
+                (((((aColor1 & 0x00FF00FF) * a1) + ((aColor2 & 0x00FF00FF) * a2) +
+					((color3 & 0x00FF00FF) * a3) + ((color4 & 0x00FF00FF) * a4)) >> 8) & 0x00FF00FF) |
                 (((((aColor1 >> 8) & 0x00FF00FF) * a1) + (((aColor2 >> 8) & 0x00FF00FF) * a2) +
 					(((color3 >> 8) & 0x00FF00FF) * a3) + (((color4 >> 8) & 0x00FF00FF) * a4)) & 0xFF00FF00);
 
 			//*aBits = aColor1;
-							
-			aBits++;				
+
+			aBits++;
 			aU += dU;
 			aU -= (int) (aU / virtPW) * virtPW;
 		}
-			
+
 		aV += dV;
 		aV -= (int) (aV / virtPH) * virtPH;
 	}
@@ -2677,37 +2677,37 @@ void ImageStrokeEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 	tempImage->mX = destImageData->mX;
 	tempImage->mY = destImageData->mY;
 
-	float aRadius = (float) mSize;	
+	float aRadius = (float) mSize;
 	float blurRadius = aRadius;
 
 	if (mPosition == 'CtrF')
 		blurRadius /= 2;
-	
+
 	uint32* aDest = tempImage->mBits;
 
-	ChamferedDistanceTransformInit(imageData, tempImage, false, 0);	
+	ChamferedDistanceTransformInit(imageData, tempImage, false, 0);
 	ChamferedDistanceTransform(aDest, w, h);
-			
-	uint32* tempBuffer = destImageData->mBits;//new uint32[w*h]; 
+
+	uint32* tempBuffer = destImageData->mBits;//new uint32[w*h];
 	uint32* exterior = aDest;
 	uint32* anInterior = tempBuffer;
 
 	float rad = blurRadius;
 	int inf = (int) (blurRadius + 2) * 256;
-	
+
 	for (int i = 0; i < aSize; i++)
-	{	
-		float dist = aDest[i] / 256.0f;		
+	{
+		float dist = aDest[i] / 256.0f;
 		dist -= 0.001f;
 
 		if (dist < 0)
-		{			
+		{
 			exterior[i] = inf;
 			anInterior[i] = 0;
 		}
 		else if (dist < 1.0f)
 		{
-			exterior[i] = BFClamp((int) ((1.0f - dist) * 256.0f), 0, 0xFF);								
+			exterior[i] = BFClamp((int) ((1.0f - dist) * 256.0f), 0, 0xFF);
 			anInterior[i] = (int) (dist * 256);
 		}
 		else
@@ -2715,15 +2715,15 @@ void ImageStrokeEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 			exterior[i] = 0;
 			anInterior[i] = (int) (dist * 256);
 		}
-	}	
-	
+	}
+
 	ChamferedDistanceTransform(exterior, w, h);
 
 	for (int i = 0; i < aSize; i++)
 	{
 		float distInterior = (anInterior[i] / 256.0f) - rad;
 		float distExterior = (exterior[i] / 256.0f) - rad;
-		float maxDist = std::max(distInterior, distExterior);		
+		float maxDist = std::max(distInterior, distExterior);
 
 		if (maxDist < 0)
 			aDest[i] = 0xFF000000;
@@ -2744,7 +2744,7 @@ void ImageStrokeEffect::Apply(PSDLayerInfo* layerInfo, ImageData* imageData, Ima
 		mColorFill.Apply(layerInfo, imageData, destImageData);
 
 	for (int i = 0; i < aSize; i++)
-	{		
+	{
 		uint32 srcAlpha = tempImage->mBits[i] >> 24;
 		uint32 destAlpha = destImageData->mBits[i] >> 24;
 
@@ -2763,7 +2763,7 @@ void ImageStrokeEffect::Apply(ImageEffectCtx* ctx)
 		BaseImageEffect* anEffect = ctx->mLayerInfo->mImageEffects->mImageEffectVector[effectIdx];
 
 		bevelEffect = dynamic_cast<ImageBevelEffect*>(anEffect);
-		if ((bevelEffect != NULL) && (bevelEffect->mStyle == 'stro')) 
+		if ((bevelEffect != NULL) && (bevelEffect->mStyle == 'stro'))
 			break;
 		bevelEffect = NULL;
 	}
@@ -2780,7 +2780,7 @@ void ImageStrokeEffect::Apply(ImageEffectCtx* ctx)
 	effectImage->mY = ctx->mBlendY;
 	Apply(ctx->mLayerInfo, ctx->mLayerImage, effectImage);
 
-	float opacity = (float) mOpacity / 100.0f;	
+	float opacity = (float) mOpacity / 100.0f;
 
 	ImageData* mixImage = CreateResizedImageUnion(ctx->mOrigImage, effectImage->mX, effectImage->mY, effectImage->mWidth, effectImage->mHeight);
 	BlendImage(mixImage, effectImage, effectImage->mX - mixImage->mX, effectImage->mY - mixImage->mY, opacity, mBlendMode, true);
@@ -2803,20 +2803,20 @@ void ImageStrokeEffect::Apply(ImageEffectCtx* ctx)
 		else if (mPosition == 'InsF')
 			aStyle = 'InrB';
 		bevelEffect->Apply(0, aStyle, ctx->mLayerInfo, ctx->mLayerImage, hiliteEffectImage, shadowEffectImage);
-		
-		BlendImage(mixImage, hiliteEffectImage, hiliteEffectImage->mX - mixImage->mX, hiliteEffectImage->mY - mixImage->mY, (float) bevelEffect->mHiliteOpacity / 100.0f, bevelEffect->mHiliteMode);	
+
+		BlendImage(mixImage, hiliteEffectImage, hiliteEffectImage->mX - mixImage->mX, hiliteEffectImage->mY - mixImage->mY, (float) bevelEffect->mHiliteOpacity / 100.0f, bevelEffect->mHiliteMode);
 		BlendImage(mixImage, shadowEffectImage, shadowEffectImage->mX - mixImage->mX, shadowEffectImage->mY - mixImage->mY, (float) bevelEffect->mShadowOpacity / 100.0f, bevelEffect->mShadowMode);
 
 		delete shadowEffectImage;
 		delete hiliteEffectImage;
 	}
-	
+
 	int mixType = GetMixType();
-	if ((mixType == IMAGEMIX_INNER) || (mixType == IMAGEMIX_OVER))	
+	if ((mixType == IMAGEMIX_INNER) || (mixType == IMAGEMIX_OVER))
 		BlendImagesTogether(ctx->mInnerImage, mixImage, effectImage);
 	if ((mixType == IMAGEMIX_OUTER) || (mixType == IMAGEMIX_OVER))
 		BlendImagesTogether(ctx->mOuterImage, mixImage, effectImage);
-	
+
 	delete mixImage;
 
 	delete effectImage;
@@ -2847,7 +2847,7 @@ bool ImageStrokeEffect::NeedsOrigBits(ImageEffects* effects)
 		BaseImageEffect* anEffect = effects->mImageEffectVector[effectIdx];
 
 		bevelEffect = dynamic_cast<ImageBevelEffect*>(anEffect);
-		if ((bevelEffect != NULL) && (bevelEffect->mStyle == 'stro')) 
+		if ((bevelEffect != NULL) && (bevelEffect->mStyle == 'stro'))
 			return true;
 	}
 

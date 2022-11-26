@@ -11,7 +11,7 @@ class ImagePatternFill;
 
 class ImageAdjustment
 {
-public:	
+public:
 	~ImageAdjustment();
 
 	virtual ImageData*		CreateAdjustedImage(PSDLayerInfo* layerInfo, ImageData* destImage);

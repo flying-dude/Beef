@@ -12,7 +12,7 @@ class ShaderParam
 public:
 	virtual ~ShaderParam() {}
 
-	virtual void			SetTexture(Texture* texture) = 0;	
+	virtual void			SetTexture(Texture* texture) = 0;
 	virtual void			SetFloat2(float x, float y) { SetFloat4(x, y, 0, 1); }
 	virtual void			SetFloat3(float x, float y, float z) { SetFloat4(x, y, z, 1); }
 	virtual void			SetFloat4(float x, float y, float z, float w) = 0;
@@ -22,7 +22,7 @@ class Shader
 {
 public:
 	ShaderParam*			mTextureParam;
-	int						mLastResizeCount;	
+	int						mLastResizeCount;
 	int						mVertexSize;
 
 public:
@@ -31,7 +31,7 @@ public:
 public:
 	Shader();
 	virtual ~Shader();
-	
+
 	virtual ShaderParam*	GetShaderParam(const StringImpl& name) = 0;
 };
 

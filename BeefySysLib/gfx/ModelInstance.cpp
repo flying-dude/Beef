@@ -6,7 +6,7 @@ ModelInstance::ModelInstance(ModelDef* modelDef)
 {
 	mNext = NULL;
 	mModelDef = modelDef;
-	mJointTranslations.Resize(mModelDef->mJoints.size());	
+	mJointTranslations.Resize(mModelDef->mJoints.size());
 	mMeshesVisible.Insert(0, mModelDef->mMeshes.size(), true);
 }
 
