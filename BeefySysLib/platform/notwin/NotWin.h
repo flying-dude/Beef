@@ -215,12 +215,12 @@ struct LARGE_INTEGER
 HANDLE GetModuleHandle(HANDLE h);
 uint32 GetModuleFileNameW(uint32 hModule, wchar_t* lpFilename, uint32 length);
 uint32 GetModuleFileNameA(uint32 hModule, char* lpFilename, uint32 length);
-HMODULE LoadLibraryA(const char* fileName) { NOT_IMPL_WARN; printf("LoadLibraryA: Use dlopen() on Linux.\n"); }
+//HMODULE LoadLibraryA(const char* fileName) { NOT_IMPL_WARN; printf("LoadLibraryA: Use dlopen() on Linux.\n"); }
 void FreeLibrary(HMODULE lib);
 bool CreateDirectoryW(const wchar_t* str, void* securityAttributes);
 bool RemoveDirectoryW(const wchar_t* str);
 int GetLastError();
-BFLibProcAddr GetProcAddress(HMODULE mod, const char* name) { NOT_IMPL_WARN; }
+//BFLibProcAddr GetProcAddress(HMODULE mod, const char* name);
 int* GetStdHandle(int32 handleId);
 BF_THREADID GetCurrentThreadId();
 HANDLE GetCurrentThread();

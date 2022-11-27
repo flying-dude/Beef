@@ -30,6 +30,7 @@ const char* (SDLCALL* bf_SDL_GetError)(void);
 SDL_GLContext (SDLCALL* bf_SDL_GL_CreateContext)(SDL_Window* window);
 void (SDLCALL* bf_SDL_Quit)(void);
 
+/*
 static HMODULE gSDLModule;
 
 static HMODULE GetSDLModule(const StringImpl& installDir)
@@ -59,6 +60,7 @@ static void BFGetSDLProc(T& proc, const char* name, const StringImpl& installDir
 }
 
 #define BF_GET_SDLPROC(name) BFGetSDLProc(bf_##name, #name, mInstallDir)
+*/
 
 SdlBFWindow::SdlBFWindow(BFWindow* parent, const StringImpl& title, int x, int y, int width, int height, int windowFlags)
 {
@@ -244,6 +246,7 @@ SdlBFApp::SdlBFApp()
 
 	if (bf_SDL_CreateWindow == NULL)
 	{
+/*
 		BF_GET_SDLPROC(SDL_CreateWindow);
 		BF_GET_SDLPROC(SDL_GL_SetAttribute);
 		BF_GET_SDLPROC(SDL_GetWindowID);
@@ -261,6 +264,24 @@ SdlBFApp::SdlBFApp()
 		BF_GET_SDLPROC(SDL_GetError);
 		BF_GET_SDLPROC(SDL_GL_CreateContext);
 		BF_GET_SDLPROC(SDL_Quit);
+*/
+        bf_SDL_CreateWindow = &SDL_CreateWindow;
+        bf_SDL_GL_SetAttribute = &SDL_GL_SetAttribute;
+        bf_SDL_GetWindowID = &SDL_GetWindowID;
+        bf_SDL_DestroyWindow = &SDL_DestroyWindow;
+        bf_SDL_Init = &SDL_Init;
+        bf_SDL_GetWindowPosition = &SDL_GetWindowPosition;
+        bf_SDL_GetClipboardText = &SDL_GetClipboardText;
+        bf_SDL_SetClipboardText = &SDL_SetClipboardText;
+        bf_SDL_GL_GetProcAddress = &SDL_GL_GetProcAddress;
+        bf_SDL_GetWindowSize = &SDL_GetWindowSize;
+        bf_SDL_GL_SwapWindow = &SDL_GL_SwapWindow;
+        bf_SDL_free = &SDL_free;
+        bf_SDL_SetWindowPosition = &SDL_SetWindowPosition;
+        bf_SDL_PollEvent = &SDL_PollEvent;
+        bf_SDL_GetError = &SDL_GetError;
+        bf_SDL_GL_CreateContext = &SDL_GL_CreateContext;
+        bf_SDL_Quit = &SDL_Quit;
 	}
 
 	mDataDir = mInstallDir;

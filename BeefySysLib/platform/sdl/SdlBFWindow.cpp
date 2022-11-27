@@ -1,6 +1,6 @@
 #include "SdlBFApp.h"
 #include "GLRenderDevice.h"
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 USING_NS_BF;
 

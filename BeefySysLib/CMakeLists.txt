@@ -339,6 +339,10 @@ if (DEFINED BF_ENABLE_SDL)
     file(GLOB SRC_FILES_OS
         platform/sdl/SdlBFApp.cpp
         platform/sdl/GLRenderDevice.cpp
+
+        platform/sdl/SdlBFWindow.cpp
+        platform/notwin/NotWin.h
+        BeefySysLib/platform/linux/LinuxCommon.h
     )
 endif()
 
