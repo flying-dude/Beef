@@ -162,7 +162,6 @@ target("BeefBoot")
 
 target("BeefRT")
   set_kind("static")
-  add_deps("libffi")
 
   -- this flag will fix compile error when encountering unrecognized "__cdecl" in c++ files.
   -- needs llvm/clang toolchain (defined at top of file); seems like gcc doesn't support it?
@@ -203,11 +202,15 @@ target("BeefRT")
     "BeefySysLib/third_party/utf8proc/utf8proc.c",
     "BeefySysLib/third_party/putty/wildcard.c")
 
+  add_cxxflags("-DBF_DISABLE_FFI")
+--[[
+  add_deps("libffi")
   add_files("BeefySysLib/third_party/libffi/src/.libs/*.o")
 
   -- note: if building on non-x86 system is desired, then this line should
   --       be adjusted to pick the appropriate platform inside the "src" folder.
   add_files("BeefySysLib/third_party/libffi/src/x86/.libs/*.o")
+--]]
 
 target("BeefySysLib")
   set_kind("shared")
@@ -305,6 +308,7 @@ target("IDEHelper")
     target:add(find_packages("LLVM-13", "hunspell"))
   end)
 
+--[[
 -- TODO xmake already has make-integration: https://xmake.io/#/package/local_3rd_source_library?id=integrated-makefile-source-library
 --      this target works well but maybe it would still be easier to use the xmake-integrated facility
 target("libffi")
@@ -330,3 +334,4 @@ target("libffi")
 
     logfile:close()
   end)
+--]]

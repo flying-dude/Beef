@@ -24,7 +24,12 @@ Building: BeefBuild
 Beef compilation time: 27.31s
 Comptime execution time: 0.21s
 Executing Command: ReadFile("$(WorkspaceDir)/../IDE/dist/IDEHelper_libs.txt", "IDEHelperLibs")
-error: execv(IDE/dist/BeefBuild_boot -proddir=BeefBuild -config=Release) failed(-1)
+clang-14: error: no such file or directory: '$(Var'
+clang-14: error: no such file or directory: 'IDEHelperLibs)'
+Execution Failed
+Executing Command: CopyToDependents("$(ProjectDir)/dist/libBeefySysLib.so")
+ERROR: BUILD FAILED
+error: execv(IDE/dist/BeefBuild_boot -proddir=BeefBuild -config=Release) failed(1)
 ```
 
 ## Build on Arch Linux
