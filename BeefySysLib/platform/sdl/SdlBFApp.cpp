@@ -442,11 +442,13 @@ void SdlBFApp::SetClipboardData(const StringImpl& format, const void* ptr, int s
 
 BFMenu* SdlBFWindow::AddMenuItem(BFMenu* parent, int insertIdx, const char* text, const char* hotKey, BFSysBitmap* bitmap, bool enabled, int checkState, bool radioCheck)
 {
+	NOT_IMPL_WARN;
 	return NULL;
 }
 
 void SdlBFWindow::RemoveMenuItem(BFMenu* item)
 {
+	NOT_IMPL_WARN;
 }
 
 BFSysBitmap* SdlBFApp::LoadSysBitmap(const wchar_t* fileName)
