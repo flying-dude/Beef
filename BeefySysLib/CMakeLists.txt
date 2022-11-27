@@ -109,6 +109,10 @@ if(NOT MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-multichar")
 endif(NOT MSVC)
 
+# hard-activating SDL for work on IDE port to linux
+# this is only temporary for development on linux boxes
+SET(BF_ENABLE_SDL "DUMMY-VALUE")
+
 if (DEFINED BF_ENABLE_SDL)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBF_ENABLE_SDL")
 endif()

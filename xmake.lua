@@ -15,7 +15,8 @@ add_includedirs("$(projectdir)/BeefySysLib/platform/linux/")
 add_cxxflags("-DXMAKE_BUILD")
 
 -- deactivate exceptions globally
-add_cxxflags("-fno-exceptions")
+-- (keeping 'em activated for now but plan is to remove completely eventually)
+-- add_cxxflags("-fno-exceptions")
 
 -- debug mode does not entail debug flag in xmake. so we need to set it here.
 if is_mode("debug") then
