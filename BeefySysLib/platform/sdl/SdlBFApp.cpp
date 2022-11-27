@@ -1,12 +1,13 @@
 #include "SdlBFApp.h"
-#include "SdlBFWindow.h"
 #include "GLRenderDevice.h"
+#include "platform/PlatformHelper.h"
 #include <SDL2/SDL.h>
 
 #include "platform/notwin/NotWin.h"
-#include "platform/PlatformHelper.h"
 
 USING_NS_BF;
+
+///
 
 #pragma comment(lib, "imm32.lib")
 #pragma comment(lib, "version.lib")

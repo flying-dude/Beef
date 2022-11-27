@@ -1,5 +1,4 @@
 #include "SdlBFApp.h"
-#include "SdlBFWindow.h"
 #include "GLRenderDevice.h"
 #include "SDL.h"
 
@@ -56,8 +55,8 @@ SdlBFWindow::~SdlBFWindow()
 bool SdlBFWindow::TryClose()
 {
 	SdlBFApp* app = (SdlBFApp*)gBFApp;
-	SdlWindowMap::iterator itr = app->mSdlWindowMap.find(SDL_GetWindowID(mSDLWindow));
-	app->mSdlWindowMap.erase(itr);
+	SdlWindowMap::iterator itr = app->mSdlWindowMap.Find(SDL_GetWindowID(mSDLWindow));
+	app->mSdlWindowMap.Remove(itr);
 
 	SDL_DestroyWindow(mSDLWindow);
 	mSDLWindow = NULL;
