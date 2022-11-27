@@ -36,7 +36,9 @@ static HMODULE GetSDLModule(const StringImpl& installDir)
 {
 	if (gSDLModule == NULL)
 	{
-		String loadPath = installDir + "SDL2.dll";
+        printf("%s :: %d :: warning :: %s\n", __FILE_NAME__, __LINE__, "On-demand loading of libSDL is not yet supported on Linux.");
+        printf("%s :: %d :: warning :: %s\n", __FILE_NAME__, __LINE__, "Use dlopen() instead of LoadLibraryA. See header NotWin.h");
+        String loadPath = installDir + "SDL2.dll";
 		gSDLModule = ::LoadLibraryA(loadPath.c_str());
 		if (gSDLModule == NULL)
 		{
