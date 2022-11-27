@@ -41,7 +41,7 @@ public:
 
 	virtual void			LostFocus(BFWindow* newFocus) override { NOT_IMPL_WARN; }
 
-	virtual void			ModalsRemoved() override;
+	virtual void			ModalsRemoved() override { NOT_IMPL_WARN; }
 
 	virtual void			Show(ShowKind showKind) { NOT_IMPL_WARN; }
 	virtual void			SetForeground() override { NOT_IMPL_WARN; }

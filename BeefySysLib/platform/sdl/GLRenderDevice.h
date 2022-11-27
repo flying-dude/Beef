@@ -111,7 +111,7 @@ class GLDrawLayer : public DrawLayer
 public:
 	virtual DrawBatch*		CreateDrawBatch();
 	virtual RenderCmd*		CreateSetTextureCmd(int textureIdx, Texture* texture) override;
-	virtual void			SetShaderConstantData(int usageIdx, int slotIdx, void* constData, int size) override;
+	virtual void			SetShaderConstantData(int usageIdx, int slotIdx, void* constData, int size) override { NOT_IMPL_WARN; }
 
 public:
 	GLDrawLayer();
